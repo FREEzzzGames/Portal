@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>RETRO RACER — TG MINI APP</title>
+<title>F1 ARCADE — TG MINI APP</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -25,13 +25,13 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
 .hudbox small{display:block;color:#20e8ff;font-size:7px;}
 .hudbox b{display:block;font-size:14px;}
 
-/* CONTROLS (SEMITRANSPARENT) */
+/* CONTROLS */
 .controls{position:absolute;z-index:20;inset:0;display:flex;justify-content:space-between;align-items:flex-end;padding:15px;pointer-events:none;}
-.group{display:flex;gap:10px;pointer-events:auto;}
-.ctrl-btn{width:65px;height:65px;border:2px solid rgba(255,255,255,.4);border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:22px;display:flex;justify-content:center;align-items:center;backdrop-filter:blur(4px);user-select:none;box-shadow:0 0 10px rgba(0,0,0,.5);cursor:pointer;}
-.ctrl-btn:active{background:rgba(32,232,255,.35);border-color:#20e8ff;}
-.ctrl-btn.gas{background:rgba(0,255,100,.15);border-color:rgba(0,255,100,.4);}
-.ctrl-btn.brake{background:rgba(255,50,50,.15);border-color:rgba(255,50,50,.4);}
+.group{display:flex;gap:12px;pointer-events:auto;}
+.ctrl-btn{width:70px;height:70px;border:2px solid rgba(255,255,255,.5);border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:24px;display:flex;justify-content:center;align-items:center;backdrop-filter:blur(4px);user-select:none;box-shadow:0 0 12px rgba(0,0,0,.5);cursor:pointer;}
+.ctrl-btn:active{background:rgba(32,232,255,.4);border-color:#20e8ff;}
+.ctrl-btn.gas{background:rgba(0,255,100,.2);border-color:rgba(0,255,100,.5);}
+.ctrl-btn.brake{background:rgba(255,50,50,.2);border-color:rgba(255,50,50,.5);}
 
 /* OVERLAY */
 .overlay{position:absolute;z-index:30;inset:0;display:flex;align-items:center;justify-content:center;background:#02030be8;}
@@ -47,8 +47,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
 <body>
 <div class="arcade">
   <header class="marquee">
-    <h1>RETRO RACER <span>360</span></h1>
-    <div class="sub">CHAMPIONSHIP CIRCUIT</div>
+    <h1>F1 ARCADE <span>GP</span></h1>
+    <div class="sub">STRICT WALLS TIME ATTACK</div>
   </header>
 
   <div class="screen-wrapper">
@@ -63,7 +63,6 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
         <div class="hudbox"><small>BEST</small><b id="hudBest">--.--</b></div>
       </div>
 
-      <!-- SEMITRANSPARENT CONTROLS -->
       <div class="controls">
         <div class="group">
           <div class="ctrl-btn" id="btnLeft">◀</div>
@@ -77,8 +76,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
 
       <div class="overlay" id="overlay">
         <div class="card">
-          <h2 id="title">RETRO RACER</h2>
-          <p id="message">Пройди 3 круга на лучшее время.<br><br>Управление: слева повороты, справа газ/тормоз.</p>
+          <h2 id="title">F1 ARCADE</h2>
+          <p id="message">Пройди 3 круга на время.<br><br>Красные борта стали прочными стенами — выехать за пределы трассы больше нельзя!</p>
           <button class="start-btn" id="startBtn">СТАРТ ГОНКИ</button>
         </div>
       </div>
@@ -114,50 +113,79 @@ function resize() {
 }
 window.addEventListener("resize", resize);
 
-const trackPoints = [
-  {x: 400, y: 400}, {x: 200, y: 380}, {x: 100, y: 250}, {x: 150, y: 120},
-  {x: 350, y: 80},  {x: 600, y: 100}, {x: 700, y: 220}, {x: 650, y: 380}
-];
+// Параметры трассы (внешние и внутренние границы бортов)
+const rxOuter = 340, ryOuter = 210;
+const rxInner = 160, ryInner = 90;
 
 let running = false, paused = false;
-let car = { x: 400, y: 400, angle: -Math.PI/2, speed: 0, maxSpeed: 6.5, accel: 0.12, friction: 0.04, steer: 0.05 };
+let car = { x: 400, y: 410, angle: -Math.PI/2, speed: 0, maxSpeed: 7.5, accel: 0.15, friction: 0.03, steer: 0.045 };
 let keys = { left: false, right: false, gas: false, brake: false };
 
 let currentLap = 1, lapStartTime = 0, raceStartTime = 0, currentLapTime = 0;
-let lastLapTimes = [], bestLapTime = Number(localStorage.getItem("retroBestLap") || 0);
-let bestRaceTime = Number(localStorage.getItem("retroBestRace") || 0);
+let lastLapTimes = [], bestLapTime = Number(localStorage.getItem("f1WallBestLap") || 0);
+let bestRaceTime = Number(localStorage.getItem("f1WallBestRace") || 0);
 
 $("bestLap").textContent = bestLapTime ? bestLapTime.toFixed(2) + "s" : "--.--";
 $("bestRace").textContent = bestRaceTime ? bestRaceTime.toFixed(2) + "s" : "--.--";
 
 function drawStaticTrack() {
-  tctx.fillStyle = "#0c1b0a"; tctx.fillRect(0, 0, width, height);
-  tctx.strokeStyle = "#10260e"; tctx.lineWidth = 1;
-  for(let i=0; i<width; i+=40) { tctx.beginPath(); tctx.moveTo(i,0); tctx.lineTo(i,height); tctx.stroke(); }
+  tctx.fillStyle = "#0c170b"; tctx.fillRect(0, 0, width, height);
 
   tctx.save();
-  tctx.scale(width/800, height/500);
-  
+  tctx.translate(width/2, height/2);
+
+  // Внешний красный борт (Стена)
+  tctx.strokeStyle = "#e52225"; tctx.lineWidth = 20; tctx.lineCap = "round";
+  tctx.beginPath(); tctx.ellipse(0, 0, rxOuter + 10, ryOuter + 10, 0, 0, Math.PI*2); tctx.stroke();
+
+  // Основное дорожное полотно (Асфальт)
+  tctx.strokeStyle = "#2b303b"; tctx.lineWidth = 170;
+  tctx.beginPath(); tctx.ellipse(0, 0, rxOuter, ryOuter, 0, 0, Math.PI*2); tctx.stroke();
+
+  // Разметка посередине дороги
+  tctx.strokeStyle = "#ffcc00"; tctx.lineWidth = 2; tctx.setLineDash([15, 15]);
+  tctx.beginPath(); tctx.ellipse(0, 0, (rxOuter + rxInner)/2, (ryOuter + ryInner)/2, 0, 0, Math.PI*2); tctx.stroke();
+  tctx.setLineDash([]);
+
+  // Внутренний красный борт (Стена газона)
+  tctx.fillStyle = "#0c170b";
+  tctx.beginPath(); tctx.ellipse(0, 0, rxInner, ryInner, 0, 0, Math.PI*2); tctx.fill();
+  tctx.strokeStyle = "#e52225"; tctx.lineWidth = 16; tctx.stroke();
+
+  // Линия старта / финиша
+  tctx.strokeStyle = "#fff"; tctx.lineWidth = 6; tctx.setLineDash([5,5]);
   tctx.beginPath();
-  tctx.moveTo(trackPoints[0].x, trackPoints[0].y);
-  for(let p of trackPoints) tctx.lineTo(p.x, p.y);
-  tctx.closePath();
-  tctx.strokeStyle = "#ff4444"; tctx.lineWidth = 90; tctx.lineJoin = "round"; tctx.stroke();
-  
-  tctx.strokeStyle = "#22252b"; tctx.lineWidth = 74; tctx.stroke();
-  
-  tctx.strokeStyle = "#fff"; tctx.lineWidth = 6; tctx.setLineDash([8,8]);
-  tctx.beginPath(); tctx.moveTo(400, 360); tctx.lineTo(400, 440); tctx.stroke();
+  tctx.moveTo(0, -ryOuter - 15); tctx.lineTo(0, -ryInner + 5); tctx.stroke();
+
   tctx.restore();
 }
 
-function isOnRoad(x, y) {
-  let dist = Math.hypot(x - width*0.42, y - height*0.48);
-  return (dist > 90 && dist < 240);
+// Жесткие и надежные физические стены (отбойники)
+function enforceStrictWalls() {
+  let dx = car.x - width/2;
+  let dy = car.y - height/2;
+  
+  // Проверка выхода за внешний красный борт
+  let outerCheck = (dx*dx) / (rxOuter*rxOuter) + (dy*dy) / (ryOuter*ryOuter);
+  if (outerCheck > 1.0) {
+    car.speed *= -0.3; // Удар о стену с потерей скорости
+    let angleToCenter = Math.atan2(dy, dx);
+    car.x = width/2 + Math.cos(angleToCenter) * rxOuter;
+    car.y = height/2 + Math.sin(angleToCenter) * ryOuter;
+  }
+
+  // Проверка заезда за внутренний красный борт
+  let innerCheck = (dx*dx) / (rxInner*rxInner) + (dy*dy) / (ryInner*ryInner);
+  if (innerCheck < 1.0) {
+    car.speed *= -0.3;
+    let angleFromCenter = Math.atan2(dy, dx);
+    car.x = width/2 + Math.cos(angleFromCenter) * rxInner;
+    car.y = height/2 + Math.sin(angleFromCenter) * ryInner;
+  }
 }
 
 function startRace() {
-  car.x = width * 0.5; car.y = height * 0.8; car.angle = -Math.PI/2; car.speed = 0;
+  car.x = width/2; car.y = height/2 + 200; car.angle = -Math.PI/2; car.speed = 0;
   currentLap = 1; lastLapTimes = [];
   raceStartTime = performance.now();
   lapStartTime = raceStartTime;
@@ -179,34 +207,33 @@ bindBtn("btnGas", "gas"); bindBtn("btnBrake", "brake");
 function update(dt) {
   if (!running || paused) return;
 
-  if (keys.left) car.angle -= car.steer * (car.speed / car.maxSpeed);
-  if (keys.right) car.angle += car.steer * (car.speed / car.maxSpeed);
+  if (keys.left) car.angle -= car.steer * Math.min(1, car.speed / 3);
+  if (keys.right) car.angle += car.steer * Math.min(1, car.speed / 3);
 
   if (keys.gas) car.speed = Math.min(car.maxSpeed, car.speed + car.accel);
-  else if (keys.brake) car.speed = Math.max(-2, car.speed - car.accel * 1.5);
+  else if (keys.brake) car.speed = Math.max(-2, car.speed - car.accel * 2);
   else car.speed = Math.max(0, car.speed - car.friction);
-
-  let scaleX = width/800, scaleY = height/500;
-  let onRoad = isOnRoad(car.x, car.y);
-  let currentMax = onRoad ? car.maxSpeed : 2.5;
-  if (car.speed > currentMax) car.speed -= 0.2;
 
   car.x += Math.cos(car.angle) * car.speed;
   car.y += Math.sin(car.angle) * car.speed;
 
-  car.x = Math.max(20, Math.min(width-20, car.x));
-  car.y = Math.max(20, Math.min(height-20, car.y));
+  // Применяем жесткие стены
+  enforceStrictWalls();
 
-  let fx = 400 * scaleX, fy1 = 360 * scaleY, fy2 = 440 * scaleY;
-  if (car.x >= fx - 15 && car.x <= fx + 15 && car.y >= fy1 && car.y <= fy2 && car.speed > 1) {
+  // Фиксация пересечения линии финиша
+  let fx = width/2;
+  let fyMin = height/2 - ryOuter - 20;
+  let fyMax = height/2 - ryInner + 5;
+
+  if (Math.abs(car.x - fx) < 30 && car.y >= fyMin && car.y <= fyMax && car.speed > 1) {
     let now = performance.now();
-    if (now - lapStartTime > 3000) {
+    if (now - lapStartTime > 2500) {
       let lapTime = (now - lapStartTime) / 1000;
       lastLapTimes.push(lapTime);
       
       if (!bestLapTime || lapTime < bestLapTime) {
         bestLapTime = lapTime;
-        localStorage.setItem("retroBestLap", bestLapTime);
+        localStorage.setItem("f1WallBestLap", bestLapTime);
         $("bestLap").textContent = bestLapTime.toFixed(2) + "s";
       }
 
@@ -218,13 +245,13 @@ function update(dt) {
         let totalRaceTime = lastLapTimes.reduce((a,b)=>a+b, 0);
         if (!bestRaceTime || totalRaceTime < bestRaceTime) {
           bestRaceTime = totalRaceTime;
-          localStorage.setItem("retroBestRace", bestRaceTime);
+          localStorage.setItem("f1WallBestRace", bestRaceTime);
           $("bestRace").textContent = bestRaceTime.toFixed(2) + "s";
         }
 
         $("overlay").classList.remove("hidden");
         $("title").textContent = "ФИНИШ!";
-        $("message").innerHTML = `Гонка завершена!<br>Итоговое время: <b>${totalRaceTime.toFixed(2)}с</b><br>Лучший круг: ${bestLapTime.toFixed(2)}с`;
+        $("message").innerHTML = `Гонка завершена!<br>Время: <b>${totalRaceTime.toFixed(2)}с</b><br>Лучший круг: ${bestLapTime.toFixed(2)}с`;
         $("startBtn").textContent = "ИГРАТЬ СНОВА";
       }
     }
@@ -244,19 +271,26 @@ function draw() {
   cctx.translate(car.x, car.y);
   cctx.rotate(car.angle);
 
-  cctx.fillStyle = "#ffcc00";
-  cctx.fillRect(-16, -10, 32, 20);
+  // Болид F1
   cctx.fillStyle = "#e52225";
-  cctx.fillRect(-8, -10, 16, 20);
+  cctx.fillRect(-16, -10, 6, 20);
   
-  cctx.fillStyle = "#111";
-  cctx.fillRect(-12, -14, 8, 4);
-  cctx.fillRect(4, -14, 8, 4);
-  cctx.fillRect(-12, 10, 8, 4);
-  cctx.fillRect(4, 10, 8, 4);
+  cctx.fillStyle = "#e52225";
+  cctx.beginPath();
+  cctx.moveTo(16, 0); cctx.lineTo(-10, -7); cctx.lineTo(-10, 7);
+  cctx.closePath(); cctx.fill();
 
-  cctx.fillStyle = "#20eaff";
-  cctx.fillRect(2, -7, 6, 14);
+  cctx.fillStyle = "#ffcc00";
+  cctx.beginPath(); cctx.arc(0, 0, 3, 0, Math.PI*2); cctx.fill();
+
+  cctx.fillStyle = "#111";
+  cctx.fillRect(-10, -13, 7, 4);
+  cctx.fillRect(-10, 9, 7, 4);
+  cctx.fillRect(6, -12, 6, 4);
+  cctx.fillRect(6, 8, 6, 4);
+
+  cctx.fillStyle = "#fff";
+  cctx.fillRect(12, -12, 3, 24);
 
   cctx.restore();
 }
