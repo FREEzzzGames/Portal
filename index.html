@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>ARCADE PORTAL</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
+body{padding:15px;display:flex;justify-content:center;align-items:center;background:radial-gradient(circle at 50% 0,#29105f 0%,#070922 35%,#010208 85%);}
+.portal{width:min(400px,100%);text-align:center;display:flex;flex-direction:column;gap:15px;}
+h1{color:#ffd52c;font-size:28px;margin:0 0 10px;text-shadow:3px 3px #e52225;}
+.game-btn{display:block;width:100%;padding:16px;border:2px solid #20e8ff;border-radius:10px;background:#060a1b;color:#fff;font:bold 16px monospace;text-decoration:none;box-shadow:0 0 15px #00d9ff33;transition:.2s;}
+.game-btn:active{transform:scale(.97);background:#0f2766;}
+.desc{color:#83a4c9;font-size:11px;margin-top:5px;}
+</style>
+</head>
+<body>
+<div class="portal">
+  <h1>ARCADE PORTAL 🕹️</h1>
+  
+  <div>
+    <a href="duck.html" class="game-btn">🦆 DUCK MUDACK</a>
+    <div class="desc">Космический тир (Бесконечный режим)</div>
+  </div>
+
+  <div>
+    <a href="race.html" class="game-btn">🏎️ RETRO RACER</a>
+    <div class="desc">Аркадные гонки на время (3 круга)</div>
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.ready(); tg.expand();
+</script>
+</body>
+</html>
