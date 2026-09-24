@@ -8,36 +8,35 @@
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
-body{padding:4px;display:flex;justify-content:center;align-items:center;background:radial-gradient(circle at 50% 0,#180b30 0%,#060818 50%,#010206 100%);}
+body{padding:2px;display:flex;justify-content:center;align-items:center;background:radial-gradient(circle at 50% 0,#180b30 0%,#060818 50%,#010206 100%);}
 
-.arcade{width:min(500px,100%);height:100%;max-height:750px;overflow:hidden;border:3px solid #1e2548;border-radius:16px;background:#080b1e;box-shadow:0 0 40px #153cff44;display:flex;flex-direction:column;}
+.arcade{width:min(480px,100%);height:100%;max-height:850px;overflow:hidden;border:2px solid #1e2548;border-radius:12px;background:#080b1e;display:flex;flex-direction:column;}
 
-.marquee{padding:8px;text-align:center;background:#090d24;border-bottom:3px solid #161e3f;}
-.marquee h1{margin:0;font-size:clamp(18px,3.5vw,28px);color:#ffd52c;text-shadow:2px 2px #e52225;}
-.sub{color:#20eaff;font-size:clamp(8px,1.5vw,11px);font-weight:bold;}
+.marquee{padding:4px;text-align:center;background:#090d24;border-bottom:2px solid #161e3f;}
+.marquee h1{margin:0;font-size:clamp(16px,3vw,22px);color:#ffd52c;text-shadow:2px 2px #e52225;}
 
-.screen-wrapper{flex-grow:1;position:relative;background:#050712;overflow:hidden;display:flex;justify-content:center;align-items:center;padding:10px;gap:15px;}
+.screen-wrapper{flex-grow:1;position:relative;background:#03050c;overflow:hidden;display:flex;justify-content:center;align-items:center;padding:4px;gap:8px;}
 
-/* TETRIS BOARD */
-canvas{background:#03050c;border:3px solid #20e8ff;border-radius:6px;box-shadow:0 0 15px #00d9ff22;}
+/* МАКСИМАЛЬНО БОЛЬШОЕ ПОЛЕ */
+canvas{background:#010206;border:2px solid #20e8ff;border-radius:4px;box-shadow:0 0 10px #00d9ff33;height:100%;max-height:100%;aspect-ratio:1/2;}
 
-/* SIDE PANEL (SCORE & NEXT) */
-.side-panel{display:flex;flex-direction:column;gap:10px;width:110px;}
-.infobox{padding:6px;border:2px solid #20e8ff;border-radius:6px;text-align:center;background:#020922dd;box-shadow:0 0 8px #00d9ff33;}
-.infobox small{display:block;color:#20e8ff;font-size:8px;}
-.infobox b{display:block;font-size:15px;color:#fff;}
-.next-canvas{background:#020409;border:2px solid #1634a4;border-radius:4px;margin-top:2px;}
+/* БОКОВАЯ ПАНЕЛЬ */
+.side-panel{display:flex;flex-direction:column;gap:6px;width:75px;flex-shrink:0;}
+.infobox{padding:4px;border:2px solid #20e8ff;border-radius:4px;text-align:center;background:#020922dd;}
+.infobox small{display:block;color:#20e8ff;font-size:7px;}
+.infobox b{display:block;font-size:12px;color:#fff;}
+.next-canvas{background:#020409;border:1px solid #1634a4;border-radius:3px;margin-top:2px;width:50px;height:50px;}
 
-/* CONTROLS */
-.controls{position:relative;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:12px;background:#070a1e;border-top:2px solid #161e3f;}
-.group-left{display:grid;grid-template-columns:repeat(3, 50px);grid-template-rows:repeat(2, 45px);gap:6px;}
-.group-right{display:flex;flex-direction:column;gap:6px;}
+/* УВЕЛИЧЕННЫЕ КНОПКИ УПРАВЛЕНИЯ */
+.controls{position:relative;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:8px;background:#070a1e;border-top:2px solid #161e3f;gap:8px;}
+.group-left{display:grid;grid-template-columns:repeat(3, 1fr);grid-template-rows:repeat(2, 60px);gap:6px;flex-grow:1;}
+.group-right{display:flex;flex-direction:column;width:95px;flex-shrink:0;}
 
-.ctrl-btn{border:2px solid rgba(255,255,255,.3);border-radius:8px;background:rgba(255,255,255,.08);color:#fff;font-size:18px;display:flex;justify-content:center;align-items:center;user-select:none;cursor:pointer;}
-.ctrl-btn:active{background:rgba(32,232,255,.3);border-color:#20e8ff;}
-.ctrl-btn.wide{grid-column: span 3;height:38px;font-size:11px;background:linear-gradient(#ff6b55,#8c0505);border-color:#7b1717;font-weight:bold;}
-.ctrl-btn.rotate{background:rgba(255,200,0,.15);border-color:rgba(255,200,0,.4);}
-.ctrl-btn.drop{width:70px;height:75px;font-size:22px;background:rgba(0,255,100,.15);border-color:rgba(0,255,100,.4);}
+.ctrl-btn{border:2px solid rgba(255,255,255,.4);border-radius:10px;background:rgba(255,255,255,.12);color:#fff;font-size:24px;display:flex;justify-content:center;align-items:center;user-select:none;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.4);}
+.ctrl-btn:active{background:rgba(32,232,255,.4);border-color:#20e8ff;transform:scale(0.96);}
+.ctrl-btn.wide{grid-column: span 3;height:36px;font-size:11px;background:linear-gradient(#ff6b55,#8c0505);border-color:#7b1717;font-weight:bold;box-shadow:none;}
+.ctrl-btn.rotate{background:rgba(255,200,0,.2);border-color:rgba(255,200,0,.5);font-size:26px;}
+.ctrl-btn.drop{width:100%;height:126px;font-size:32px;background:rgba(0,255,100,.2);border-color:rgba(0,255,100,.5);}
 
 /* OVERLAY */
 .overlay{position:absolute;z-index:30;inset:0;display:flex;align-items:center;justify-content:center;background:#02030be8;}
@@ -47,14 +46,13 @@ canvas{background:#03050c;border:3px solid #20e8ff;border-radius:6px;box-shadow:
 .card p{color:#b8eaff;font-size:12px;line-height:1.4;}
 .start-btn{margin-top:12px;width:100%;height:42px;border:2px solid #20e8ff;border-radius:6px;background:#0f2766;color:#fff;font:bold 14px monospace;cursor:pointer;}
 
-.bottom{padding:5px;text-align:center;border-top:2px solid #111a3b;color:#ffd42a;font-size:12px;background:#050716;}
+.bottom{padding:3px;text-align:center;border-top:1px solid #111a3b;color:#ffd42a;font-size:10px;background:#050716;}
 </style>
 </head>
 <body>
 <div class="arcade">
   <header class="marquee">
-    <h1>TETRIS <span>CLASSIC</span></h1>
-    <div class="sub">TELEGRAM EDITION</div>
+    <h1>TETRIS CLASSIC</h1>
   </header>
 
   <div class="screen-wrapper">
@@ -76,9 +74,8 @@ canvas{background:#03050c;border:3px solid #20e8ff;border-radius:6px;box-shadow:
     </div>
   </div>
 
-  <!-- CONTROLS -->
+  <!-- УПРАВЛЕНИЕ -->
   <div class="controls">
-    <!-- Левая группа: Влево, Вправо, Поворот и Старт/Пауза -->
     <div class="group-left">
       <div class="ctrl-btn" id="btnLeft">◄</div>
       <div class="ctrl-btn rotate" id="btnRotate">↻</div>
@@ -86,7 +83,6 @@ canvas{background:#03050c;border:3px solid #20e8ff;border-radius:6px;box-shadow:
       <button class="ctrl-btn wide" id="startBtn">СТАРТ / ПАУЗА</button>
     </div>
 
-    <!-- Правая группа: Сброс / Вниз -->
     <div class="group-right">
       <div class="ctrl-btn drop" id="btnDrop">▼</div>
     </div>
@@ -95,13 +91,13 @@ canvas{background:#03050c;border:3px solid #20e8ff;border-radius:6px;box-shadow:
   <div class="overlay" id="overlay">
     <div class="card">
       <h2 id="title">TETRIS</h2>
-      <p id="message">Складывай линии и ставь рекорды!<br><br>Слева — движение и поворот, справа — ускорение вниз.</p>
+      <p id="message">Складывай линии и ставь рекорды!<br><br>Слева — движение и поворот, справа — сброс вниз.</p>
       <button class="start-btn" id="overlayStart">НАЧАТЬ ИГРУ</button>
     </div>
   </div>
 
   <footer class="bottom">
-    🏆 HIGH SCORE: <span id="highScore">000000</span>
+    🏆 BEST: <span id="highScore">000000</span>
   </footer>
 </div>
 
@@ -120,13 +116,7 @@ nCtx.scale(15, 15);
 
 const colors = [
   null,
-  '#FF0D72', // I
-  '#0DC2FF', // J
-  '#0DFF72', // L
-  '#F538FF', // O
-  '#FF8E0D', // S
-  '#FFE138', // T
-  '#3877FF'  // Z
+  '#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF'
 ];
 
 const arena = createMatrix(10, 20);
@@ -150,9 +140,7 @@ let paused = false;
 
 function createMatrix(w, h) {
   const matrix = [];
-  while (h--) {
-    matrix.push(new Array(w).fill(0));
-  }
+  while (h--) matrix.push(new Array(w).fill(0));
   return matrix;
 }
 
@@ -181,12 +169,11 @@ function drawMatrix(matrix, offset, ctx = context) {
 }
 
 function draw() {
-  context.fillStyle = '#03050c';
+  context.fillStyle = '#010206';
   context.fillRect(0, 0, canvas.width, canvas.height);
   drawMatrix(arena, {x: 0, y: 0});
   if (player.matrix) drawMatrix(player.matrix, player.pos);
 
-  // Next piece preview
   nCtx.fillStyle = '#020409';
   nCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
   if (player.nextMatrix) {
@@ -201,9 +188,7 @@ function draw() {
 function merge(arena, player) {
   player.matrix.forEach((row, y) => {
     row.forEach((value, x) => {
-      if (value !== 0) {
-        arena[y + player.pos.y][x + player.pos.x] = value;
-      }
+      if (value !== 0) arena[y + player.pos.y][x + player.pos.x] = value;
     });
   });
 }
@@ -234,13 +219,10 @@ function playerRotate() {
 }
 
 function collide(arena, player) {
-  const m = player.matrix;
-  const o = player.pos;
+  const m = player.matrix, o = player.pos;
   for (let y = 0; y < m.length; ++y) {
     for (let x = 0; x < m[y].length; ++x) {
-      if (m[y][x] !== 0 && (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) {
-        return true;
-      }
+      if (m[y][x] !== 0 && (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) return true;
     }
   }
   return false;
@@ -275,16 +257,12 @@ function playerDrop() {
 
 function playerMove(dir) {
   player.pos.x += dir;
-  if (collide(arena, player)) {
-    player.pos.x -= dir;
-  }
+  if (collide(arena, player)) player.pos.x -= dir;
 }
 
 function playerReset() {
   const pieces = 'IJLOSZT';
-  if (!player.nextMatrix) {
-    player.nextMatrix = createPiece(pieces[(pieces.length * Math.random()) | 0]);
-  }
+  if (!player.nextMatrix) player.nextMatrix = createPiece(pieces[(pieces.length * Math.random()) | 0]);
   player.matrix = player.nextMatrix;
   player.nextMatrix = createPiece(pieces[(pieces.length * Math.random()) | 0]);
   
@@ -334,7 +312,6 @@ function togglePause() {
   }
 }
 
-// Кнопки управления
 const bind = (id, action) => {
   const el = document.getElementById(id);
   el.addEventListener('pointerdown', e => { e.preventDefault(); if(running && !paused) action(); });
@@ -361,9 +338,7 @@ function update(time = 0) {
 
   if (running && !paused) {
     dropCounter += deltaTime;
-    if (dropCounter > dropInterval) {
-      playerDrop();
-    }
+    if (dropCounter > dropInterval) playerDrop();
   }
 
   draw();
