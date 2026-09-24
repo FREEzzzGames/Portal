@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>RETRO RACER — TG MINI APP</title>
+<title>F1 FORMULA — TG MINI APP</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -47,8 +47,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
 <body>
 <div class="arcade">
   <header class="marquee">
-    <h1>RETRO RACER <span>360</span></h1>
-    <div class="sub">CHAMPIONSHIP CIRCUIT</div>
+    <h1>F1 GRAND PRIX <span>CIRCUIT</span></h1>
+    <div class="sub">CHAMPIONSHIP TIME ATTACK</div>
   </header>
 
   <div class="screen-wrapper">
@@ -63,7 +63,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
         <div class="hudbox"><small>BEST</small><b id="hudBest">--.--</b></div>
       </div>
 
-      <!-- SEMITRANSPARENT CONTROLS -->
+      <!-- CONTROLS -->
       <div class="controls">
         <div class="group">
           <div class="ctrl-btn" id="btnLeft">◀</div>
@@ -77,8 +77,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
 
       <div class="overlay" id="overlay">
         <div class="card">
-          <h2 id="title">RETRO RACER</h2>
-          <p id="message">Пройди 3 круга на лучшее время.<br><br>Управление: слева повороты, справа газ/тормоз.</p>
+          <h2 id="title">F1 TIME ATTACK</h2>
+          <p id="message">Пройди 3 круга на болиде F1.<br><br>Трасса защищена отбойниками. Удерживай газ и маневрируй на поворотах!</p>
           <button class="start-btn" id="startBtn">СТАРТ ГОНКИ</button>
         </div>
       </div>
@@ -114,50 +114,88 @@ function resize() {
 }
 window.addEventListener("resize", resize);
 
-const trackPoints = [
-  {x: 400, y: 400}, {x: 200, y: 380}, {x: 100, y: 250}, {x: 150, y: 120},
-  {x: 350, y: 80},  {x: 600, y: 100}, {x: 700, y: 220}, {x: 650, y: 380}
-];
+// F1 Circuit parameters (Center coords, inner & outer radii for precise collision)
+const trackCenter = { x: 400, y: 250 };
+const trackOuterRadiusX = 350, trackOuterRadiusY = 200;
+const trackInnerRadiusX = 210, trackInnerRadiusY = 100;
 
 let running = false, paused = false;
-let car = { x: 400, y: 400, angle: -Math.PI/2, speed: 0, maxSpeed: 6.5, accel: 0.12, friction: 0.04, steer: 0.05 };
+let car = { x: 400, y: 410, angle: -Math.PI/2, speed: 0, maxSpeed: 8.5, accel: 0.14, friction: 0.05, steer: 0.055 };
 let keys = { left: false, right: false, gas: false, brake: false };
 
 let currentLap = 1, lapStartTime = 0, raceStartTime = 0, currentLapTime = 0;
-let lastLapTimes = [], bestLapTime = Number(localStorage.getItem("retroBestLap") || 0);
-let bestRaceTime = Number(localStorage.getItem("retroBestRace") || 0);
+let lastLapTimes = [], bestLapTime = Number(localStorage.getItem("f1BestLap") || 0);
+let bestRaceTime = Number(localStorage.getItem("f1BestRace") || 0);
 
 $("bestLap").textContent = bestLapTime ? bestLapTime.toFixed(2) + "s" : "--.--";
 $("bestRace").textContent = bestRaceTime ? bestRaceTime.toFixed(2) + "s" : "--.--";
 
 function drawStaticTrack() {
-  tctx.fillStyle = "#0c1b0a"; tctx.fillRect(0, 0, width, height);
-  tctx.strokeStyle = "#10260e"; tctx.lineWidth = 1;
-  for(let i=0; i<width; i+=40) { tctx.beginPath(); tctx.moveTo(i,0); tctx.lineTo(i,height); tctx.stroke(); }
+  tctx.fillStyle = "#111811"; tctx.fillRect(0, 0, width, height);
 
   tctx.save();
-  tctx.scale(width/800, height/500);
-  
+  tctx.translate(width/2, height/2);
+
+  // Outer Kerb (Red/White stripes simulation)
+  tctx.strokeStyle = "#e52225"; tctx.lineWidth = 145; tctx.lineCap = "round";
+  tctx.beginPath(); tctx.ellipse(0, 0, trackOuterRadiusX + 10, trackOuterRadiusY + 10, 0, 0, Math.PI*2); tctx.stroke();
+
+  // Outer Wall / Barrier
+  tctx.strokeStyle = "#1b2438"; tctx.lineWidth = 130;
+  tctx.beginPath(); tctx.ellipse(0, 0, trackOuterRadiusX, trackOuterRadiusY, 0, 0, Math.PI*2); tctx.stroke();
+
+  // Asphalt Track
+  tctx.strokeStyle = "#2b303b"; tctx.lineWidth = 110;
+  tctx.beginPath(); tctx.ellipse(0, 0, trackOuterRadiusX, trackOuterRadiusY, 0, 0, Math.PI*2); tctx.stroke();
+
+  // Center Dash Line
+  tctx.strokeStyle = "#ffcc00"; tctx.lineWidth = 3; tctx.setLineDash([12, 12]);
+  tctx.beginPath(); tctx.ellipse(0, 0, (trackOuterRadiusX + trackInnerRadiusX)/2, (trackOuterRadiusY + trackInnerRadiusY)/2, 0, 0, Math.PI*2); tctx.stroke();
+  tctx.setLineDash([]);
+
+  // Inner Grass Island
+  tctx.fillStyle = "#111811";
+  tctx.beginPath(); tctx.ellipse(0, 0, trackInnerRadiusX, trackInnerRadiusY, 0, 0, Math.PI*2); tctx.fill();
+  tctx.strokeStyle = "#e52225"; tctx.lineWidth = 8; tctx.stroke();
+
+  // Start / Finish Line
+  tctx.strokeStyle = "#fff"; tctx.lineWidth = 6; tctx.setLineDash([4,4]);
   tctx.beginPath();
-  tctx.moveTo(trackPoints[0].x, trackPoints[0].y);
-  for(let p of trackPoints) tctx.lineTo(p.x, p.y);
-  tctx.closePath();
-  tctx.strokeStyle = "#ff4444"; tctx.lineWidth = 90; tctx.lineJoin = "round"; tctx.stroke();
-  
-  tctx.strokeStyle = "#22252b"; tctx.lineWidth = 74; tctx.stroke();
-  
-  tctx.strokeStyle = "#fff"; tctx.lineWidth = 6; tctx.setLineDash([8,8]);
-  tctx.beginPath(); tctx.moveTo(400, 360); tctx.lineTo(400, 440); tctx.stroke();
+  let fx = 0, fy1 = -trackOuterRadiusY - 5, fy2 = -trackInnerRadiusY + 5;
+  tctx.moveTo(fx, fy1); tctx.lineTo(fx, fy2); tctx.stroke();
+
   tctx.restore();
 }
 
-function isOnRoad(x, y) {
-  let dist = Math.hypot(x - width*0.42, y - height*0.48);
-  return (dist > 90 && dist < 240);
+// Check boundaries (Keep car strictly between inner and outer barriers)
+function checkBoundaries() {
+  let dx = car.x - width/2;
+  let dy = car.y - height/2;
+  // Ellipse distance equation: (dx/rx)^2 + (dy/ry)^2
+  let outerVal = (dx*dx) / (trackOuterRadiusX*trackOuterRadiusX) + (dy*dy) / (trackOuterRadiusY*trackOuterRadiusY);
+  let innerVal = (dx*dx) / (trackInnerRadiusX*trackInnerRadiusX) + (dy*dy) / (trackInnerRadiusY*trackInnerRadiusY);
+
+  let bounced = false;
+  // Hit outer wall
+  if (outerVal > 0.92) {
+    car.speed *= -0.4; // Soft bounce
+    // Push back inside
+    car.x -= Math.cos(car.angle) * 4;
+    car.y -= Math.sin(car.angle) * 4;
+    bounced = true;
+  }
+  // Hit inner wall
+  if (innerVal < 1.08) {
+    car.speed *= -0.4;
+    car.x += Math.cos(car.angle) * 4;
+    car.y += Math.sin(car.angle) * 4;
+    bounced = true;
+  }
+  return bounced;
 }
 
 function startRace() {
-  car.x = width * 0.5; car.y = height * 0.8; car.angle = -Math.PI/2; car.speed = 0;
+  car.x = width/2; car.y = height/2 + 160; car.angle = -Math.PI/2; car.speed = 0;
   currentLap = 1; lastLapTimes = [];
   raceStartTime = performance.now();
   lapStartTime = raceStartTime;
@@ -183,22 +221,21 @@ function update(dt) {
   if (keys.right) car.angle += car.steer * (car.speed / car.maxSpeed);
 
   if (keys.gas) car.speed = Math.min(car.maxSpeed, car.speed + car.accel);
-  else if (keys.brake) car.speed = Math.max(-2, car.speed - car.accel * 1.5);
+  else if (keys.brake) car.speed = Math.max(-3, car.speed - car.accel * 2);
   else car.speed = Math.max(0, car.speed - car.friction);
-
-  let scaleX = width/800, scaleY = height/500;
-  let onRoad = isOnRoad(car.x, car.y);
-  let currentMax = onRoad ? car.maxSpeed : 2.5;
-  if (car.speed > currentMax) car.speed -= 0.2;
 
   car.x += Math.cos(car.angle) * car.speed;
   car.y += Math.sin(car.angle) * car.speed;
 
-  car.x = Math.max(20, Math.min(width-20, car.x));
-  car.y = Math.max(20, Math.min(height-20, car.y));
+  // Collision with barriers
+  checkBoundaries();
 
-  let fx = 400 * scaleX, fy1 = 360 * scaleY, fy2 = 440 * scaleY;
-  if (car.x >= fx - 15 && car.x <= fx + 15 && car.y >= fy1 && car.y <= fy2 && car.speed > 1) {
+  // Lap detection (Top straight finish line)
+  let fx = width/2;
+  let fyMin = height/2 - trackOuterRadiusY - 15;
+  let fyMax = height/2 - trackInnerRadiusY + 15;
+
+  if (Math.abs(car.x - fx) < 25 && car.y >= fyMin && car.y <= fyMax && car.speed > 1) {
     let now = performance.now();
     if (now - lapStartTime > 3000) {
       let lapTime = (now - lapStartTime) / 1000;
@@ -206,7 +243,7 @@ function update(dt) {
       
       if (!bestLapTime || lapTime < bestLapTime) {
         bestLapTime = lapTime;
-        localStorage.setItem("retroBestLap", bestLapTime);
+        localStorage.setItem("f1BestLap", bestLapTime);
         $("bestLap").textContent = bestLapTime.toFixed(2) + "s";
       }
 
@@ -218,20 +255,20 @@ function update(dt) {
         let totalRaceTime = lastLapTimes.reduce((a,b)=>a+b, 0);
         if (!bestRaceTime || totalRaceTime < bestRaceTime) {
           bestRaceTime = totalRaceTime;
-          localStorage.setItem("retroBestRace", bestRaceTime);
+          localStorage.setItem("f1BestRace", bestRaceTime);
           $("bestRace").textContent = bestRaceTime.toFixed(2) + "s";
         }
 
         $("overlay").classList.remove("hidden");
-        $("title").textContent = "ФИНИШ!";
+        $("title").textContent = "ФИНИШ F1!";
         $("message").innerHTML = `Гонка завершена!<br>Итоговое время: <b>${totalRaceTime.toFixed(2)}с</b><br>Лучший круг: ${bestLapTime.toFixed(2)}с`;
-        $("startBtn").textContent = "ИГРАТЬ СНОВА";
+        $("startBtn").textContent = "ПОВТОРИТЬ ГОНКУ";
       }
     }
   }
 
   currentLapTime = (performance.now() - lapStartTime) / 1000;
-  $("hudSpeed").textContent = Math.round(car.speed * 25);
+  $("hudSpeed").textContent = Math.round(car.speed * 30);
   $("hudLap").textContent = Math.min(3, currentLap) + "/3";
   $("hudTime").textContent = currentLapTime.toFixed(2);
   $("hudBest").textContent = bestLapTime ? bestLapTime.toFixed(2) : "--.--";
@@ -240,23 +277,42 @@ function update(dt) {
 function draw() {
   cctx.clearRect(0, 0, width, height);
 
+  // Draw F1 Car Style
   cctx.save();
   cctx.translate(car.x, car.y);
   cctx.rotate(car.angle);
 
-  cctx.fillStyle = "#ffcc00";
-  cctx.fillRect(-16, -10, 32, 20);
+  // Rear Wing
   cctx.fillStyle = "#e52225";
-  cctx.fillRect(-8, -10, 16, 20);
-  
-  cctx.fillStyle = "#111";
-  cctx.fillRect(-12, -14, 8, 4);
-  cctx.fillRect(4, -14, 8, 4);
-  cctx.fillRect(-12, 10, 8, 4);
-  cctx.fillRect(4, 10, 8, 4);
+  cctx.fillRect(-18, -12, 6, 24);
 
-  cctx.fillStyle = "#20eaff";
-  cctx.fillRect(2, -7, 6, 14);
+  // Main Body (Monoposto)
+  cctx.fillStyle = "#e52225"; // Ferrari Red style
+  cctx.beginPath();
+  cctx.moveTo(18, 0);
+  cctx.lineTo(-12, -8);
+  cctx.lineTo(-14, -4);
+  cctx.lineTo(-14, 4);
+  cctx.lineTo(-12, 8);
+  cctx.closePath();
+  cctx.fill();
+
+  // Cockpit & Driver Helmet
+  cctx.fillStyle = "#111";
+  cctx.fillRect(-2, -3, 6, 6);
+  cctx.fillStyle = "#ffcc00"; // Helmet
+  cctx.beginPath(); cctx.arc(1, 0, 3, 0, Math.PI*2); cctx.fill();
+
+  // Wheels
+  cctx.fillStyle = "#111";
+  cctx.fillRect(-12, -15, 8, 5); // Rear Left
+  cctx.fillRect(-12, 10, 8, 5);  // Rear Right
+  cctx.fillRect(8, -14, 7, 4);   // Front Left
+  cctx.fillRect(8, 10, 7, 4);    // Front Right
+
+  // Front Wing
+  cctx.fillStyle = "#fff";
+  cctx.fillRect(14, -14, 4, 28);
 
   cctx.restore();
 }
