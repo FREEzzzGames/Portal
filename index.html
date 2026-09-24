@@ -8,42 +8,60 @@
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
-body{padding:12px;display:flex;justify-content:center;align-items:center;background:radial-gradient(circle at 50% 0,#29105f 0%,#070922 35%,#010208 85%);}
-.portal{width:min(420px,100%);text-align:center;display:flex;flex-direction:column;gap:10px;max-height:100%;overflow-y:auto;}
-h1{color:#ffd52c;font-size:24px;margin:0 0 4px;text-shadow:3px 3px #e52225;}
-.game-btn{display:block;width:100%;padding:12px;border:2px solid #20e8ff;border-radius:10px;background:#060a1b;color:#fff;font:bold 14px monospace;text-decoration:none;box-shadow:0 0 15px #00d9ff33;transition:.2s;}
-.game-btn:active{transform:scale(.97);background:#0f2766;}
-.desc{color:#83a4c9;font-size:10px;margin-top:2px;}
+body{padding:10px;display:flex;justify-content:center;align-items:center;background:radial-gradient(circle at 50% 0,#29105f 0%,#070922 35%,#010208 85%);}
+
+.portal{width:min(450px,100%);text-align:center;display:flex;flex-direction:column;gap:12px;max-height:100%;overflow-y:auto;padding:5px;}
+h1{color:#ffd52c;font-size:22px;margin:0;text-shadow:3px 3px #e52225;letter-spacing:1px;}
+
+/* СЕТКА ИКОНОК 3x4 */
+.grid-menu{display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;padding:5px;}
+
+.icon-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:1/1;border:2px solid #20e8ff;border-radius:12px;background:#060a1b;color:#fff;text-decoration:none;box-shadow:0 0 12px #00d9ff22;transition:.15s;padding:6px;gap:4px;}
+.icon-btn:active{transform:scale(.94);background:#0f2766;border-color:#ffd42a;}
+
+.icon-emoji{font-size:28px;filter:drop-shadow(0 0 6px rgba(32,232,255,0.4));}
+.icon-title{font-size:10px;font-weight:bold;color:#ffd52c;text-align:center;line-height:1.1;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+
+.footer-info{color:#83a4c9;font-size:9px;margin-top:2px;}
 </style>
 </head>
 <body>
 <div class="portal">
   <h1>ARCADE PORTAL 🕹️</h1>
   
-  <div>
-    <a href="duck.html" class="game-btn">🦆 DUCK MUDACK</a>
-    <div class="desc">Космический ретро-тир</div>
+  <div class="grid-menu">
+    <!-- 1. Утки -->
+    <a href="duck.html" class="icon-btn">
+      <div class="icon-emoji">🦆</div>
+      <div class="icon-title">DUCK MUDACK</div>
+    </a>
+
+    <!-- 2. Гонки -->
+    <a href="race.html" class="icon-btn">
+      <div class="icon-emoji">🏎️</div>
+      <div class="icon-title">RETRO RACER</div>
+    </a>
+
+    <!-- 3. Тетрис -->
+    <a href="tetris.html" class="icon-btn">
+      <div class="icon-emoji">🧱</div>
+      <div class="icon-title">TETRIS CLASSIC</div>
+    </a>
+
+    <!-- 4. Змейка -->
+    <a href="snake.html" class="icon-btn">
+      <div class="icon-emoji">🐍</div>
+      <div class="icon-title">SNAKE</div>
+    </a>
+
+    <!-- 5. Марио -->
+    <a href="mario.html" class="icon-btn">
+      <div class="icon-emoji">🍄</div>
+      <div class="icon-title">PLATFORMER</div>
+    </a>
   </div>
 
-  <div>
-    <a href="race.html" class="game-btn">🏎️ RETRO RACER</a>
-    <div class="desc">Аркадные гонки F1 со стенами</div>
-  </div>
-
-  <div>
-    <a href="tetris.html" class="game-btn">🧱 TETRIS CLASSIC</a>
-    <div class="desc">Легендарная головоломка</div>
-  </div>
-
-  <div>
-    <a href="snake.html" class="game-btn">🐍 CLASSIC SNAKE</a>
-    <div class="desc">Змейка с зеркальными стенами</div>
-  </div>
-
-  <div>
-    <a href="mario.html" class="game-btn">🍄 SUPER PLATFORMER</a>
-    <div class="desc">Платформер в стиле Марио (3 уровня)</div>
-  </div>
+  <div class="footer-info">ВЫБЕРИ АРКАДУ ДЛЯ ЗАПУСКА</div>
 </div>
 
 <script>
