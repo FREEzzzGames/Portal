@@ -14,8 +14,8 @@
   --border-col: #20e8ff;
   --accent-col: #20e8ff;
   --title-col: #ffd52c;
-  --glass-bg: rgba(32, 232, 255, 0.06);
-  --glass-hover: rgba(32, 232, 255, 0.18);
+  --glass-bg: rgba(32, 232, 255, 0.08);
+  --glass-hover: rgba(32, 232, 255, 0.22);
   --neon-glow: rgba(32, 232, 255, 0.35);
 }
 body.theme-matrix {
@@ -26,8 +26,8 @@ body.theme-matrix {
   --border-col: #00ff88;
   --accent-col: #00ff88;
   --title-col: #00ff88;
-  --glass-bg: rgba(0, 255, 136, 0.06);
-  --glass-hover: rgba(0, 255, 136, 0.18);
+  --glass-bg: rgba(0, 255, 136, 0.08);
+  --glass-hover: rgba(0, 255, 136, 0.22);
   --neon-glow: rgba(0, 255, 136, 0.35);
 }
 body.theme-fire {
@@ -38,8 +38,8 @@ body.theme-fire {
   --border-col: #ff6b30;
   --accent-col: #ff6b30;
   --title-col: #ffd52c;
-  --glass-bg: rgba(255, 107, 48, 0.06);
-  --glass-hover: rgba(255, 107, 48, 0.18);
+  --glass-bg: rgba(255, 107, 48, 0.08);
+  --glass-hover: rgba(255, 107, 48, 0.22);
   --neon-glow: rgba(255, 107, 48, 0.35);
 }
 
@@ -95,11 +95,12 @@ body{
 .profile-box {
   font-size: 10px; color: var(--accent-col); display: flex; align-items: center; gap: 5px;
   cursor: pointer; background: rgba(16, 26, 60, 0.8); padding: 3px 6px; border-radius: 5px; border: 1px solid var(--border-col);
+  z-index: 120;
 }
 .profile-box:active { background: var(--glass-hover); }
 .user-avatar { width: 18px; height: 18px; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-size: 11px; border: 1px solid var(--accent-col); }
 
-.cabinet-btns { display: flex; gap: 4px; }
+.cabinet-btns { display: flex; gap: 4px; z-index: 120; }
 .cab-btn {
   background: rgba(16, 26, 60, 0.8); border: 1px solid var(--border-col); color: var(--title-col);
   padding: 3px 8px; border-radius: 5px; font-size: 11px; cursor: pointer;
@@ -117,15 +118,16 @@ body{
 .arcade-screen::after {
   content: " "; display: block; position: absolute; inset: 0;
   background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
-  background-size: 100% 3px; z-index: 50; pointer-events: none; opacity: 0.4;
+  background-size: 100% 3px; z-index: 1; pointer-events: none; opacity: 0.4;
 }
 
-/* ВКЛАДКИ И КНОПКИ ДЕЙСТВИЙ */
-.actions-row { display: flex; gap: 4px; justify-content: center; flex-shrink: 0; z-index: 55; flex-wrap: wrap; }
+/* ВКЛАДКИ И КНОПКИ ДЕЙСТВИЙ (ПОВЫШЕННЫЙ Z-INDEX ДЛЯ КЛИКОВ) */
+.actions-row { display: flex; gap: 4px; justify-content: center; flex-shrink: 0; z-index: 100; flex-wrap: wrap; }
 .action-btn {
   background: var(--glass-bg); border: 1px solid var(--border-col); color: #83a4c9;
-  padding: 4px 8px; border-radius: 5px; font: bold 8px monospace; cursor: pointer;
+  padding: 5px 8px; border-radius: 5px; font: bold 8px monospace; cursor: pointer;
   box-shadow: 0 0 4px var(--neon-glow); transition: .15s; backdrop-filter: blur(2px);
+  position: relative; z-index: 101;
 }
 .action-btn.active { background: var(--btn-hover); border-color: var(--accent-col); color: var(--title-col); }
 .action-btn.special { border-color: #ffd42aaa; color: #ffd42a; }
@@ -139,9 +141,10 @@ body{
   grid-template-rows: repeat(4, 1fr); 
   gap: 5px; 
   flex-grow: 1; 
-  z-index: 55; 
+  z-index: 100; 
   width: 100%;
   height: 100%;
+  overflow-y: auto;
 }
 .icon-btn {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -150,6 +153,7 @@ body{
   color: #fff; text-decoration: none; cursor: pointer;
   box-shadow: inset 0 0 10px rgba(255,255,255,0.05), 0 0 6px var(--neon-glow);
   transition: all 0.15s ease; width: 100%; height: 100%; padding: 2px; gap: 2px;
+  position: relative; z-index: 101;
 }
 .icon-btn:active { 
   transform: scale(0.94); 
@@ -160,7 +164,7 @@ body{
 .icon-title { font-size: 7.5px; font-weight: bold; color: var(--title-col); text-align: center; line-height: 1; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-shadow: 0 1px 2px rgba(0,0,0,0.9); }
 
 /* ПАНЕЛИ ТОПА И АЧИВОК */
-.panel-view { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; overflow-y: auto; z-index: 55; padding: 2px; }
+.panel-view { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; overflow-y: auto; z-index: 100; padding: 2px; }
 .row-card { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); border: 1px solid var(--border-col); border-radius: 6px; padding: 6px 10px; font-size: 10px; text-align: left; backdrop-filter: blur(4px); }
 .row-name { color: var(--accent-col); font-weight: bold; }
 .row-val { color: var(--title-col); font-weight: bold; }
@@ -238,7 +242,7 @@ body{
     </div>
   </div>
 
-  <!-- ЭКРАН ЭЛТ (CRT МОНИТОР С ИГРАМИ, ТОПОМ И АЧИВКАМИ) -->
+  <!-- ЭКРАН ЭЛТ (CRT МОНИТОР) -->
   <div class="arcade-screen">
     <div class="actions-row">
       <button class="action-btn active" id="tabGames" onclick="switchTab('games')">🎮 ИГРЫ</button>
@@ -360,7 +364,7 @@ function applyTheme() {
   document.getElementById('bodyRoot').className = themes[currentThemeIdx] || "";
 }
 
-// ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК (ИГРЫ, ТОП, АЧИВКИ)
+// ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
 function switchTab(tab) {
   haptic();
   ['gamesGrid', 'leaderboardView', 'achievementsView'].forEach(id => {
@@ -480,10 +484,3 @@ function stopBGM() {
 }
 
 window.addEventListener('pointerdown', () => {
-  if (soundEnabled && !musicInterval) {
-    startBGM();
-  }
-}, {once: true});
-
-if (soundEnabled) {
-  setTime
