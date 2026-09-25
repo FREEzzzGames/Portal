@@ -174,7 +174,7 @@ body{
   border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.8); cursor: pointer;
 }
 
-/* МОДАЛЬНОЕ ОКНО АВАТАРОВ (ИСПРАВЛЕННОЕ) */
+/* МОДАЛЬНОЕ ОКНО АВАТАРОВ */
 .hidden { display: none !important; }
 .modal-overlay { 
   position: absolute; inset: 0; background: rgba(2,3,11,0.92); z-index: 1000; 
@@ -218,7 +218,7 @@ body{
     </div>
     <div class="cabinet-btns">
       <button class="cab-btn" onclick="toggleTheme()" title="Сменить тему">🎨</button>
-      <button class="cab-btn" id="soundToggle" onclick="toggleSound()">🔊</button>
+      <button class="cab-btn" id="soundToggle" onclick="toggleSound()">🎵</button>
     </div>
   </div>
 
@@ -239,8 +239,8 @@ body{
       <a href="arkanoid.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">ARKANOID</div></a>
       <a href="duck.html" class="icon-btn"><div class="icon-emoji">🦆</div><div class="icon-title">DUCK MUDACK</div></a>
       <a href="invaders.html" class="icon-btn"><div class="icon-emoji">👾</div><div class="icon-title">INVADERS</div></a>
-      <a href="doodle.html" class="icon-btn"><div class="icon-emoji">🦘</div><div class="icon-title">JUMPER</div></a>
-      <a href="minesweeper.html" class="icon-btn"><div class="icon-emoji">💣</div><div class="icon-title">MINESWEEPER</div></a>
+      <a href="doodle.html" class="icon-btn"><div class="icon-emoji">🦘</div><div class="icon-title">JUMPER</div></div>
+      <a href="minesweeper.html" class="icon-btn"><div class="icon-emoji">💣</div><div class="icon-title">MINESWEEPER</div></div>
       <div class="icon-btn" style="opacity:0.4; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
       <div class="icon-btn" style="opacity:0.4; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
     </div>
@@ -252,7 +252,7 @@ body{
     <div class="footer-info">COIN INSERTED • PRESS GAME</div>
     <div class="arcade-buttons-mock">
       <div class="arcade-btn-red" onclick="playRandomGame()" title="Кнопка А"></div>
-      <div class="arcade-btn-yellow" onclick="toggleTheme()" title="Кнопка B"></div>
+      <div class="arcade-btn-yellow" onclick="toggleSound()" title="Кнопка B"></div>
     </div>
   </div>
 </div>
@@ -327,19 +327,90 @@ function applyTheme() {
   document.getElementById('bodyRoot').className = themes[currentThemeIdx] || "";
 }
 
-// Звук / Вибрация
+// СИНТЕЗАТОР РЕТРО-МЕЛОДИИ (Web Audio API)
+let audioCtx = null;
+let musicInterval = null;
 let soundEnabled = localStorage.getItem("freezzzSound") !== "false";
 updateSoundBtn();
+
 function toggleSound() {
   soundEnabled = !soundEnabled;
   localStorage.setItem("freezzzSound", soundEnabled);
   updateSoundBtn();
+  if (soundEnabled) {
+    startBGM();
+  } else {
+    stopBGM();
+  }
 }
+
 function updateSoundBtn() {
-  document.getElementById('soundToggle').textContent = soundEnabled ? "🔊" : "🔇";
+  document.getElementById('soundToggle').textContent = soundEnabled ? "🎵" : "🔇";
 }
+
 function haptic() {
   if (soundEnabled && tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+}
+
+// Ноты аркадной ретро-мелодии (частоты в Гц)
+const melodyNotes = [
+  330, 330, 0, 330, 0, 262, 330, 0, 392, 0, 0, 196,
+  262, 0, 392, 0, 330, 0, 220, 247, 233, 220, 196,
+  330, 392, 440, 0, 349, 392, 0, 330, 262, 294, 247
+];
+let noteIndex = 0;
+
+function playNote(freq) {
+  if (!soundEnabled) return;
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    if (freq === 0) return;
+
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    
+    osc.type = 'square'; // Настоящий 8-битный чиптюн-звук
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.2);
+  } catch(e) {}
+}
+
+function startBGM() {
+  if (musicInterval) clearInterval(musicInterval);
+  musicInterval = setInterval(() => {
+    if (!soundEnabled) return;
+    playNote(melodyNotes[noteIndex]);
+    noteIndex = (noteIndex + 1) % melodyNotes.length;
+  }, 200);
+}
+
+function stopBGM() {
+  if (musicInterval) clearInterval(musicInterval);
+  musicInterval = null;
+}
+
+// Автостарт музыки по первому клику/тапу в любом месте (требование браузеров)
+window.addEventListener('pointerdown', () => {
+  if (soundEnabled && !musicInterval) {
+    startBGM();
+  }
+}, {once: true});
+
+if (soundEnabled) {
+  setTimeout(startBGM, 500);
 }
 
 const gameFiles = ["snake.html", "tetris.html", "pong.html", "race.html", "mario.html", "arkanoid.html", "duck.html", "invaders.html", "doodle.html", "minesweeper.html"];
