@@ -31,18 +31,24 @@ body{
   position: relative;
 }
 
-/* УВЕЛИЧЕННАЯ ШАПКА */
+/* ШАПКА */
 .game-ui-header { 
   display: flex; justify-content: space-between; align-items: center; 
   padding: 10px 12px; background: var(--btn-bg); border: 1.5px solid var(--border-col); 
-  border-radius: 10px; width: 100%; flex-shrink: 0; font-size: 12px; 
-  z-index: 50;
+  border-radius: 10px; width: 100%; flex-shrink: 0; font-size: 11px; 
+  z-index: 50; gap: 6px;
 }
+.header-left { display: flex; gap: 4px; align-items: center; }
 .back-btn {
   background: rgba(180, 40, 40, 0.95); border: 1.5px solid #ff6b55; color: #fff;
-  padding: 6px 12px; border-radius: 8px; text-decoration: none; font-weight: bold;
-  cursor: pointer; font-size: 11px;
+  padding: 6px 10px; border-radius: 8px; text-decoration: none; font-weight: bold;
+  cursor: pointer; font-size: 10px;
 }
+.lang-btn {
+  background: rgba(74, 144, 226, 0.3); border: 1.5px solid var(--accent-col); color: #fff;
+  padding: 6px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 10px;
+}
+.lang-btn:active { background: rgba(74, 144, 226, 0.6); }
 
 /* ОСНОВНОЙ КОНТЕЙНЕР */
 .clicker-body {
@@ -51,10 +57,8 @@ body{
   padding: 10px; overflow-y: auto; gap: 8px; position: relative;
 }
 
-/* УВЕЛИЧЕННЫЕ БЛОКИ РЕСУРСОВ */
-.resources-container {
-  display: flex; gap: 8px; width: 100%;
-}
+/* БЛОКИ РЕСУРСОВ */
+.resources-container { display: flex; gap: 8px; width: 100%; }
 .res-box {
   flex: 1; background: var(--glass-bg); border: 1.5px solid var(--border-col); border-radius: 10px;
   padding: 8px; text-align: center;
@@ -63,11 +67,11 @@ body{
 .res-val { font-size: 15px; font-weight: bold; color: var(--title-col); text-shadow: 0 0 8px rgba(255,213,44,0.5); margin-top: 2px; }
 .res-sub { font-size: 9px; color: var(--accent-col); margin-top: 3px; }
 
-/* УВЕЛИЧЕННАЯ КНОПКА ПРОДАЖИ ЭНЕРГИИ */
+/* КНОПКА ПРОДАЖИ ЭНЕРГИИ */
 .sell-energy-btn {
   width: 100%; background: linear-gradient(135deg, rgba(255,213,44,0.22), rgba(74,144,226,0.22));
   border: 1.5px solid var(--title-col); border-radius: 8px; padding: 9px; color: var(--title-col);
-  font-family: monospace; font-size: 11px; font-weight: bold; cursor: pointer; text-align: center;
+  font-family: monospace; font-size: 10.5px; font-weight: bold; cursor: pointer; text-align: center;
   transition: transform 0.1s; box-shadow: 0 0 10px rgba(255,213,44,0.2);
 }
 .sell-energy-btn:active { transform: scale(0.97); background: rgba(255,213,44,0.35); }
@@ -80,7 +84,7 @@ body{
   height: 100%; background: linear-gradient(90deg, #4a90e2, #ffd52c); width: 0%; transition: width 0.2s ease;
 }
 
-/* УВЕЛИЧЕННАЯ ЦЕНТРАЛЬНАЯ КНОПКА МОЛНИИ */
+/* ЦЕНТРАЛЬНАЯ КНОПКА */
 .click-target-container { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .click-target {
   width: 95px; height: 95px; background: radial-gradient(circle at 35% 35%, #ffd52c, #d39e00);
@@ -90,7 +94,7 @@ body{
 }
 .click-target:active { transform: scale(0.86); background: radial-gradient(circle at 35% 35%, #e0b800, #997500); box-shadow: 0 0 12px #ffd52c; }
 
-/* УВЕЛИЧЕННЫЙ СПИСОК КАРТОЧЕК */
+/* СПИСОК КАРТОЧЕК */
 .upgrades-list { width: 100%; display: flex; flex-direction: column; gap: 6px; max-height: 210px; overflow-y: auto; padding-right: 2px; }
 .upgrade-card {
   display: flex; justify-content: space-between; align-items: center; background: rgba(18, 48, 80, 0.9);
@@ -119,27 +123,30 @@ body{
 
 <div class="portal">
   <div class="game-ui-header">
-    <a href="index.html" class="back-btn">⬅ МЕНЮ</a>
-    <div id="licenseTxt" style="color:var(--title-col); font-weight:bold; font-size: 11px;">🛠️ Zeitarbeit Elektрик</div>
+    <div class="header-left">
+      <a href="index.html" class="back-btn" id="menuBtnTxt">⬅ МЕНЮ</a>
+      <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">🇩🇪 DE</button>
+    </div>
+    <div id="licenseTxt" style="color:var(--title-col); font-weight:bold; font-size: 10.5px;">🛠️ Zeitarbeit Elektрик</div>
   </div>
 
   <div class="clicker-body">
     <!-- ДВОЙНЫЕ ШКАЛЫ РЕСУРСОВ -->
     <div class="resources-container">
       <div class="res-box">
-        <div class="res-title">Бюджет (€)</div>
+        <div class="res-title" id="resBudgetTitle">Бюджет (€)</div>
         <div class="res-val" id="moneyTxt">0.00 €</div>
         <div class="res-sub" id="cpsTxt">+0.0 €/сек</div>
       </div>
       <div class="res-box">
-        <div class="res-title">Энергия (МВт·ч)</div>
+        <div class="res-title" id="resEnergyTitle">Энергия (МВт·ч)</div>
         <div class="res-val" id="energyTxt" style="color:#6bc5ff;">0.0 МВт</div>
         <div class="res-sub" id="epsTxt">+0.0 МВт/с</div>
       </div>
     </div>
 
     <!-- КНОПКА ПРОДАЖИ ЭНЕРГИИ -->
-    <button class="sell-energy-btn" onclick="sellEnergy()">⚡ ПРОДАТЬ ЭНЕРГИЮ (1 МВт = 2.50 €)</button>
+    <button class="sell-energy-btn" id="sellBtnTxt" onclick="sellEnergy()">⚡ ПРОДАТЬ ЭНЕРГИЮ (1 МВт = 2.50 €)</button>
 
     <!-- ИНДИКАТОР НАПОЛНЯЕМОСТИ -->
     <div class="progress-bar-container">
@@ -149,7 +156,7 @@ body{
     <!-- ЦЕНТРАЛЬНАЯ КНОПКА -->
     <div class="click-target-container">
       <div class="click-target" onclick="clickEnergy(event)">⚡</div>
-      <div style="font-size: 8.5px; color: #a1c4fd;">Тапай для подачи напряжения!</div>
+      <div style="font-size: 8.5px; color: #a1c4fd;" id="tapHintTxt">Тапай для подачи напряжения!</div>
     </div>
 
     <!-- СПИСОК ПРОФЕССИЙ И СТАНЦИЙ -->
@@ -161,30 +168,74 @@ body{
 const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
 let soundEnabled = localStorage.getItem("freezzzSound") !== "false";
 
+let currentLang = localStorage.getItem("freezzzLang") || "ru";
+
+const langData = {
+  ru: {
+    menu: "⬅ МЕНЮ",
+    license: "🛠️ Zeitarbeit Электрик",
+    budget: "Бюджет (€)",
+    energy: "Энергия (МВт·ч)",
+    sellBtn: "⚡ ПРОДАТЬ ЭНЕРГИЮ (1 МВт = 2.50 €)",
+    tapHint: "Тапай для подачи напряжения!",
+    price: "Цена",
+    reqWorkers: "Требует раб.",
+    income: "Доход",
+    items: [
+      { name: "👷‍♂️ Elektrohelfer (Монтажник)", desc: "Базовый персонал в каске" },
+      { name: "☀️ Solar-Park (Солнечные панели)", desc: "Требует рабочих (+1.2 МВт)" },
+      { name: "🗼 Freileitung (Линия ЛЭП)", desc: "Опоры высоковольтных сетей" },
+      { name: "🎛️ Schaltanlage (Щитовая)", desc: "Распределительный узел объектов" },
+      { name: "⚡ Atomkraftwerk (АЭС Баден)", desc: "Главная энергетическая станция" }
+    ]
+  },
+  de: {
+    menu: "⬅ MENÜ",
+    license: "🛠️ Zeitarbeit Elektrik",
+    budget: "Budget (€)",
+    energy: "Energie (MWh)",
+    sellBtn: "⚡ ENERGIE VERKAUFEN (1 MWh = 2.50 €)",
+    tapHint: "Tippen für Stromversorgung!",
+    price: "Preis",
+    reqWorkers: "Benötigt Arb.",
+    income: "Einkommen",
+    items: [
+      { name: "👷‍♂️ Elektrohelfer (Helfer)", desc: "Grundpersonal mit Helm" },
+      { name: "☀️ Solar-Park (Solaranlagen)", desc: "Benötigt Arbeiter (+1.2 MWh)" },
+      { name: "🗼 Freileitung (Stromnetz)", desc: "Hochspannungs-Masten" },
+      { name: "🎛️ Schaltanlage (Schaltposten)", desc: "Verteilerstation für Projekte" },
+      { name: "⚡ Atomkraftwerk (AKW Baden)", desc: "Haupt-Energieerzeuger" }
+    ]
+  }
+};
+
+function toggleLanguage() {
+  currentLang = currentLang === "ru" ? "de" : "ru";
+  localStorage.setItem("freezzzLang", currentLang);
+  updateLanguageUI();
+  updateUI();
+}
+
+function updateLanguageUI() {
+  let t = langData[currentLang];
+  document.getElementById('menuBtnTxt').textContent = t.menu;
+  document.getElementById('licenseTxt').textContent = t.license;
+  document.getElementById('resBudgetTitle').textContent = t.budget;
+  document.getElementById('resEnergyTitle').textContent = t.energy;
+  document.getElementById('sellBtnTxt').textContent = t.sellBtn;
+  document.getElementById('tapHintTxt').textContent = t.tapHint;
+  document.getElementById('langBtn').textContent = currentLang === "ru" ? "🇩🇪 DE" : "🇷🇺 RU";
+}
+
 let money = Number(localStorage.getItem("zeitarbeitMoney") || 0);
 let totalEnergyMWh = Number(localStorage.getItem("zeitarbeitEnergy") || 0);
 
 let upgrades = [
-  { 
-    id: 'helfer', name: '👷‍♂️ Elektrohelfer (Монтажник)', desc: 'Базовый персонал в каске', 
-    cost: 15, incomeEur: 0.4, energyMWh: 0.1, count: Number(localStorage.getItem("up_helfer") || 0), mult: 1.15, type: 'worker' 
-  },
-  { 
-    id: 'solar', name: '☀️ Solar-Park (Солнечные панели)', desc: 'Требует рабочих (+1.2 МВт)', 
-    cost: 120, incomeEur: 2, energyMWh: 1.2, workersNeeded: 1, count: Number(localStorage.getItem("up_solar") || 0), mult: 1.18, type: 'station' 
-  },
-  { 
-    id: 'wind', name: '🗼 Freileitung (Линия ЛЭП)', desc: 'Опоры высоковольтных сетей', 
-    cost: 950, incomeEur: 14, energyMWh: 8.5, workersNeeded: 3, count: Number(localStorage.getItem("up_wind") || 0), mult: 1.20, type: 'station' 
-  },
-  { 
-    id: 'kraftwerk', name: '🎛️ Schaltanlage (Щитовая)', desc: 'Распределительный узел объектов', 
-    cost: 12000, incomeEur: 110, energyMWh: 65, workersNeeded: 10, count: Number(localStorage.getItem("up_kraftwerk") || 0), mult: 1.22, type: 'station' 
-  },
-  { 
-    id: 'aueg', name: '⚡ Atomkraftwerk (АЭС Баден)', desc: 'Главная энергетическая станция', 
-    cost: 150000, incomeEur: 850, energyMWh: 450, workersNeeded: 35, count: Number(localStorage.getItem("up_aueg") || 0), mult: 1.25, type: 'station' 
-  }
+  { id: 'helfer', cost: 15, incomeEur: 0.4, energyMWh: 0.1, count: Number(localStorage.getItem("up_helfer") || 0), mult: 1.15, type: 'worker' },
+  { id: 'solar', cost: 120, incomeEur: 2, energyMWh: 1.2, workersNeeded: 1, count: Number(localStorage.getItem("up_solar") || 0), mult: 1.18, type: 'station' },
+  { id: 'wind', cost: 950, incomeEur: 14, energyMWh: 8.5, workersNeeded: 3, count: Number(localStorage.getItem("up_wind") || 0), mult: 1.20, type: 'station' },
+  { id: 'kraftwerk', cost: 12000, incomeEur: 110, energyMWh: 65, workersNeeded: 10, count: Number(localStorage.getItem("up_kraftwerk") || 0), mult: 1.22, type: 'station' },
+  { id: 'aueg', cost: 150000, incomeEur: 850, energyMWh: 450, workersNeeded: 35, count: Number(localStorage.getItem("up_aueg") || 0), mult: 1.25, type: 'station' }
 ];
 
 let audioCtx = null;
@@ -200,7 +251,7 @@ function playSound(freq, type='square', duration=0.1) {
     gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(ctx.destination);
     osc.start();
     osc.stop(audioCtx.currentTime + duration);
   } catch(e) {}
@@ -284,12 +335,13 @@ function calculateStats() {
 
 function updateUI() {
   let stats = calculateStats();
+  let t = langData[currentLang];
   
   document.getElementById('moneyTxt').textContent = money.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
-  document.getElementById('cpsTxt').textContent = `+${stats.totalEurSec.toFixed(1)} €/сек`;
+  document.getElementById('cpsTxt').textContent = `+${stats.totalEurSec.toFixed(1)} €/s`;
   
-  document.getElementById('energyTxt').textContent = totalEnergyMWh.toFixed(1) + " МВт";
-  document.getElementById('epsTxt').textContent = `+${stats.totalEnergySec.toFixed(1)} МВт/с`;
+  document.getElementById('energyTxt').textContent = totalEnergyMWh.toFixed(1) + (currentLang === 'ru' ? " МВт" : " MWh");
+  document.getElementById('epsTxt').textContent = `+${stats.totalEnergySec.toFixed(1)} ${currentLang === 'ru' ? 'МВт/с' : 'MWh/s'}`;
 
   let cheapestCost = Math.min(...upgrades.map(u => u.cost));
   let progressPercent = Math.min(100, (money / cheapestCost) * 100);
@@ -299,18 +351,19 @@ function updateUI() {
   upgrades.forEach((up, idx) => {
     let currentCost = Math.floor(up.cost);
     let canBuy = money >= currentCost;
+    let localizedItem = t.items[idx];
     
-    let subInfo = `Доход: +${up.incomeEur}€/с, +${up.energyMWh}МВт/с`;
+    let subInfo = `${currentLang === 'ru' ? 'Доход' : 'Eink.'}: +${up.incomeEur}€/s, +${up.energyMWh}MWh/s`;
     if (up.type === 'station') {
-      subInfo = `Требует кал.: ${up.workersNeeded} раб./шт. | +${up.energyMWh}МВт`;
+      subInfo = `${t.reqWorkers}: ${up.workersNeeded} | +${up.energyMWh}MWh`;
     }
 
     listHtml += `
       <div class="upgrade-card" style="opacity: ${canBuy ? 1 : 0.65}; border-color: ${canBuy ? 'var(--title-col)' : 'var(--border-col)'};" onclick="buyUpgrade(${idx})">
         <div class="upgrade-info">
-          <div class="upgrade-name">${up.name}</div>
+          <div class="upgrade-name">${localizedItem.name}</div>
           <div class="upgrade-desc">${subInfo}</div>
-          <div class="upgrade-cost">Цена: ${currentCost.toLocaleString()} €</div>
+          <div class="upgrade-cost">${t.price}: ${currentCost.toLocaleString()} €</div>
         </div>
         <div class="upgrade-count">${up.count}</div>
       </div>
@@ -336,6 +389,7 @@ setInterval(() => {
   localStorage.setItem("zeitarbeitEnergy", totalEnergyMWh);
 }, 5000);
 
+updateLanguageUI();
 updateUI();
 </script>
 </body>
