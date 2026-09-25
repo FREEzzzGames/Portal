@@ -3,137 +3,247 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FREEzzzGames — Arcade Portal</title>
+<title>FREEzzzGames — Arcade Cabinet</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root {
-  --bg-grad: radial-gradient(circle at 50% 20%, rgba(41, 16, 95, 0.9) 0%, rgba(7, 9, 34, 0.95) 50%, rgba(1, 2, 8, 1) 100%);
-  --portal-bg: rgba(4, 7, 20, 0.92);
-  --border-col: rgba(32, 232, 255, 0.4);
+  --cabinet-body: #0b0d19;
+  --cabinet-border: #18224c;
+  --bg-grad: linear-gradient(135deg, #050711 0%, #120926 50%, #03040a 100%);
+  --screen-bg: #010206;
+  --border-col: #20e8ff;
   --accent-col: #20e8ff;
   --title-col: #ffd52c;
-  --btn-bg: rgba(10, 16, 40, 0.95);
-  --btn-hover: #16368a;
+  --btn-bg: rgba(16, 26, 60, 0.95);
+  --btn-hover: #213c8f;
+  --neon-glow: rgba(32, 232, 255, 0.35);
 }
 body.theme-matrix {
-  --bg-grad: radial-gradient(circle at 50% 20%, rgba(10, 45, 20, 0.9) 0%, rgba(5, 20, 10, 0.95) 50%, rgba(1, 5, 2, 1) 100%);
-  --portal-bg: rgba(4, 20, 10, 0.92);
-  --border-col: rgba(0, 255, 136, 0.4);
+  --cabinet-body: #041209;
+  --cabinet-border: #0d381c;
+  --bg-grad: linear-gradient(135deg, #020904 0%, #092614 50%, #010502 100%);
+  --screen-bg: #010502;
+  --border-col: #00ff88;
   --accent-col: #00ff88;
   --title-col: #00ff88;
-  --btn-bg: rgba(8, 30, 15, 0.95);
-  --btn-hover: #134a2e;
+  --btn-bg: rgba(8, 38, 18, 0.95);
+  --btn-hover: #135c2e;
+  --neon-glow: rgba(0, 255, 136, 0.35);
 }
 body.theme-fire {
-  --bg-grad: radial-gradient(circle at 50% 20%, rgba(65, 15, 10, 0.9) 0%, rgba(25, 7, 5, 0.95) 50%, rgba(8, 2, 1, 1) 100%);
-  --portal-bg: rgba(20, 6, 4, 0.92);
-  --border-col: rgba(255, 100, 30, 0.4);
+  --cabinet-body: #140705;
+  --cabinet-border: #401410;
+  --bg-grad: linear-gradient(135deg, #0d0403 0%, #2b0b08 100%);
+  --screen-bg: #050201;
+  --border-col: #ff6b30;
   --accent-col: #ff6b30;
   --title-col: #ffd52c;
-  --btn-bg: rgba(30, 10, 8, 0.95);
-  --btn-hover: #7b1717;
+  --btn-bg: rgba(40, 14, 10, 0.95);
+  --btn-hover: #802219;
+  --neon-glow: rgba(255, 107, 48, 0.35);
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
+html,body{margin:0;width:100%;height:100%;background:#010206;color:#fff;font-family:monospace;overflow:hidden;}
 body{
   padding:6px;display:flex;justify-content:center;align-items:center;
   background: var(--bg-grad); position: fixed; inset: 0;
 }
-.portal{
-  width: 100%; height: 100%; max-width: 480px; max-height: 100vh;
-  text-align: center; display: flex; flex-direction: column; gap: 8px;
-  overflow-y: auto; padding: 10px; z-index: 10;
-  background: var(--portal-bg); border: 2px solid var(--border-col);
-  border-radius: 12px; box-shadow: 0 0 25px rgba(0,0,0,0.8);
+
+/* КОРПУС АРКАДНОГО АВТОМАТА */
+.arcade-cabinet {
+  width: 100%; height: 100%; max-width: 440px; max-height: 100vh;
+  background: var(--cabinet-body);
+  border: 4px solid var(--cabinet-border);
+  border-radius: 20px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(0,0,0,0.8);
+  display: flex; flex-direction: column; padding: 10px; gap: 8px;
+  position: relative; overflow: hidden;
+}
+
+/* ВЕРХНЯЯ ВЫВЕСКА (MARQUEE) */
+.arcade-marquee {
+  background: rgba(0,0,0,0.6);
+  border: 2px solid var(--border-col);
+  border-radius: 10px;
+  padding: 6px;
+  text-align: center;
+  box-shadow: 0 0 15px var(--neon-glow);
+  flex-shrink: 0;
+}
+.marquee-title {
+  color: var(--title-col);
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+  text-shadow: 2px 2px #ff0055, 0 0 10px var(--title-col);
+  letter-spacing: 3px;
+}
+.marquee-sub {
+  color: var(--accent-col);
+  font-size: 8px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* ПРОФИЛЬ И ПАНЕЛЬ УПРАВЛЕНИЯ НА КОРПУСЕ */
+.cabinet-top-panel {
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(0,0,0,0.4); border: 1px solid var(--border-col);
+  border-radius: 8px; padding: 4px 8px; flex-shrink: 0;
+}
+.profile-box {
+  font-size: 10px; color: var(--accent-col); display: flex; align-items: center; gap: 6px;
+  cursor: pointer; background: var(--btn-bg); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-col);
+}
+.profile-box:active { background: var(--btn-hover); }
+.user-avatar { width: 22px; height: 22px; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-size: 13px; border: 1px solid var(--accent-col); }
+
+.cabinet-btns { display: flex; gap: 6px; }
+.cab-btn {
+  background: var(--btn-bg); border: 1px solid var(--border-col); color: var(--title-col);
+  padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;
+}
+
+/* ЭМУЛЯЦИЯ ЭКРАНА АВТОМАТА (CRT МОНИТОР) */
+.arcade-screen {
+  flex-grow: 1; background: var(--screen-bg);
+  border: 4px inset var(--cabinet-border);
+  border-radius: 12px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.9), 0 0 10px var(--neon-glow);
+  display: flex; flex-direction: column; padding: 8px; gap: 6px;
+  overflow-y: auto; position: relative;
+}
+/* Сканлинии ЭЛТ экрана */
+.arcade-screen::after {
+  content: " "; display: block; position: absolute; inset: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 3px; z-index: 50; pointer-events: none; opacity: 0.6;
+}
+
+/* СПЕЦ-КНОПКИ НА ЭКРАНЕ */
+.actions-row { display: flex; gap: 6px; justify-content: center; flex-shrink: 0; z-index: 55; }
+.action-btn {
+  background: var(--btn-bg); border: 2px solid var(--border-col); color: var(--title-col);
+  padding: 6px 12px; border-radius: 6px; font: bold 9px monospace; cursor: pointer;
+  box-shadow: 0 0 8px var(--neon-glow); transition: .15s;
+}
+.action-btn:active { background: var(--btn-hover); transform: scale(0.95); }
+
+/* СЕТКА ИКОНОК 3x4 НА ЭКРАНЕ */
+.grid-menu { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr); gap: 8px; flex-grow: 1; z-index: 55; }
+.icon-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  aspect-ratio: 1/1; border: 2px solid var(--accent-col); border-radius: 10px;
+  background: var(--btn-bg); color: #fff; text-decoration: none; cursor: pointer;
+  box-shadow: 0 0 8px var(--neon-glow); transition: .15s; padding: 4px; gap: 2px;
+}
+.icon-btn:active { transform: scale(.92); background: var(--btn-hover); border-color: var(--title-col); }
+.icon-emoji { font-size: 26px; filter: drop-shadow(0 0 4px var(--accent-col)); }
+.icon-title { font-size: 8px; font-weight: bold; color: var(--title-col); text-align: center; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+/* ПАНЕЛЬ УПРАВЛЕНИЯ ВНИЗУ АВТОМАТА (КОНСОЛЬ) */
+.arcade-deck {
+  background: linear-gradient(to bottom, #111526, #070912);
+  border: 2px solid var(--cabinet-border);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex; justify-content: space-around; align-items: center;
+  flex-shrink: 0; box-shadow: inset 0 2px 5px rgba(255,255,255,0.05);
+}
+.joystick-mock {
+  width: 36px; height: 36px; background: radial-gradient(circle at 35% 35%, #ff3366, #880022);
+  border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.8), inset 0 2px 4px rgba(255,255,255,0.4);
   position: relative;
 }
-.hidden { display: none !important; }
+.arcade-buttons-mock { display: flex; gap: 8px; align-items: center; }
+.arcade-btn-red {
+  width: 28px; height: 28px; background: radial-gradient(circle at 35% 35%, #ff4444, #990000);
+  border-radius: 50%; box-shadow: 0 3px 6px rgba(0,0,0,0.8), inset 0 2px 3px rgba(255,255,255,0.4);
+  cursor: pointer;
+}
+.arcade-btn-red:active { transform: scale(0.9); }
+.arcade-btn-yellow {
+  width: 28px; height: 28px; background: radial-gradient(circle at 35% 35%, #ffdd00, #997700);
+  border-radius: 50%; box-shadow: 0 3px 6px rgba(0,0,0,0.8), inset 0 2px 3px rgba(255,255,255,0.4);
+  cursor: pointer;
+}
+.arcade-btn-yellow:active { transform: scale(0.9); }
 
-/* ШАПКА */
-.header-top { display: flex; justify-content: space-between; align-items: center; padding: 4px 6px; gap: 6px; flex-shrink: 0; }
-.profile-box { font-size: 11px; color: var(--accent-col); text-align: left; display: flex; align-items: center; gap: 6px; background: var(--btn-bg); padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-col); cursor: pointer; }
-.profile-box:active { background: var(--btn-hover); }
-.user-avatar { width: 26px; height: 26px; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 15px; border: 1px solid var(--accent-col); flex-shrink: 0; }
-
-.header-btns { display: flex; gap: 6px; }
-.top-btn { background: var(--btn-bg); border: 1px solid var(--border-col); color: var(--title-col); padding: 6px 12px; border-radius: 8px; font-size: 14px; cursor: pointer; }
-
-h1{ color: var(--title-col); font-size: 24px; margin: 2px 0 0; text-shadow: 2px 2px #e52225; letter-spacing: 2px; }
-.subtitle { color: var(--accent-col); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
-
-/* КНОПКИ НАВИГАЦИИ */
-.actions-row { display: flex; gap: 6px; justify-content: center; margin-bottom: 4px; flex-wrap: wrap; flex-shrink: 0; }
-.action-btn { background: var(--btn-bg); border: 2px solid var(--border-col); color: #83a4c9; padding: 8px 12px; border-radius: 8px; font: bold 10px monospace; cursor: pointer; transition: .2s; display: flex; align-items: center; gap: 4px; }
-.action-btn:active { background: var(--btn-hover); color: var(--title-col); }
-.action-btn.special { border-color: #ffd42aaa; color: #ffd42a; }
-
-/* СЕТКА ИКОНОК 3x4 */
-.grid-menu { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr); gap: 10px; padding: 4px; flex-grow: 1; }
-.icon-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; aspect-ratio: 1/1; border: 2px solid var(--accent-col); border-radius: 14px; background: var(--btn-bg); color: #fff; text-decoration: none; cursor: pointer; box-shadow: 0 0 12px rgba(0,0,0,0.5); transition: .15s; padding: 8px; gap: 4px; }
-.icon-btn:active { transform: scale(.93); background: var(--btn-hover); border-color: var(--title-col); }
-.icon-emoji { font-size: 34px; filter: drop-shadow(0 0 6px var(--accent-col)); }
-.icon-title { font-size: 11px; font-weight: bold; color: var(--title-col); text-align: center; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-
-/* МОДАЛЬНОЕ ОКНО КОЛЛЕКЦИИ АВАТАРОВ */
-.modal-overlay { position: absolute; inset: 0; background: rgba(2,3,11,0.88); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 15px; }
-.modal-card { background: var(--portal-bg); border: 2px solid var(--accent-col); border-radius: 12px; width: 100%; max-width: 340px; padding: 14px; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.9); display: flex; flex-direction: column; gap: 8px; }
-.avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-height: 200px; overflow-y: auto; padding: 2px; }
-.avatar-item { aspect-ratio: 1/1; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 22px; cursor: pointer; }
+/* МОДАЛЬНОЕ ОКНО АВАТАРОВ */
+.modal-overlay { position: absolute; inset: 0; background: rgba(2,3,11,0.9); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 15px; }
+.modal-card { background: var(--cabinet-body); border: 2px solid var(--border-col); border-radius: 12px; width: 100%; max-width: 320px; padding: 14px; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.9); display: flex; flex-direction: column; gap: 8px; z-index: 101; }
+.avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-height: 180px; overflow-y: auto; padding: 2px; }
+.avatar-item { aspect-ratio: 1/1; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; }
 .avatar-item.active { border-color: var(--title-col); box-shadow: 0 0 8px var(--title-col); }
 
-.footer-info { color: #83a4c9; font-size: 9px; letter-spacing: 1px; margin-top: auto; padding: 4px; flex-shrink: 0; }
+.footer-info { color: #83a4c9; font-size: 8px; letter-spacing: 1px; text-align: center; flex-shrink: 0; }
 </style>
 </head>
 <body id="bodyRoot">
-<div class="portal">
-  <div class="header-top">
+
+<div class="arcade-cabinet">
+  <!-- ВЫВЕСКА АРКАДЫ (MARQUEE) -->
+  <div class="arcade-marquee">
+    <h1 class="marquee-title">FREEzzzGAMES</h1>
+    <div class="marquee-sub">ARCADE CABINET 🕹️ v2.0</div>
+  </div>
+
+  <!-- ШАПКА КАБИНЕТА (ПРОФИЛЬ И ТЕМЫ) -->
+  <div class="cabinet-top-panel">
     <div class="profile-box" onclick="openAvatarModal()">
       <div class="user-avatar" id="currentAvatarEmoji">👾</div>
       <div id="userNameTxt">Игрок</div>
     </div>
-    <div class="header-btns">
-      <button class="top-btn" onclick="toggleTheme()" title="Тема">🎨</button>
-      <button class="top-btn" id="soundToggle" onclick="toggleSound()">🔊</button>
+    <div class="cabinet-btns">
+      <button class="cab-btn" onclick="toggleTheme()" title="Сменить тему">🎨</button>
+      <button class="cab-btn" id="soundToggle" onclick="toggleSound()">🔊</button>
     </div>
   </div>
 
-  <div>
-    <h1>FREEzzzGames</h1>
-    <div class="subtitle">ARCADE PORTAL 🕹️</div>
+  <!-- ЭКРАН ЭЛТ (CRT МОНИТОР С ИГРАМИ) -->
+  <div class="arcade-screen">
+    <div class="actions-row">
+      <button class="action-btn" onclick="playRandomGame()">🎲 РАНДОМ</button>
+      <button class="action-btn" onclick="sharePortal()">📤 ДРУЗЬЯМ</button>
+    </div>
+
+    <!-- Сетка иконок 3x4 -->
+    <div class="grid-menu">
+      <a href="snake.html" class="icon-btn"><div class="icon-emoji">🐍</div><div class="icon-title">SNAKE</div></a>
+      <a href="tetris.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">TETRIS</div></a>
+      <a href="pong.html" class="icon-btn"><div class="icon-emoji">🏓</div><div class="icon-title">PONG</div></a>
+      <a href="race.html" class="icon-btn"><div class="icon-emoji">🏎️</div><div class="icon-title">RACER</div></a>
+      <a href="mario.html" class="icon-btn"><div class="icon-emoji">🍄</div><div class="icon-title">PLATFORMER</div></a>
+      <a href="arkanoid.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">ARKANOID</div></a>
+      <a href="duck.html" class="icon-btn"><div class="icon-emoji">🦆</div><div class="icon-title">DUCK MUDACK</div></a>
+      <a href="invaders.html" class="icon-btn"><div class="icon-emoji">👾</div><div class="icon-title">INVADERS</div></a>
+      <a href="doodle.html" class="icon-btn"><div class="icon-emoji">🦘</div><div class="icon-title">JUMPER</div></a>
+      <a href="minesweeper.html" class="icon-btn"><div class="icon-emoji">💣</div><div class="icon-title">MINESWEEPER</div></a>
+      <div class="icon-btn" style="opacity:0.5; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
+      <div class="icon-btn" style="opacity:0.5; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
+    </div>
   </div>
 
-  <div class="actions-row">
-    <button class="action-btn special" onclick="playRandomGame()">🎲 РАНДОМ</button>
-    <button class="action-btn" onclick="sharePortal()">📤 ДРУЗЬЯМ</button>
+  <!-- ПАНЕЛЬ УПРАВЛЕНИЯ (КНОПКИ И ДЖОЙСТИК ВНИЗУ АВТОМАТА) -->
+  <div class="arcade-deck">
+    <div class="joystick-mock" onclick="playRandomGame()" title="Джойстик"></div>
+    <div class="footer-info">COIN INSERTED • PRESS GAME</div>
+    <div class="arcade-buttons-mock">
+      <div class="arcade-btn-red" onclick="playRandomGame()" title="Кнопка А"></div>
+      <div class="arcade-btn-yellow" onclick="toggleTheme()" title="Кнопка B"></div>
+    </div>
   </div>
-  
-  <!-- Сетка 3x4 (прямые переходы на файлы игр) -->
-  <div class="grid-menu" id="gamesGrid">
-    <a href="snake.html" class="icon-btn"><div class="icon-emoji">🐍</div><div class="icon-title">SNAKE</div></a>
-    <a href="tetris.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">TETRIS</div></a>
-    <a href="pong.html" class="icon-btn"><div class="icon-emoji">🏓</div><div class="icon-title">PONG</div></a>
-    <a href="race.html" class="icon-btn"><div class="icon-emoji">🏎️</div><div class="icon-title">RACER</div></a>
-    <a href="mario.html" class="icon-btn"><div class="icon-emoji">🍄</div><div class="icon-title">PLATFORMER</div></a>
-    <a href="arkanoid.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">ARKANOID</div></div>
-    <a href="duck.html" class="icon-btn"><div class="icon-emoji">🦆</div><div class="icon-title">DUCK MUDACK</div></div>
-    <a href="invaders.html" class="icon-btn"><div class="icon-emoji">👾</div><div class="icon-title">INVADERS</div></div>
-    <a href="doodle.html" class="icon-btn"><div class="icon-emoji">🦘</div><div class="icon-title">JUMPER</div></div>
-    <a href="minesweeper.html" class="icon-btn"><div class="icon-emoji">💣</div><div class="icon-title">MINESWEEPER</div></div>
-    <div class="icon-btn" style="opacity:0.6;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
-    <div class="icon-btn" style="opacity:0.6;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
-  </div>
-
-  <div class="footer-info">FREEzzzGames • ARCADE HUB</div>
 </div>
 
 <!-- МОДАЛЬНОЕ ОКНО КОЛЛЕКЦИИ АВАТАРОВ -->
 <div class="modal-overlay hidden" id="avatarModal">
   <div class="modal-card">
-    <h3 style="color:var(--title-col); margin:0; font-size:14px;">КОЛЛЕКЦИЯ АВАТАРОВ</h3>
-    <p style="font-size:9px; color:#83a4c9; margin:0;">Выбирай собранную аватарку или заходи ежедневно за новой!</p>
+    <h3 style="color:var(--title-col); margin:0; font-size:13px;">КОЛЛЕКЦИЯ АВАТАРОВ</h3>
+    <p style="font-size:9px; color:#83a4c9; margin:0;">Выбирай аватарку или заходи ежедневно за новой!</p>
     <div class="avatar-grid" id="avatarGrid"></div>
-    <button class="action-btn" style="width:100%; justify-content:center; padding:8px; margin-top:2px;" onclick="closeAvatarModal()">ЗАКРЫТЬ</button>
+    <button class="action-btn" style="width:100%; justify-content:center; padding:8px;" onclick="closeAvatarModal()">ЗАКРЫТЬ</button>
   </div>
 </div>
 
@@ -145,7 +255,7 @@ if (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.first_
 }
 document.getElementById('userNameTxt').textContent = userName;
 
-// АВАТАРЫ (Ежедневный рандом + Коллекция)
+// АВАТАРЫ
 const possibleAvatars = ["👾", "🤖", "👽", "🦊", "🐯", "🐼", "🦄", "🐲", "👻", "💀", "👑", "🚀", "⚡", "💎", "🕹️", "🔥"];
 let userAvatars = JSON.parse(localStorage.getItem("freezzzAvatars") || '["👾"]');
 let currentAvatar = localStorage.getItem("freezzzCurrentAvatar") || userAvatars[0];
@@ -219,12 +329,11 @@ function playRandomGame() {
 
 function sharePortal() {
   haptic();
-  const botUrl = "https://t.me/" + (tg.initDataUnsafe && tg.initDataUnsave.bot ? tg.initDataUnsafe.bot.username : "your_bot_username");
-  const shareText = "🕹️ Крутой аркадный портал FREEzzzGames! 10 ретро-игр:";
+  const botUrl = "https://t.me/" + (tg.initDataUnsafe && tg.initDataUnsafe.bot ? tg.initDataUnsafe.bot.username : "your_bot_username");
+  const shareText = "🕹️ Крутой аркадный кабинет FREEzzzGames! 10 ретро-игр:";
   if (tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(shareText)}`);
   else window.open(`https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(shareText)}`);
 }
 </script>
 </body>
-    </html>
-      
+</html>
