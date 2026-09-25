@@ -14,8 +14,6 @@
   --title-col: #ffd52c;
   --btn-bg: rgba(16, 26, 60, 0.95);
   --btn-hover: #213c8f;
-  --glass-bg: rgba(32, 232, 255, 0.08);
-  --neon-glow: rgba(32, 232, 255, 0.35);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
@@ -24,19 +22,17 @@ body{
   background: var(--bg-grad); position: fixed; inset: 0;
 }
 .portal{
-  width: 100%; height: 100%; max-width: 420px; max-height: 100vh;
+  width: 100%; height: 100%; max-width: 480px; max-height: 100vh;
   text-align: center; display: flex; flex-direction: column; gap: 6px;
   overflow-y: auto; padding: 8px; z-index: 10;
   background: var(--portal-bg); border: 2px solid var(--border-col);
   border-radius: 12px; box-shadow: 0 0 25px rgba(0,0,0,0.8);
   position: relative;
 }
-.game-ui-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; width: 100%; flex-shrink: 0; font-size: 11px; }
+.game-ui-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; width: 100%; flex-shrink: 0; }
 
-#gameContainer { flex-grow: 1; width: 100%; position: relative; background: #050b1a; border: 2px solid var(--accent-col); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; cursor: crosshair; }
-canvas { width: 100%; height: 100%; object-fit: contain; background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d); }
-
-.game-info-footer { display: flex; justify-content: space-around; padding: 6px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; font-size: 10px; flex-shrink: 0; }
+#gameContainer { flex-grow: 1; width: 100%; position: relative; background: #010206; border: 2px solid var(--accent-col); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; cursor: crosshair; }
+canvas { width: 100%; height: 100%; object-fit: contain; background: #010206; }
 </style>
 </head>
 <body>
@@ -50,16 +46,13 @@ canvas { width: 100%; height: 100%; object-fit: contain; background: linear-grad
 
 <div class="portal">
   <div class="game-ui-header">
-    <div id="scoreTxt" style="color:var(--title-col);">СЧЕТ: 0</div>
-    <div id="speedTxt" style="color:var(--accent-col);">СКОРОСТЬ: 1/10</div>
+    <div style="width: 50px;"></div>
+    <div style="color:var(--title-col); font-size:12px; font-weight:bold;" id="scoreTxt">СЧЕТ: 0</div>
+    <div id="speedTxt" style="color:var(--accent-col); font-size:10px;">СКОРОСТЬ: 1/10</div>
   </div>
 
   <div id="gameContainer">
-    <canvas id="dCanvas" width="360" height="420"></canvas>
-  </div>
-
-  <div class="game-info-footer">
-    <span style="color:var(--title-col);">ТАПАЙ ПО УТКАМ ДЛЯ ВЫСТРЕЛА! 🎯</span>
+    <canvas id="duckCanvas" width="360" height="480"></canvas>
   </div>
 </div>
 
@@ -127,7 +120,7 @@ function haptic() {
   }
 }
 
-const canvas = document.getElementById('dCanvas');
+const canvas = document.getElementById('duckCanvas');
 const ctx = canvas.getContext('2d');
 
 let score = 0;
@@ -138,53 +131,47 @@ class Duck {
     this.reset();
   }
   reset() {
-    this.w = 36;
-    this.h = 28;
-    this.x = Math.random() < 0.5 ? -40 : canvas.width + 10;
-    this.y = Math.random() * (canvas.height - 180) + 40;
+    this.x = Math.random() < 0.5 ? -30 : canvas.width + 30;
+    this.y = Math.random() * 250 + 40;
     
-    // Скорость зависит от текущего уровня сложности (от 1 до 10)
+    // Плавная начальная скорость, увеличивающаяся на 1 пункт каждые 10 000 очков (до 10 скоростей)
     let speedLevel = Math.min(10, Math.floor(score / 10000) + 1);
-    let baseSpeed = 1.2 + (speedLevel * 0.4);
+    let baseSpeed = 0.8 + (speedLevel * 0.3);
     
     this.vx = (this.x < 0) ? baseSpeed : -baseSpeed;
-    this.vy = (Math.random() - 0.5) * 1.0;
-    this.isDead = false;
-    this.fallAnim = 0;
+    this.vy = (Math.random() - 0.5) * 0.6;
+    this.hit = false;
+    this.fallTimer = 0;
   }
   update() {
-    if (!this.isDead) {
+    if (!this.hit) {
       this.x += this.vx;
       this.y += this.vy;
-      if (this.y < 20 || this.y > canvas.height - 100) this.vy *= -1;
+      if (this.y < 30 || this.y > 320) this.vy *= -1;
 
-      // Возврат при выходе за границы
-      if ((this.vx > 0 && this.x > canvas.width + 40) || (this.vx < 0 && this.x < -40)) {
+      if ((this.vx > 0 && this.x > canvas.width + 30) || (this.vx < 0 && this.x < -30)) {
         this.reset();
       }
     } else {
-      this.fallAnim += 4;
-      this.y += this.fallAnim;
+      this.fallTimer += 3;
+      this.y += this.fallTimer;
       if (this.y > canvas.height + 40) {
         this.reset();
       }
     }
   }
   draw() {
-    ctx.font = '26px monospace';
+    ctx.font = '24px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    let emoji = this.isDead ? '🍖' : (this.vx > 0 ? '🦆' : '🐥');
-    ctx.fillText(emoji, this.x, this.y);
+    ctx.fillText(this.hit ? '🎯' : '🦆', this.x, this.y);
   }
 }
 
-// Создаем стаю из 3 уток
 for (let i = 0; i < 3; i++) {
   ducks.push(new Duck());
 }
 
-// Обработка клика/выстрела по холсту
 canvas.addEventListener('pointerdown', (e) => {
   let rect = canvas.getBoundingClientRect();
   let clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
@@ -193,14 +180,12 @@ canvas.addEventListener('pointerdown', (e) => {
   playShootSound();
   haptic();
 
-  let hit = false;
-  ducks.forEach(duck => {
-    if (!duck.isDead && Math.abs(clickX - duck.x) < 25 && Math.abs(clickY - duck.y) < 25) {
-      duck.isDead = true;
-      duck.vx = 0;
-      duck.vy = 0;
+  ducks.forEach(d => {
+    if (!d.hit && Math.abs(clickX - d.x) < 22 && Math.abs(clickY - d.y) < 22) {
+      d.hit = true;
+      d.vx = 0;
+      d.vy = 0;
       score += 1000;
-      hit = true;
       playQuackSound();
     }
   });
@@ -211,21 +196,12 @@ canvas.addEventListener('pointerdown', (e) => {
 });
 
 function gameLoop() {
-  ctx.fillStyle = '#050b1a';
+  ctx.fillStyle = '#010206';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Рисуем задний фон (небо и холмы)
-  ctx.fillStyle = '#112244';
-  ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
-  ctx.fillStyle = '#22aa44';
-  ctx.beginPath();
-  ctx.arc(100, canvas.height - 40, 90, Math.PI, 0, false);
-  ctx.arc(280, canvas.height - 30, 110, Math.PI, 0, false);
-  ctx.fill();
-
-  ducks.forEach(duck => {
-    duck.update();
-    duck.draw();
+  ducks.forEach(d => {
+    d.update();
+    d.draw();
   });
 
   requestAnimationFrame(gameLoop);
