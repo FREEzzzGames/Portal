@@ -7,64 +7,70 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root {
-  --bg-grad: linear-gradient(135deg, #09192b 0%, #112d4e 50%, #06111c 100%);
-  --portal-bg: rgba(13, 35, 58, 0.96);
+  --portal-bg: rgba(10, 22, 38, 0.88);
   --border-col: rgba(74, 144, 226, 0.5);
   --accent-col: #4a90e2;
   --title-col: #ffd52c;
   --btn-bg: rgba(18, 48, 80, 0.95);
-  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg: rgba(13, 35, 58, 0.75);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;width:100%;height:100%;background:#06111c;color:#fff;font-family:monospace;overflow:hidden;}
 body{
   padding:10px;display:flex;justify-content:center;align-items:center;
-  background: var(--bg-grad); position: fixed; inset: 0;
+  /* Атмосферный индустриальный фон с офисом и минивеном */
+  background: linear-gradient(rgba(6, 17, 28, 0.65), rgba(6, 17, 28, 0.85)), 
+              url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80') no-repeat center center;
+  background-size: cover;
+  position: fixed; inset: 0;
 }
 .menu-container{
   width: 100%; height: 100%; max-width: 420px; max-height: 100vh;
   text-align: center; display: flex; flex-direction: column; justify-content: space-between;
   padding: 16px; z-index: 10;
   background: var(--portal-bg); border: 2.5px solid var(--border-col);
-  border-radius: 16px; box-shadow: 0 0 35px rgba(13, 35, 58, 0.95);
+  border-radius: 16px; box-shadow: 0 0 35px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(6px);
   position: relative; overflow-y: auto;
 }
-.menu-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.menu-header { display: flex; justify-content: space-between; align-items: center; width: 100%; z-index: 2; }
 .lang-btn, .sound-btn {
   background: rgba(74, 144, 226, 0.3); border: 1.5px solid var(--accent-col); color: #fff;
   padding: 6px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;
 }
 .lang-btn:active, .sound-btn:active { background: rgba(74, 144, 226, 0.6); }
 
-.brand-section { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 10px 0; }
+.brand-section { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 5px 0; z-index: 2; }
 .brand-logo {
-  width: 90px; height: 90px; background: radial-gradient(circle, #252B37 0%, var(--btn-bg) 70%);
+  width: 75px; height: 75px; background: radial-gradient(circle, #252B37 0%, var(--btn-bg) 70%);
   border: 3px solid var(--title-col); border-radius: 50%; display: flex;
-  align-items: center; justify-content: center; font-size: 45px;
-  box-shadow: 0 0 25px rgba(255,213,44,0.4);
+  align-items: center; justify-content: center; font-size: 38px;
+  box-shadow: 0 0 20px rgba(255,213,44,0.5);
   animation: pulseLogo 2s infinite ease-in-out;
 }
 @keyframes pulseLogo {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255,213,44,0.4); }
-  50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255,213,44,0.7); }
+  0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(255,213,44,0.4); }
+  50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(255,213,44,0.7); }
 }
 .brand-title { 
-  font-size: 20px; font-weight: bold; color: var(--title-col); letter-spacing: 1.5px; 
+  font-size: 19px; font-weight: bold; color: var(--title-col); letter-spacing: 1.5px; 
   display: flex; align-items: center; justify-content: center; gap: 6px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
-.brand-title span.bold { font-weight: 900; font-size: 22px; text-shadow: 0 0 10px rgba(255,213,44,0.6); }
-.brand-title span.normal { font-weight: normal; color: #a1c4fd; font-size: 18px; }
-.brand-subtitle { font-size: 10px; color: #a1c4fd; text-transform: uppercase; letter-spacing: 2px; }
+.brand-title span.bold { font-weight: 900; font-size: 21px; color: #ffffff; text-shadow: 0 0 10px rgba(255,213,44,0.8); }
+.brand-title span.normal { font-weight: normal; color: var(--accent-col); font-size: 17px; }
+.brand-subtitle { font-size: 9.5px; color: #a1c4fd; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 
 .player-stats-card {
   background: var(--glass-bg); border: 1.5px solid var(--border-col);
-  border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; width: 100%; text-align: left;
+  border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; width: 100%; text-align: left;
+  z-index: 2; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
 }
 .stat-row { display: flex; justify-content: space-between; font-size: 11px; }
 .stat-label { color: #a1c4fd; }
 .stat-value { font-weight: bold; color: var(--title-col); }
 
-.menu-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; margin: 10px 0; }
+.menu-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; margin: 5px 0; z-index: 2; }
 .menu-btn {
   width: 100%; background: linear-gradient(135deg, rgba(74,144,226,0.3), rgba(18,48,80,0.8));
   border: 2px solid var(--accent-col); border-radius: 10px; padding: 12px;
@@ -74,11 +80,11 @@ body{
 }
 .menu-btn:active { transform: scale(0.97); }
 .menu-btn.primary {
-  background: linear-gradient(135deg, rgba(255,213,44,0.3), rgba(211,158,0,0.8));
-  border-color: var(--title-col); color: var(--title-col); font-size: 14px;
-  box-shadow: 0 0 20px rgba(255,213,44,0.3);
+  background: linear-gradient(135deg, rgba(255,213,44,0.35), rgba(211,158,0,0.85));
+  border-color: var(--title-col); color: var(--title-col); font-size: 15px;
+  box-shadow: 0 0 20px rgba(255,213,44,0.4);
 }
-.menu-footer { font-size: 9px; color: rgba(161, 196, 253, 0.6); }
+.menu-footer { font-size: 9px; color: rgba(161, 196, 253, 0.6); z-index: 2; }
 </style>
 </head>
 <body>
@@ -111,10 +117,10 @@ body{
   </div>
 
   <div class="menu-actions">
-    <a href="game.html" class="menu-btn primary" id="btnPlay">⚡ ДИСПЕТЧЕРСКАЯ (ИГРАТЬ)</a>
+    <a href="game.html" class="menu-btn primary" id="btnPlay">⚡ РАБОТАТЬ</a>
   </div>
 
-  <div class="menu-footer">Standalone Project v1.0 • eckert electro</div>
+  <div class="menu-footer">eckert electro corporation v1.0</div>
 </div>
 
 <script>
@@ -129,7 +135,7 @@ const menuLang = {
     subtitle: "Симулятор энергоконцерна",
     capital: "Капитал:",
     energyStat: "Энергобаланс:",
-    play: "⚡ ДИСПЕТЧЕРСКАЯ (ИГРАТЬ)",
+    play: "⚡ РАБОТАТЬ",
     soundOn: "🔊 ЗВУК ВКЛ",
     soundOff: "🔇 ЗВУК ВЫКЛ"
   },
@@ -137,7 +143,7 @@ const menuLang = {
     subtitle: "Energiekonzern Simulator",
     capital: "Kapital:",
     energyStat: "Energiebilanz:",
-    play: "⚡ LEITWARTE (SPIELEN)",
+    play: "⚡ ARBEITEN",
     soundOn: "🔊 TON AN",
     soundOff: "🔇 TON AUS"
   }
@@ -164,7 +170,7 @@ function updateMenuUI() {
   document.getElementById('langBtn').textContent = currentLang === "ru" ? "🇩🇪 DE" : "🇷🇺 RU";
   document.getElementById('soundBtn').textContent = soundEnabled ? t.soundOn : t.soundOff;
 
-  // Подтягиваем актуальные данные из localStorage (последней рабочей версии)
+  // Подтягиваем данные из localStorage последней рабочей версии
   let savedMoney = Number(localStorage.getItem("zeitarbeitMoney") || 0);
   let savedEnergy = Number(localStorage.getItem("zeitarbeitEnergy") || 0);
   
