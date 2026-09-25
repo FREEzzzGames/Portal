@@ -8,12 +8,13 @@
 <style>
 :root {
   --bg-grad: linear-gradient(135deg, #050711 0%, #120926 50%, #03040a 100%);
-  --portal-bg: rgba(4, 7, 20, 0.92);
+  --portal-bg: rgba(4, 7, 20, 0.95);
   --border-col: rgba(32, 232, 255, 0.4);
   --accent-col: #20e8ff;
   --title-col: #ffd52c;
   --btn-bg: rgba(16, 26, 60, 0.95);
   --btn-hover: rgba(32, 232, 255, 0.22);
+  --glass-bg: rgba(32, 232, 255, 0.08);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
@@ -29,63 +30,108 @@ body{
   border-radius: 12px; box-shadow: 0 0 25px rgba(0,0,0,0.8);
   position: relative;
 }
-.game-ui-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; width: 100%; flex-shrink: 0; font-size: 11px; }
 
+/* ШАПКА */
+.game-ui-header { 
+  display: flex; justify-content: space-between; align-items: center; 
+  padding: 6px 10px; background: var(--btn-bg); border: 1px solid var(--border-col); 
+  border-radius: 8px; width: 100%; flex-shrink: 0; font-size: 10px; 
+}
+.back-btn {
+  background: rgba(140, 5, 5, 0.9); border: 1px solid #ff6b55; color: #fff;
+  padding: 4px 8px; border-radius: 6px; text-decoration: none; font-weight: bold;
+}
+
+/* ОСНОВНОЙ КОНТЕЙНЕР */
 .clicker-body {
   flex-grow: 1; background: rgba(1,2,6,0.6); border: 2px solid var(--accent-col);
   border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-  padding: 10px; overflow-y: auto; gap: 8px;
+  padding: 8px; overflow-y: auto; gap: 6px; position: relative;
 }
 
-.money-display { font-size: 18px; font-weight: bold; color: var(--title-col); text-shadow: 0 0 8px rgba(255,213,44,0.5); }
-.cps-display { font-size: 9px; color: var(--accent-col); }
+.money-box {
+  background: var(--glass-bg); border: 1px solid var(--border-col); border-radius: 8px;
+  padding: 6px 12px; width: 100%;
+}
+.money-display { font-size: 20px; font-weight: bold; color: var(--title-col); text-shadow: 0 0 10px rgba(255,213,44,0.6); }
+.cps-display { font-size: 9px; color: var(--accent-col); margin-top: 2px; }
 
+/* КЛИКЕР-ТЕРМИНАЛ */
+.click-target-container { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .click-target {
-  width: 90px; height: 90px; background: radial-gradient(circle at 35% 35%, #20e8ff, #0a4d59);
+  width: 85px; height: 85px; background: radial-gradient(circle at 35% 35%, #20e8ff, #0a4d59);
   border: 3px solid var(--title-col); border-radius: 50%; display: flex; justify-content: center; align-items: center;
-  font-size: 40px; cursor: pointer; box-shadow: 0 0 20px rgba(32,232,255,0.4); transition: transform 0.05s;
+  font-size: 38px; cursor: pointer; box-shadow: 0 0 20px rgba(32,232,255,0.4); transition: transform 0.08s ease;
   user-select: none;
 }
-.click-target:active { transform: scale(0.90); background: radial-gradient(circle at 35% 35%, #ffd52c, #b38600); }
+.click-target:active { transform: scale(0.88); background: radial-gradient(circle at 35% 35%, #ffd52c, #b38600); }
 
-.upgrades-list { width: 100%; display: flex; flex-direction: column; gap: 5px; max-height: 180px; overflow-y: auto; padding-right: 2px; }
+/* СПИСОК АПГРЕЙДОВ */
+.upgrades-list { width: 100%; display: flex; flex-direction: column; gap: 5px; max-height: 190px; overflow-y: auto; padding-right: 2px; }
 .upgrade-card {
-  display: flex; justify-content: space-between; align-items: center; background: rgba(16, 26, 60, 0.8);
+  display: flex; justify-content: space-between; align-items: center; background: rgba(16, 26, 60, 0.85);
   border: 1px solid var(--border-col); border-radius: 6px; padding: 6px 8px; font-size: 9px; text-align: left; cursor: pointer;
+  transition: all 0.15s ease; position: relative; overflow: hidden;
 }
-.upgrade-card:active { background: var(--btn-hover); }
-.upgrade-info { display: flex; flex-direction: column; gap: 2px; }
-.upgrade-name { color: var(--title-col); font-weight: bold; }
+.upgrade-card:active { transform: scale(0.98); background: var(--btn-hover); }
+.upgrade-info { display: flex; flex-direction: column; gap: 2px; z-index: 2; }
+.upgrade-name { color: var(--title-col); font-weight: bold; font-size: 9.5px; }
 .upgrade-cost { color: var(--accent-col); }
-.upgrade-count { font-size: 11px; font-weight: bold; color: #fff; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-col); }
+.upgrade-count { font-size: 11px; font-weight: bold; color: #fff; background: rgba(0,0,0,0.5); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border-col); z-index: 2; }
+
+/* ВСПЛЫВАЮЩИЕ АНИМАЦИИ */
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
+}
+.floating-text {
+  position: fixed; color: #ffd52c; font-size: 13px; font-weight: bold; pointer-events: none; z-index: 99999;
+  animation: floatUp 0.5s ease-out forwards; text-shadow: 0 0 5px rgba(0,0,0,0.8);
+}
+
+/* МОДАЛКА СОБЫТИЙ (ZOLL) */
+.event-overlay {
+  position: absolute; inset: 0; background: rgba(2,3,11,0.92); z-index: 1000;
+  display: flex; justify-content: center; align-items: center; padding: 15px;
+}
+.event-card {
+  background: var(--btn-bg); border: 2px solid #ff4444; border-radius: 12px;
+  width: 100%; max-width: 280px; padding: 14px; text-align: center; box-shadow: 0 0 30px rgba(255,0,0,0.5);
+  display: flex; flex-direction: column; gap: 8px;
+}
 </style>
 </head>
 <body>
 
-<div style="position: fixed; top: 10px; left: 10px; z-index: 99999;">
-  <a href="index.html" style="display: flex; align-items: center; gap: 4px; background: rgba(140, 5, 5, 0.95); border: 2px solid #ff6b55; color: #fff; padding: 8px 14px; border-radius: 8px; text-decoration: none; font-family: monospace; font-size: 11px; font-weight: bold; box-shadow: 0 0 15px rgba(255,0,0,0.7); -webkit-tap-highlight-color: transparent;">
-    ⬅ МЕНЮ
-  </a>
-</div>
-
 <div class="portal">
   <div class="game-ui-header">
-    <div style="color:var(--title-col); font-weight:bold;">⚡ ZEITARBEIT TYCOON</div>
-    <div id="licenseTxt" style="font-size:9px; color:#20e8ff;">Лицензия: Базовая</div>
+    <a href="index.html" class="back-btn">⬅ МЕНЮ</a>
+    <div id="licenseTxt" style="color:var(--accent-col); font-weight:bold;">AÜG: Базовая</div>
   </div>
 
   <div class="clicker-body">
-    <div>
+    <div class="money-box">
       <div class="money-display" id="moneyTxt">0.00 €</div>
-      <div class="cps-display" id="cpsTxt">Доход: 0.00 € / сек</div>
+      <div class="cps-display" id="cpsTxt">Пассив: 0.00 € / сек</div>
     </div>
 
-    <!-- Кликабельный элемент (найм/заказ) -->
-    <div class="click-target" onclick="clickMoney(event)">⚡</div>
-    <div style="font-size: 8px; color: #83a4c9;">Тапай для поиска клиентов и контрактов!</div>
+    <!-- Кликабельный терминал контрактов -->
+    <div class="click-target-container">
+      <div class="click-target" onclick="clickMoney(event)">⚡</div>
+      <div style="font-size: 7.5px; color: #83a4c9;">Тапай для заключения краткосрочных контрактов!</div>
+    </div>
 
-    <!-- Список апгрейдов (персонал и бюро) -->
+    <!-- Апгрейды персонала и лицензий -->
     <div class="upgrades-list" id="upgradesList"></div>
+  </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ПРОВЕРКИ ZOLL -->
+<div class="event-overlay hidden" id="eventModal">
+  <div class="event-card">
+    <h3 style="color:#ff4444; margin:0; font-size:13px;">🚨 ВНЕПЛАНОВАЯ ПРОВЕРКА ZOLL</h3>
+    <p style="font-size:9px; color:#ddd; margin:0;" id="eventDesc">Инспекция проверяет договора аренды персонала (AÜG).</p>
+    <button class="back-btn" style="background:#20e8ff; color:#010206; width:100%; padding:8px; margin-top:4px;" onclick="resolveEvent(true)">Оплатить штраф / Урегулировать</button>
   </div>
 </div>
 
@@ -96,37 +142,54 @@ let soundEnabled = localStorage.getItem("freezzzSound") !== "false";
 let money = Number(localStorage.getItem("zeitarbeitMoney") || 0);
 let totalCps = 0;
 
-// Список улучшений (персонал Zeitarbeit)
+// Список апгрейдов Zeitarbeit
 let upgrades = [
   { id: 'helfer', name: '⚡ Elektrohelfer (Помощник)', cost: 15, cps: 0.5, count: Number(localStorage.getItem("up_helfer") || 0), mult: 1.15 },
   { id: 'elektriker', name: '💡 Geselle (Дипл. Электрик)', cost: 100, cps: 4, count: Number(localStorage.getItem("up_elektriker") || 0), mult: 1.18 },
   { id: 'meister', name: '🛠️ Obermonteur (Мастер)', cost: 1100, cps: 32, count: Number(localStorage.getItem("up_meister") || 0), mult: 1.2 },
   { id: 'bureau', name: '🏢 Büro Stuttgart (Офис)', cost: 13000, cps: 260, count: Number(localStorage.getItem("up_bureau") || 0), mult: 1.22 },
-  { id: 'aueg', name: '📜 Лицензия AÜG (Агентство)', cost: 150000, cps: 1400, count: Number(localStorage.getItem("up_aueg") || 0), mult: 1.25 }
+  { id: 'aueg', name: '📜 Лицензия AÜG (Bundesagentur)', cost: 150000, cps: 1400, count: Number(localStorage.getItem("up_aueg") || 0), mult: 1.25 }
 ];
 
-function haptic() {
+let audioCtx = null;
+function playSound(freq, type='square', duration=0.1) {
+  if (!soundEnabled) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch(e) {}
+}
+
+function haptic(style='light') {
   if (soundEnabled && tg && tg.HapticFeedback) {
-    try { tg.HapticFeedback.impactOccurred('light'); } catch(e){}
+    try { tg.HapticFeedback.impactOccurred(style); } catch(e){}
   }
 }
 
 function clickMoney(e) {
   money += 1;
-  haptic();
+  playSound(440, 'triangle', 0.08);
+  haptic('light');
   updateUI();
-  
-  // Анимация при клике (+1 €)
-  let rect = e.target.getBoundingClientRect();
+
+  // Анимация летящего плюса
   let pop = document.createElement('div');
   pop.textContent = "+1 €";
-  pop.style.cssText = `position:fixed; left:${e.clientX}px; top:${e.clientY}px; color:#ffd52c; font-size:12px; font-weight:bold; pointer-events:none; z-index:9999; transition:0.4s ease-out;`;
+  pop.className = "floating-text";
+  pop.style.left = (e.clientX - 10) + "px";
+  pop.style.top = (e.clientY - 20) + "px";
   document.body.appendChild(pop);
-  setTimeout(() => {
-    pop.style.transform = "translateY(-30px)";
-    pop.style.opacity = "0";
-  }, 10);
-  setTimeout(() => pop.remove(), 400);
+  setTimeout(() => pop.remove(), 500);
 }
 
 function buyUpgrade(index) {
@@ -136,8 +199,11 @@ function buyUpgrade(index) {
     up.count++;
     up.cost = Math.floor(up.cost * up.mult);
     localStorage.setItem("up_" + up.id, up.count);
-    haptic();
+    playSound(660, 'square', 0.15);
+    haptic('medium');
     updateUI();
+  } else {
+    playSound(150, 'sawtooth', 0.2);
   }
 }
 
@@ -151,20 +217,19 @@ function calculateCps() {
 function updateUI() {
   calculateCps();
   document.getElementById('moneyTxt').textContent = money.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
-  document.getElementById('cpsTxt').textContent = `Доход: ${totalCps.toFixed(1)} € / сек («соли» на счет)`;
-  
-  // Статус лицензии
+  document.getElementById('cpsTxt').textContent = `Пассив: ${totalCps.toFixed(1)} € / сек`;
+
   let licenseName = "Базовая (Solo)";
   if (upgrades[3].count > 0) licenseName = "Региональный офис";
-  if (upgrades[4].count > 0) licenseName = "Полная лицензия AÜG (Baden-Württemberg)";
-  document.getElementById('licenseTxt').textContent = "Лицензия: " + licenseName;
+  if (upgrades[4].count > 0) licenseName = "Полная лицензия AÜG";
+  document.getElementById('licenseTxt').textContent = "AÜG: " + licenseName;
 
   let listHtml = "";
   upgrades.forEach((up, idx) => {
     let currentCost = Math.floor(up.cost);
     let canBuy = money >= currentCost;
     listHtml += `
-      <div class="upgrade-card" style="opacity: ${canBuy ? 1 : 0.6};" onclick="buyUpgrade(${idx})">
+      <div class="upgrade-card" style="opacity: ${canBuy ? 1 : 0.65}; border-color: ${canBuy ? 'var(--accent-col)' : 'var(--border-col)'};" onclick="buyUpgrade(${idx})">
         <div class="upgrade-info">
           <div class="upgrade-name">${up.name}</div>
           <div class="upgrade-cost">Цена: ${currentCost.toLocaleString()} € (+${up.cps}/сек)</div>
@@ -174,11 +239,35 @@ function updateUI() {
     `;
   });
   document.getElementById('upgradesList').innerHTML = listHtml;
-  
   localStorage.setItem("zeitarbeitMoney", money);
 }
 
-// Игровой цикл пассивного дохода (каждую секунду сохранение и прибавление)
+// Случайные события (Zoll проверка) каждые 90-180 секунд
+function triggerZollEvent() {
+  if (money < 200) return; // не душим новичков
+  let fine = Math.floor(money * 0.08);
+  document.getElementById('eventDesc').textContent = `Инспекция выявила несоответствие по командировкам. Штраф / издержки: ${fine} €`;
+  window.currentZollFine = fine;
+  document.getElementById('eventModal').classList.remove('hidden');
+  playSound(120, 'sawtooth', 0.4);
+}
+
+function resolveEvent(pay) {
+  if (pay) {
+    money = Math.max(0, money - (window.currentZollFine || 50));
+  }
+  document.getElementById('eventModal').classList.add('hidden');
+  updateUI();
+}
+
+// Запуск случайных проверок
+setInterval(() => {
+  if (Math.random() < 0.35 && upgrades[0].count > 2) {
+    triggerZollEvent();
+  }
+}, 120000);
+
+// Игровой цикл пассивного дохода
 setInterval(() => {
   if (totalCps > 0) {
     money += totalCps / 10;
@@ -186,7 +275,7 @@ setInterval(() => {
   }
 }, 100);
 
-// Автосохранение каждые 5 секунд
+// Автосохранение
 setInterval(() => {
   localStorage.setItem("zeitarbeitMoney", money);
 }, 5000);
