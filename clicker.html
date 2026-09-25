@@ -7,34 +7,28 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root {
-  --bg-grad: linear-gradient(135deg, #030a14 0%, #081b29 50%, #02050a 100%);
-  --portal-bg: rgba(4, 12, 24, 0.96);
-  --border-col: rgba(32, 232, 255, 0.5);
-  --accent-col: #20e8ff;
+  /* Палитра в стиле предоставленных иконок: индустриальный синий, стальной, жёлтый (каски/инструмент) */
+  --bg-grad: linear-gradient(135deg, #09192b 0%, #112d4e 50%, #06111c 100%);
+  --portal-bg: rgba(13, 35, 58, 0.96);
+  --border-col: rgba(74, 144, 226, 0.45);
+  --accent-col: #4a90e2;
   --title-col: #ffd52c;
-  --btn-bg: rgba(10, 30, 50, 0.95);
-  --btn-hover: rgba(32, 232, 255, 0.25);
-  --glass-bg: rgba(32, 232, 255, 0.06);
+  --btn-bg: rgba(18, 48, 80, 0.95);
+  --btn-hover: rgba(74, 144, 226, 0.25);
+  --glass-bg: rgba(255, 255, 255, 0.04);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;width:100%;height:100%;background:#010408;color:#fff;font-family:monospace;overflow:hidden;}
+html,body{margin:0;width:100%;height:100%;background:#06111c;color:#fff;font-family:monospace;overflow:hidden;}
 body{
   padding:4px;display:flex;justify-content:center;align-items:center;
   background: var(--bg-grad); position: fixed; inset: 0;
-  /* Фоновый узор проводов / схем */
-  background-image: 
-    radial-gradient(circle at 20% 20%, rgba(32, 232, 255, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 80% 80%, rgba(255, 213, 44, 0.04) 0%, transparent 40%),
-    linear-gradient(rgba(32, 232, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(32, 232, 255, 0.03) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 20px 20px, 20px 20px;
 }
 .portal{
   width: 100%; height: 100%; max-width: 420px; max-height: 100vh;
-  text-align: center; display: flex; flex-direction: column; gap: 6px;
+  text-align: center; display: flex; flex-direction: column; gap: 5px;
   overflow-y: auto; padding: 8px; z-index: 10;
   background: var(--portal-bg); border: 2px solid var(--border-col);
-  border-radius: 12px; box-shadow: 0 0 30px rgba(0, 232, 255, 0.15);
+  border-radius: 12px; box-shadow: 0 0 25px rgba(13, 35, 58, 0.8);
   position: relative;
 }
 
@@ -43,19 +37,19 @@ body{
   display: flex; justify-content: space-between; align-items: center; 
   padding: 6px 10px; background: var(--btn-bg); border: 1px solid var(--border-col); 
   border-radius: 8px; width: 100%; flex-shrink: 0; font-size: 10px; 
-  z-index: 50; box-shadow: inset 0 0 10px rgba(32,232,255,0.1);
+  z-index: 50;
 }
 .back-btn {
-  background: rgba(140, 5, 5, 0.9); border: 1px solid #ff6b55; color: #fff;
+  background: rgba(180, 40, 40, 0.9); border: 1px solid #ff6b55; color: #fff;
   padding: 4px 8px; border-radius: 6px; text-decoration: none; font-weight: bold;
   cursor: pointer;
 }
 
 /* ОСНОВНОЙ КОНТЕЙНЕР */
 .clicker-body {
-  flex-grow: 1; background: rgba(2, 8, 18, 0.75); border: 2px solid var(--accent-col);
+  flex-grow: 1; background: rgba(8, 22, 38, 0.8); border: 2px solid var(--accent-col);
   border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-  padding: 8px; overflow-y: auto; gap: 6px; position: relative;
+  padding: 6px 8px; overflow-y: auto; gap: 5px; position: relative;
 }
 
 /* ДВОЙНОЙ БЛОК РЕСУРСОВ */
@@ -66,41 +60,50 @@ body{
   flex: 1; background: var(--glass-bg); border: 1px solid var(--border-col); border-radius: 8px;
   padding: 5px; text-align: center;
 }
-.res-title { font-size: 7px; color: #83a4c9; text-transform: uppercase; }
-.res-val { font-size: 13px; font-weight: bold; color: var(--title-col); text-shadow: 0 0 8px rgba(255,213,44,0.4); }
-.res-sub { font-size: 8px; color: var(--accent-col); margin-top: 1px; }
+.res-title { font-size: 7px; color: #a1c4fd; text-transform: uppercase; }
+.res-val { font-size: 12px; font-weight: bold; color: var(--title-col); text-shadow: 0 0 6px rgba(255,213,44,0.4); }
+.res-sub { font-size: 7.5px; color: var(--accent-col); margin-top: 1px; }
+
+/* КНОПКА ПРОДАЖИ ЭНЕРГИИ */
+.sell-energy-btn {
+  width: 100%; background: linear-gradient(135deg, rgba(255,213,44,0.18), rgba(74,144,226,0.18));
+  border: 1px solid var(--title-col); border-radius: 6px; padding: 5px; color: var(--title-col);
+  font-family: monospace; font-size: 9px; font-weight: bold; cursor: pointer; text-align: center;
+  transition: transform 0.1s;
+}
+.sell-energy-btn:active { transform: scale(0.97); background: rgba(255,213,44,0.3); }
 
 /* ИНДИКАТОР НАПОЛНЯЕМОСТИ БАЛАНСА */
 .progress-bar-container {
-  width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; border: 1px solid rgba(32,232,255,0.2);
+  width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; border: 1px solid rgba(74,144,226,0.3);
 }
 .progress-bar-fill {
-  height: 100%; background: linear-gradient(90deg, #20e8ff, #ffd52c); width: 0%; transition: width 0.2s ease;
+  height: 100%; background: linear-gradient(90deg, #4a90e2, #ffd52c); width: 0%; transition: width 0.2s ease;
 }
 
 /* ЦЕНТРАЛЬНАЯ КНОПКА МОЛНИИ */
-.click-target-container { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.click-target-container { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .click-target {
-  width: 75px; height: 75px; background: radial-gradient(circle at 35% 35%, #20e8ff, #053140);
-  border: 3px solid var(--title-col); border-radius: 50%; display: flex; justify-content: center; align-items: center;
-  font-size: 34px; cursor: pointer; box-shadow: 0 0 25px rgba(32,232,255,0.5); transition: transform 0.08s ease;
+  width: 70px; height: 70px; background: radial-gradient(circle at 35% 35%, #ffd52c, #d39e00);
+  border: 3px solid #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+  font-size: 32px; cursor: pointer; box-shadow: 0 0 20px rgba(255,213,44,0.5); transition: transform 0.08s ease;
   user-select: none; z-index: 40;
 }
-.click-target:active { transform: scale(0.85); background: radial-gradient(circle at 35% 35%, #ffd52c, #806000); box-shadow: 0 0 10px #ffd52c; }
+.click-target:active { transform: scale(0.85); background: radial-gradient(circle at 35% 35%, #e0b800, #997500); box-shadow: 0 0 10px #ffd52c; }
 
-/* СПИСОК АПГРЕЙДОВ (ПЕРСОНАЛ И СТАНЦИИ) */
-.upgrades-list { width: 100%; display: flex; flex-direction: column; gap: 5px; max-height: 175px; overflow-y: auto; padding-right: 2px; }
+/* СПИСОК ПРОФЕССИЙ И СТАНЦИЙ */
+.upgrades-list { width: 100%; display: flex; flex-direction: column; gap: 4px; max-height: 160px; overflow-y: auto; padding-right: 2px; }
 .upgrade-card {
-  display: flex; justify-content: space-between; align-items: center; background: rgba(10, 25, 45, 0.9);
+  display: flex; justify-content: space-between; align-items: center; background: rgba(18, 48, 80, 0.85);
   border: 1px solid var(--border-col); border-radius: 6px; padding: 5px 8px; font-size: 9px; text-align: left; cursor: pointer;
   transition: all 0.15s ease; position: relative; overflow: hidden; z-index: 40;
 }
 .upgrade-card:active { transform: scale(0.98); background: var(--btn-hover); }
 .upgrade-info { display: flex; flex-direction: column; gap: 1px; z-index: 2; }
 .upgrade-name { color: var(--title-col); font-weight: bold; font-size: 9px; display: flex; align-items: center; gap: 4px; }
-.upgrade-desc { font-size: 7.5px; color: #a1c4fd; }
-.upgrade-cost { color: var(--accent-col); font-weight: bold; }
-.upgrade-count { font-size: 10px; font-weight: bold; color: #fff; background: rgba(0,0,0,0.6); padding: 3px 7px; border-radius: 4px; border: 1px solid var(--border-col); z-index: 2; }
+.upgrade-desc { font-size: 7px; color: #a1c4fd; }
+.upgrade-cost { color: #6bc5ff; font-weight: bold; }
+.upgrade-count { font-size: 10px; font-weight: bold; color: #fff; background: rgba(0,0,0,0.5); padding: 3px 7px; border-radius: 4px; border: 1px solid var(--border-col); z-index: 2; }
 
 /* ВСПЛЫВАЮЩИЕ АНИМАЦИИ */
 @keyframes floatUp {
@@ -118,7 +121,7 @@ body{
 <div class="portal">
   <div class="game-ui-header">
     <a href="index.html" class="back-btn">⬅ МЕНЮ</a>
-    <div id="licenseTxt" style="color:var(--accent-col); font-weight:bold;">Лицензия: Электро-Сеть</div>
+    <div id="licenseTxt" style="color:var(--title-col); font-weight:bold;">🛠️ Zeitarbeit Elektрик</div>
   </div>
 
   <div class="clicker-body">
@@ -129,25 +132,28 @@ body{
         <div class="res-val" id="moneyTxt">0.00 €</div>
         <div class="res-sub" id="cpsTxt">+0.0 €/сек</div>
       </div>
-      <div class="res-box" style="border-color: rgba(255, 213, 44, 0.4);">
+      <div class="res-box">
         <div class="res-title">Энергия (МВт·ч)</div>
-        <div class="res-val" id="energyTxt" style="color:#20e8ff;">0.0 МВт</div>
-        <div class="res-sub" id="epsTxt">+0.0 МВт/сек</div>
+        <div class="res-val" id="energyTxt" style="color:#6bc5ff;">0.0 МВт</div>
+        <div class="res-sub" id="epsTxt">+0.0 МВт/с</div>
       </div>
     </div>
+
+    <!-- КНОПКА ПРОДАЖИ ЭНЕРГИИ -->
+    <button class="sell-energy-btn" onclick="sellEnergy()">⚡ ПРОДАТЬ ЭНЕРГИЮ (1 МВт = 2.50 €)</button>
 
     <!-- Индикатор наполняемости денег -->
     <div class="progress-bar-container">
       <div class="progress-bar-fill" id="progressFill"></div>
     </div>
 
-    <!-- ЦЕНТРАЛЬНАЯ КНОПКА МОЛНИИ -->
+    <!-- ЦЕНТРАЛЬНАЯ КНОПКА С ИКОНКОЙ МОЛНИИ И КАБЕЛЕЙ -->
     <div class="click-target-container">
       <div class="click-target" onclick="clickEnergy(event)">⚡</div>
-      <div style="font-size: 7.5px; color: #83a4c9;">Тапай для генерации импульса и контрактов!</div>
+      <div style="font-size: 7px; color: #a1c4fd;">Тапай для подачи напряжения!</div>
     </div>
 
-    <!-- СПИСОК ПРОФЕССИЙ И ЭЛЕКТРОСТАНЦИЙ -->
+    <!-- СПИСОК ПРОФЕССИЙ И ОБЪЕКТОВ ЛЭП -->
     <div class="upgrades-list" id="upgradesList"></div>
   </div>
 </div>
@@ -159,27 +165,26 @@ let soundEnabled = localStorage.getItem("freezzzSound") !== "false";
 let money = Number(localStorage.getItem("zeitarbeitMoney") || 0);
 let totalEnergyMWh = Number(localStorage.getItem("zeitarbeitEnergy") || 0);
 
-// Игровая система: Профессии и Энергостанции с зависимостью
-// workersRequired - сколько нужно работников для полной эффективности станции
+// Профессии и станции в стиле электрики / ЛЭП
 let upgrades = [
   { 
-    id: 'helfer', name: '🔌 Elektrohelfer (Монтажник)', desc: 'Базовый персонал для линий', 
+    id: 'helfer', name: '👷‍♂️ Elektrohelfer (Монтажник)', desc: 'Базовый персонал в каске', 
     cost: 15, incomeEur: 0.4, energyMWh: 0.1, count: Number(localStorage.getItem("up_helfer") || 0), mult: 1.15, type: 'worker' 
   },
   { 
-    id: 'solar', name: '☀️ Solar-Park (Солнечные панели)', desc: 'Требует монтажников (+1 МВт)', 
+    id: 'solar', name: '☀️ Solar-Park (Солнечные панели)', desc: 'Требует рабочих (+1.2 МВт)', 
     cost: 120, incomeEur: 2, energyMWh: 1.2, workersNeeded: 1, count: Number(localStorage.getItem("up_solar") || 0), mult: 1.18, type: 'station' 
   },
   { 
-    id: 'wind', name: '💨 Windpark (Ветрогенератор)', desc: 'Высокая выработка энергии', 
+    id: 'wind', name: '🗼 Freileitung (Линия ЛЭП)', desc: 'Опоры высоковольтных сетей', 
     cost: 950, incomeEur: 14, energyMWh: 8.5, workersNeeded: 3, count: Number(localStorage.getItem("up_wind") || 0), mult: 1.20, type: 'station' 
   },
   { 
-    id: 'kraftwerk', name: '🏭 Kraftwerk (Тепловая станция)', desc: 'Мощный индустриальный объект', 
+    id: 'kraftwerk', name: '🎛️ Schaltanlage (Щитовая)', desc: 'Распределительный узел объектов', 
     cost: 12000, incomeEur: 110, energyMWh: 65, workersNeeded: 10, count: Number(localStorage.getItem("up_kraftwerk") || 0), mult: 1.22, type: 'station' 
   },
   { 
-    id: 'aueg', name: '⚛️ Atomkraftwerk (АЭС Баден)', desc: 'Гигантский поток энергии и евро', 
+    id: 'aueg', name: '⚡ Atomkraftwerk (АЭС Баден)', desc: 'Главная энергетическая станция', 
     cost: 150000, incomeEur: 850, energyMWh: 450, workersNeeded: 35, count: Number(localStorage.getItem("up_aueg") || 0), mult: 1.25, type: 'station' 
   }
 ];
@@ -216,7 +221,6 @@ function clickEnergy(e) {
   haptic('light');
   updateUI();
 
-  // Анимация при клике
   let pop = document.createElement('div');
   pop.textContent = "+1 € / ⚡";
   pop.className = "floating-text";
@@ -224,6 +228,19 @@ function clickEnergy(e) {
   pop.style.top = (e.clientY - 20) + "px";
   document.body.appendChild(pop);
   setTimeout(() => pop.remove(), 450);
+}
+
+function sellEnergy() {
+  if (totalEnergyMWh < 1) {
+    playSound(150, 'sawtooth', 0.15);
+    return;
+  }
+  let earned = totalEnergyMWh * 2.50;
+  money += earned;
+  totalEnergyMWh = 0;
+  playSound(880, 'square', 0.2);
+  haptic('heavy');
+  updateUI();
 }
 
 function buyUpgrade(index) {
@@ -244,9 +261,8 @@ function buyUpgrade(index) {
 function calculateStats() {
   let totalEurSec = 0;
   let totalEnergySec = 0;
-  
-  // Считаем количество рабочих (тип worker)
   let totalWorkers = 0;
+  
   upgrades.forEach(up => {
     if (up.type === 'worker') totalWorkers += up.count;
   });
@@ -256,10 +272,8 @@ function calculateStats() {
       totalEurSec += up.incomeEur * up.count;
       totalEnergySec += up.energyMWh * up.count;
     } else if (up.type === 'station') {
-      // Зависимость эффективности от наличия работников
       let requiredWorkersTotal = up.workersNeeded * up.count;
       let efficiency = requiredWorkersTotal > 0 ? Math.min(1.0, totalWorkers / requiredWorkersTotal) : 1.0;
-      // Если работников вообще 0, станции дают лишь 10% базовой мощности
       if (totalWorkers === 0 && up.workersNeeded > 0) efficiency = 0.1;
 
       totalEurSec += (up.incomeEur * up.count) * efficiency;
@@ -279,7 +293,6 @@ function updateUI() {
   document.getElementById('energyTxt').textContent = totalEnergyMWh.toFixed(1) + " МВт";
   document.getElementById('epsTxt').textContent = `+${stats.totalEnergySec.toFixed(1)} МВт/с`;
 
-  // Шкала прогресса накопления денег до следующей покупки
   let cheapestCost = Math.min(...upgrades.map(u => u.cost));
   let progressPercent = Math.min(100, (money / cheapestCost) * 100);
   document.getElementById('progressFill').style.width = progressPercent + "%";
@@ -295,7 +308,7 @@ function updateUI() {
     }
 
     listHtml += `
-      <div class="upgrade-card" style="opacity: ${canBuy ? 1 : 0.65}; border-color: ${canBuy ? 'var(--accent-col)' : 'var(--border-col)'};" onclick="buyUpgrade(${idx})">
+      <div class="upgrade-card" style="opacity: ${canBuy ? 1 : 0.65}; border-color: ${canBuy ? 'var(--title-col)' : 'var(--border-col)'};" onclick="buyUpgrade(${idx})">
         <div class="upgrade-info">
           <div class="upgrade-name">${up.name}</div>
           <div class="upgrade-desc">${subInfo}</div>
