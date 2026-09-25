@@ -73,7 +73,7 @@ body{
 }
 .marquee-title {
   color: var(--title-col);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
   margin: 0;
   text-shadow: 2px 2px #ff0055, 0 0 6px var(--title-col);
@@ -114,22 +114,23 @@ body{
   display: flex; flex-direction: column; padding: 6px; gap: 5px;
   position: relative; overflow: hidden; z-index: 100;
 }
-.arcade-screen::after {
-  content: " "; display: block; position: absolute; inset: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
-  background-size: 100% 3px; z-index: 1; pointer-events: none; opacity: 0.3;
-}
 
-/* КНОПКИ ДЕЙСТВИЙ И ВКЛАДКИ */
-.actions-row { display: flex; gap: 4px; justify-content: center; flex-shrink: 0; z-index: 150; flex-wrap: wrap; }
-.action-btn {
-  background: var(--glass-bg); border: 1px solid var(--border-col); color: #83a4c9;
-  padding: 5px 8px; border-radius: 5px; font: bold 8px monospace; cursor: pointer;
-  box-shadow: 0 0 4px var(--neon-glow); transition: .15s; backdrop-filter: blur(2px);
-  position: relative; z-index: 151; pointer-events: auto;
+/* РАВНОМЕРНО РАСПРЕДЕЛЕННАЯ ПАНЕЛЬ МЕНЮ */
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  flex-shrink: 0;
+  z-index: 150;
 }
-.action-btn.active { background: var(--btn-hover); border-color: var(--accent-col); color: var(--title-col); }
-.action-btn.special { border-color: #ffd42aaa; color: #ffd42a; }
+.action-btn {
+  background: var(--glass-bg); border: 1px solid var(--border-col); color: var(--title-col);
+  padding: 6px 4px; border-radius: 6px; font: bold 9px monospace; cursor: pointer;
+  box-shadow: 0 0 4px var(--neon-glow); transition: .15s; backdrop-filter: blur(2px);
+  text-align: center; display: flex; align-items: center; justify-content: center; gap: 3px;
+}
+.action-btn.active { background: var(--btn-hover); border-color: var(--title-col); }
+.action-btn:active { transform: scale(0.96); background: var(--glass-hover); }
 
 .hidden { display: none !important; }
 
@@ -138,36 +139,37 @@ body{
   flex-grow: 1; position: relative; z-index: 150; display: flex; flex-direction: column; overflow: hidden;
 }
 
-/* СЕТКА ИКОНОК 3x4 */
-.grid-menu { 
-  display: grid; 
-  grid-template-columns: repeat(3, 1fr); 
-  grid-template-rows: repeat(4, 1fr); 
-  gap: 5px; 
+/* СПИСОК ИГР (УДОБНЫЕ КАРТОЧКИ В ВЕРТИКАЛЬНОМ СКРОЛЛЕ) */
+.games-list { 
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   width: 100%;
   height: 100%;
   overflow-y: auto;
+  padding-right: 2px;
 }
-.icon-btn {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+.game-card {
+  display: flex; align-items: center; gap: 10px;
   border: 1.5px solid var(--border-col); border-radius: 8px;
   background: var(--glass-bg); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
   color: #fff; text-decoration: none; cursor: pointer;
-  box-shadow: inset 0 0 10px rgba(255,255,255,0.05), 0 0 6px var(--neon-glow);
-  transition: all 0.15s ease; width: 100%; height: 100%; padding: 2px; gap: 2px;
-  pointer-events: auto;
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.03), 0 0 5px var(--neon-glow);
+  transition: all 0.15s ease; padding: 6px 10px; width: 100%; flex-shrink: 0;
 }
-.icon-btn:active { 
-  transform: scale(0.94); 
+.game-card:active { 
+  transform: scale(0.98); 
   background: var(--glass-hover); 
   border-color: var(--title-col);
 }
-.icon-emoji { font-size: 22px; filter: drop-shadow(0 0 3px var(--accent-col)); }
-.icon-title { font-size: 7.5px; font-weight: bold; color: var(--title-col); text-align: center; line-height: 1; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-shadow: 0 1px 2px rgba(0,0,0,0.9); }
+.game-card-emoji { font-size: 24px; filter: drop-shadow(0 0 3px var(--accent-col)); flex-shrink: 0; }
+.game-card-info { display: flex; flex-direction: column; gap: 2px; text-align: left; flex-grow: 1; overflow: hidden; }
+.game-card-title { font-size: 11px; font-weight: bold; color: var(--title-col); }
+.game-card-desc { font-size: 8px; color: #83a4c9; text-transform: uppercase; }
 
 /* ПАНЕЛИ ТОПА И АЧИВОК */
 .panel-view { display: flex; flex-direction: column; gap: 5px; width: 100%; height: 100%; overflow-y: auto; padding: 2px; }
-.row-card { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); border: 1px solid var(--border-col); border-radius: 6px; padding: 6px 10px; font-size: 10px; text-align: left; backdrop-filter: blur(4px); flex-shrink: 0; }
+.row-card { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); border: 1px solid var(--border-col); border-radius: 6px; padding: 8px 10px; font-size: 10px; text-align: left; backdrop-filter: blur(4px); flex-shrink: 0; }
 .row-name { color: var(--accent-col); font-weight: bold; }
 .row-val { color: var(--title-col); font-weight: bold; }
 .achievement { opacity: 0.4; border-color: #444; }
@@ -247,30 +249,29 @@ body{
 
   <!-- ЭКРАН ЭЛТ (CRT МОНИТОР) -->
   <div class="arcade-screen">
-    <div class="actions-row">
+    <!-- РАВНОМЕРНО РАСПРЕДЕЛЕННАЯ ПАНЕЛЬ МЕНЮ -->
+    <div class="actions-grid">
       <button class="action-btn active" id="tabGames" onclick="switchTab('games')">🎮 ИГРЫ</button>
       <button class="action-btn" id="tabTop" onclick="switchTab('top')">🏆 ТОП</button>
       <button class="action-btn" id="tabAch" onclick="switchTab('ach')">🎖️ АЧИВКИ</button>
-      <button class="action-btn special" onclick="playRandomGame()">🎲 РАНДОМ</button>
-      <button class="action-btn" onclick="sharePortal()">📤 ДРУЗЬЯМ</button>
+      <button class="action-btn" onclick="playRandomGame()">🎲 РАНДОМ</button>
+      <button class="action-btn" onclick="sharePortal()" style="grid-column: span 2;">📤 ПРИГЛАСИТЬ ДРУЗЕЙ</button>
     </div>
 
     <!-- КОНТЕЙНЕР ВКЛАДОК -->
     <div class="screen-content">
-      <!-- Сетка иконок 3x4 (Вкладка Игры) -->
-      <div class="grid-menu" id="gamesGrid">
-        <a href="snake.html" class="icon-btn"><div class="icon-emoji">🐍</div><div class="icon-title">SNAKE</div></a>
-        <a href="tetris.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">TETRIS</div></a>
-        <a href="pong.html" class="icon-btn"><div class="icon-emoji">🏓</div><div class="icon-title">PONG</div></a>
-        <a href="race.html" class="icon-btn"><div class="icon-emoji">🏎️</div><div class="icon-title">RACER</div></a>
-        <a href="mario.html" class="icon-btn"><div class="icon-emoji">🍄</div><div class="icon-title">PLATFORMER</div></a>
-        <a href="arkanoid.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">ARKANOID</div></a>
-        <a href="duck.html" class="icon-btn"><div class="icon-emoji">🦆</div><div class="icon-title">DUCK MUDACK</div></a>
-        <a href="invaders.html" class="icon-btn"><div class="icon-emoji">👾</div><div class="icon-title">INVADERS</div></a>
-        <a href="doodle.html" class="icon-btn"><div class="icon-emoji">🦘</div><div class="icon-title">JUMPER</div></a>
-        <a href="minesweeper.html" class="icon-btn"><div class="icon-emoji">💣</div><div class="icon-title">MINESWEEPER</div></a>
-        <div class="icon-btn" style="opacity:0.4; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
-        <div class="icon-btn" style="opacity:0.4; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
+      <!-- Список игр (Вкладка Игры) -->
+      <div class="games-list" id="gamesGrid">
+        <a href="snake.html" class="game-card"><div class="game-card-emoji">🐍</div><div class="game-card-info"><div class="game-card-title">SNAKE</div><div class="game-card-desc">Классическая змейка</div></div></a>
+        <a href="tetris.html" class="game-card"><div class="game-card-emoji">🧱</div><div class="game-card-info"><div class="game-card-title">TETRIS</div><div class="game-card-desc">Ретро стакан с блоками</div></div></a>
+        <a href="pong.html" class="game-card"><div class="game-card-emoji">🏓</div><div class="game-card-info"><div class="game-card-title">PONG</div><div class="game-card-desc">Настольный пинг-понг</div></div></a>
+        <a href="race.html" class="game-card"><div class="game-card-emoji">🏎️</div><div class="game-card-info"><div class="game-card-title">RACER</div><div class="game-card-desc">Аркадные гонки</div></div></a>
+        <a href="mario.html" class="game-card"><div class="game-card-emoji">🍄</div><div class="game-card-info"><div class="game-card-title">PLATFORMER</div><div class="game-card-desc">Платформер с препятствиями</div></div></a>
+        <a href="arkanoid.html" class="game-card"><div class="game-card-emoji">🧱</div><div class="game-card-info"><div class="game-card-title">ARKANOID</div><div class="game-card-desc">Разбивай блоки и лови бонусы</div></div></a>
+        <a href="duck.html" class="game-card"><div class="game-card-emoji">🦆</div><div class="game-card-info"><div class="game-card-title">DUCK MUDACK</div><div class="game-card-desc">Ретро-аркада с уткой</div></div></a>
+        <a href="invaders.html" class="game-card"><div class="game-card-emoji">👾</div><div class="game-card-info"><div class="game-card-title">INVADERS</div><div class="game-card-desc">Космические захватчики</div></div></a>
+        <a href="doodle.html" class="game-card"><div class="game-card-emoji">🦘</div><div class="game-card-info"><div class="game-card-title">JUMPER</div><div class="game-card-desc">Прыгай выше к звёздам</div></div></a>
+        <a href="minesweeper.html" class="game-card"><div class="game-card-emoji">💣</div><div class="game-card-info"><div class="game-card-title">MINESWEEPER</div><div class="game-card-desc">Классический сапёр</div></div></a>
       </div>
 
       <!-- Таблица рекордов (Вкладка ТОП) -->
@@ -456,25 +457,3 @@ function playNote(freq) {
     if (audioCtx.state === 'suspended') {
       audioCtx.resume();
     }
-    if (freq === 0) return;
-
-    let osc = audioCtx.createOscillator();
-    let gain = audioCtx.createGain();
-    
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.2);
-  } catch(e) {}
-}
-
-function startBGM() {
-  if (musicInterval) clearInterval(musicInterval);
-  musicInt
