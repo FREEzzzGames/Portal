@@ -1,139 +1,352 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Arkanoid — FREEzzzGames</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root {
+  --bg-grad: radial-gradient(circle at 50% 20%, rgba(41, 16, 95, 0.9) 0%, rgba(7, 9, 34, 0.95) 50%, rgba(1, 2, 8, 1) 100%);
+  --portal-bg: rgba(4, 7, 20, 0.92);
+  --border-col: rgba(32, 232, 255, 0.4);
+  --accent-col: #20e8ff;
+  --title-col: #ffd52c;
+  --btn-bg: rgba(16, 26, 60, 0.95);
+  --btn-hover: #213c8f;
+  --glass-bg: rgba(32, 232, 255, 0.08);
+  --neon-glow: rgba(32, 232, 255, 0.35);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
+body{
+  padding:4px;display:flex;justify-content:center;align-items:center;
+  background: var(--bg-grad); position: fixed; inset: 0;
+}
+.portal{
+  width: 100%; height: 100%; max-width: 420px; max-height: 100vh;
+  text-align: center; display: flex; flex-direction: column; gap: 6px;
+  overflow-y: auto; padding: 8px; z-index: 10;
+  background: var(--portal-bg); border: 2px solid var(--border-col);
+  border-radius: 12px; box-shadow: 0 0 25px rgba(0,0,0,0.8);
+  position: relative;
+}
+.game-ui-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; width: 100%; flex-shrink: 0; font-size: 11px; }
+
+#gameContainer { flex-grow: 1; width: 100%; position: relative; background: #010206; border: 2px solid var(--accent-col); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; }
+canvas { width: 100%; height: 100%; object-fit: contain; background: #010206; }
+
+/* УПРАВЛЕНИЕ АРКАНОИДОМ */
+.game-controls { display: flex; gap: 10px; justify-content: center; width: 100%; padding: 4px; flex-shrink: 0; }
+.ctrl-pad-btn { 
+  background: var(--glass-bg); backdrop-filter: blur(4px);
+  border: 2px solid var(--accent-col); color: var(--title-col); 
+  font-size: 16px; font-weight: bold; width: 140px; height: 50px; border-radius: 10px; 
+  display: flex; justify-content: center; align-items: center; 
+  cursor: pointer; user-select: none; box-shadow: 0 0 10px var(--neon-glow); 
+  transition: transform 0.1s;
+}
+.ctrl-pad-btn:active { background: var(--btn-hover); transform: scale(0.92); border-color: var(--title-col); }
+</style>
+</head>
+<body>
+
 <!-- УНИВЕРСАЛЬНАЯ ПЛАВАЮЩАЯ КНОПКА ВОЗВРАТА В МЕНЮ -->
 <div style="position: fixed; top: 10px; left: 10px; z-index: 99999;">
   <a href="index.html" style="display: flex; align-items: center; gap: 4px; background: rgba(140, 5, 5, 0.95); border: 2px solid #ff6b55; color: #fff; padding: 8px 14px; border-radius: 8px; text-decoration: none; font-family: monospace; font-size: 11px; font-weight: bold; box-shadow: 0 0 15px rgba(255,0,0,0.7); -webkit-tap-highlight-color: transparent;">
     ⬅ МЕНЮ
   </a>
 </div>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>ARKANOID — FREEzzzGames</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
-body{padding:6px;display:flex;justify-content:center;align-items:center;background:radial-gradient(circle at 50% 0,#29105f 0%,#070922 35%,#010208 85%);}
-.arcade{width:min(500px,100%);height:100%;max-height:750px;border:3px solid #151a32;border-radius:16px;background:#070a15;display:flex;flex-direction:column;}
-.marquee{padding:8px;text-align:center;background:#070925;border-bottom:3px solid #121936;}
-.marquee h1{margin:0;font-size:20px;color:#ffd52c;text-shadow:2px 2px #e52225;}
-.screen-wrapper{flex-grow:1;position:relative;background:#03050c;display:flex;justify-content:center;align-items:center;padding:10px;}
-canvas{background:#010206;border:2px solid #20e8ff;border-radius:6px;width:100%;height:100%;object-fit:contain;}
-.controls{display:flex;justify-content:space-around;padding:10px;background:#070a18;border-top:3px solid #141c38;gap:10px;}
-.ctrl-btn{flex-grow:1;height:55px;border:2px solid rgba(255,255,255,.3);border-radius:10px;background:rgba(255,255,255,.08);color:#fff;font-size:22px;display:flex;justify-content:center;align-items:center;user-select:none;cursor:pointer;}
-.ctrl-btn:active{background:rgba(32,232,255,.35);border-color:#20e8ff;}
-.overlay{position:absolute;z-index:30;inset:0;display:flex;align-items:center;justify-content:center;background:#02030be8;}
-.overlay.hidden{display:none;}
-.card{width:min(320px,90%);padding:18px;border:3px solid #20e8ff;border-radius:12px;background:#060a1bef;text-align:center;}
-.card h2{margin:0 0 8px;color:#ffd42a;font-size:20px;}
-.card p{color:#b8eaff;font-size:12px;}
-.start-btn{margin-top:12px;width:100%;height:40px;border:2px solid #20e8ff;border-radius:6px;background:#0f2766;color:#fff;font:bold 13px monospace;cursor:pointer;}
-.bottom{padding:4px;text-align:center;border-top:2px solid #111a3b;color:#ffd52c;font-size:10px;background:#050716;}
-</style>
-</head>
-<body>
-<div class="arcade">
-  <div class="marquee"><h1>ARKANOID 🧱</h1></div>
-  <div class="screen-wrapper"><canvas id="arkanoid" width="400" height="500"></canvas></div>
-  <div class="controls">
-    <div class="ctrl-btn" id="btnLeft">◄</div>
-    <div class="ctrl-btn" id="btnRight">►</div>
+
+<div class="portal">
+  <div class="game-ui-header">
+    <div id="scoreTxt" style="color:var(--title-col);">СЧЕТ: 0</div>
+    <div id="livesTxt" style="color:var(--accent-col);">ЖИЗНИ: ❤️❤️❤️</div>
   </div>
-  <div class="overlay" id="overlay">
-    <div class="card">
-      <h2 id="title">ARKANOID</h2>
-      <p>Разбей все блоки мячом!<br><br>Управляй платформой кнопками.</p>
-      <button class="start-btn" id="startBtn">СТАРТ</button>
-    </div>
+
+  <div id="gameContainer">
+    <canvas id="aCanvas" width="360" height="480"></canvas>
   </div>
-  <footer class="bottom">УНИЧТОЖЬ БЛОКИ</footer>
+
+  <div class="game-controls">
+    <button class="ctrl-pad-btn" id="btnLeft">◀ НАЛЕВО</button>
+    <button class="ctrl-pad-btn" id="btnRight">НАПРАВО ▶</button>
+  </div>
 </div>
+
 <script>
 const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
-const canvas = document.getElementById('arkanoid'), ctx = canvas.getContext('2d');
-let running = false, dir = 0;
-let paddle = {x: 160, y: 460, w: 80, h: 12, speed: 6};
-let ball = {x: 200, y: 300, r: 6, vx: 3, vy: -3};
+let soundEnabled = localStorage.getItem("freezzzSound") !== "false";
+function haptic() {
+  if (soundEnabled && tg && tg.HapticFeedback) {
+    try { tg.HapticFeedback.impactOccurred('light'); } catch(e){}
+  }
+}
+
+const canvas = document.getElementById('aCanvas');
+const ctx = canvas.getContext('2d');
+
+let score = 0;
+let lives = 3;
+
+// Платформа
+let paddle = {
+  x: 130,
+  y: 440,
+  w: 90,
+  h: 12,
+  dx: 0
+};
+
+// Шары
+let balls = [{
+  x: 180,
+  y: 400,
+  r: 6,
+  vx: 3,
+  vy: -3
+}];
+
+// Блоки (меньшего размера, плотная сетка)
+const brickRowCount = 6;
+const brickColumnCount = 10;
+const brickWidth = 33;
+const brickHeight = 14;
+const brickPadding = 3;
+const brickOffsetTop = 40;
+const brickOffsetLeft = 12;
+
 let bricks = [];
 
-function initBricks() {
+// Падающие бонусы
+let powerUps = []; // {x, y, type}
+
+function initLevel() {
   bricks = [];
-  let colors = ['#e52225', '#ffd52c', '#20e8ff', '#00ff88'];
-  for(let r=0; r<4; r++) {
-    for(let c=0; c<8; c++) {
-      bricks.push({x: c * 48 + 10, y: r * 22 + 25, w: 44, h: 16, status: 1, color: colors[r]});
+  for (let c = 0; c < brickColumnCount; c++) {
+    bricks[c] = [];
+    for (let r = 0; r < brickRowCount; r++) {
+      // 5 разных типов рисунков/узоров (значения от 1 до 5)
+      let patternType = (r + c) % 5 + 1;
+      bricks[c][r] = {
+        x: (c * (brickWidth + brickPadding)) + brickOffsetLeft,
+        y: (r * (brickHeight + brickPadding)) + brickOffsetTop,
+        status: 1,
+        pattern: patternType,
+        hasPowerUp: Math.random() < 0.25 // 25% шанс скрытого улучшения в блоке
+      };
     }
   }
 }
 
+initLevel();
+
+// Отрисовка текстуры/рисунка блока (5 разных видов)
+function drawBrickPattern(bx, by, bw, bh, pattern) {
+  ctx.fillStyle = '#010206';
+  ctx.fillRect(bx, by, bw, bh);
+
+  if (pattern === 1) {
+    // Стиль 1: Неоновая рамка + точка
+    ctx.fillStyle = '#20e8ff';
+    ctx.fillRect(bx+1, by+1, bw-2, bh-2);
+    ctx.fillStyle = '#010206';
+    ctx.fillRect(bx+4, by+4, bw-8, bh-8);
+  } else if (pattern === 2) {
+    // Стиль 2: Полоски
+    ctx.fillStyle = '#ff3366';
+    ctx.fillRect(bx+1, by+1, bw-2, bh-2);
+    ctx.fillStyle = '#ffd52c';
+    ctx.fillRect(bx+4, by+2, 4, bh-4);
+    ctx.fillRect(bx+14, by+2, 4, bh-4);
+    ctx.fillRect(bx+24, by+2, 4, bh-4);
+  } else if (pattern === 3) {
+    // Стиль 3: Крест / Шахматка
+    ctx.fillStyle = '#00ff88';
+    ctx.fillRect(bx+1, by+1, bw-2, bh-2);
+    ctx.fillStyle = '#010206';
+    ctx.fillRect(bx+2, by+4, bw-4, bh-8);
+  } else if (pattern === 4) {
+    // Стиль 4: Двойной алмаз
+    ctx.fillStyle = '#b033ff';
+    ctx.fillRect(bx+1, by+1, bw-2, bh-2);
+    ctx.fillStyle = '#ffd52c';
+    ctx.fillRect(bx + bw/2 - 3, by + 2, 6, bh - 4);
+  } else {
+    // Стиль 5: Золотой ошейник
+    ctx.fillStyle = '#ffd52c';
+    ctx.fillRect(bx+1, by+1, bw-2, bh-2);
+    ctx.fillStyle = '#ff3366';
+    ctx.fillRect(bx+3, by+3, bw-6, bh-6);
+  }
+}
+
+// Управление движением платформы
+let isLeft = false;
+let isRight = false;
+
+document.getElementById('btnLeft').addEventListener('pointerdown', () => isLeft = true);
+document.getElementById('btnLeft').addEventListener('pointerup', () => isLeft = false);
+document.getElementById('btnLeft').addEventListener('pointerleave', () => isLeft = false);
+
+document.getElementById('btnRight').addEventListener('pointerdown', () => isRight = true);
+document.getElementById('btnRight').addEventListener('pointerup', () => isRight = false);
+document.getElementById('btnRight').addEventListener('pointerleave', () => isRight = false);
+
 function update() {
-  if (!running) return;
-  paddle.x += dir * paddle.speed;
+  if (isLeft) paddle.x -= 6;
+  if (isRight) paddle.x += 6;
+
   if (paddle.x < 0) paddle.x = 0;
-  if (paddle.x > canvas.width - paddle.w) paddle.x = canvas.width - paddle.w;
+  if (paddle.x + paddle.w > canvas.width) paddle.x = canvas.width - paddle.w;
 
-  ball.x += ball.vx; ball.y += ball.vy;
-  if (ball.x - ball.r < 0 || ball.x + ball.r > canvas.width) ball.vx *= -1;
-  if (ball.y - ball.r < 0) ball.vy *= -1;
+  // Движение бонусов
+  powerUps.forEach(p => {
+    p.y += 2;
+    // Столкновение с платформой
+    if (p.y + 10 >= paddle.y && p.x >= paddle.x && p.x <= paddle.x + paddle.w) {
+      haptic();
+      if (p.type === 'wide') {
+        paddle.w = Math.min(140, paddle.w + 30);
+      } else if (p.type === 'multi') {
+        let newBall = {x: balls[0].x, y: balls[0].y, r: 6, vx: -3, vy: -3};
+        let newBall2 = {x: balls[0].x, y: balls[0].y, r: 6, vx: 2, vy: -4};
+        balls.push(newBall, newBall2);
+      } else {
+        score += 200;
+      }
+      p.dead = true;
+    }
+  });
+  powerUps = powerUps.filter(p => !p.dead && p.y < canvas.height);
 
-  if (ball.y + ball.r > paddle.y && ball.x > paddle.x && ball.x < paddle.x + paddle.w) {
-    ball.vy *= -1;
-    let hitPoint = (ball.x - (paddle.x + paddle.w/2)) / (paddle.w/2);
-    ball.vx = hitPoint * 4;
-  }
+  // Движение шаров
+  balls.forEach(ball => {
+    ball.x += ball.vx;
+    ball.y += ball.vy;
 
-  if (ball.y > canvas.height) {
-    running = false;
-    showOver("ИГРА ОКОНЧЕНА");
-  }
+    // Стены
+    if (ball.x - ball.r < 0 || ball.x + ball.r > canvas.width) {
+      ball.vx *= -1;
+      haptic();
+    }
+    if (ball.y - ball.r < 0) {
+      ball.vy *= -1;
+      haptic();
+    }
 
-  let activeBricks = 0;
-  bricks.forEach(b => {
-    if (b.status === 1) {
-      activeBricks++;
-      if (ball.x > b.x && ball.x < b.x + b.w && ball.y > b.y && ball.y < b.y + b.h) {
-        b.status = 0; ball.vy *= -1;
+    // Платформа
+    if (ball.y + ball.r >= paddle.y && ball.x >= paddle.x && ball.x <= paddle.x + paddle.w) {
+      let hitPoint = (ball.x - (paddle.x + paddle.w / 2)) / (paddle.w / 2);
+      ball.vx = hitPoint * 5;
+      ball.vy = -Math.abs(ball.vy);
+      haptic();
+    }
+
+    // Столкновение с блоками
+    for (let c = 0; c < brickColumnCount; c++) {
+      for (let r = 0; r < brickRowCount; r++) {
+        let b = bricks[c][r];
+        if (b.status === 1) {
+          if (ball.x > b.x && ball.x < b.x + brickWidth && ball.y > b.y && ball.y < b.y + brickHeight) {
+            ball.vy *= -1;
+            b.status = 0;
+            score += 50;
+            haptic();
+
+            // Шанс выпадения скрытого улучшения
+            if (b.hasPowerUp) {
+              let pType = Math.random() < 0.5 ? 'wide' : 'multi';
+              powerUps.push({x: b.x + brickWidth/2, y: b.y, type: pType});
+            }
+
+            // Проверка победы
+            let won = true;
+            outer: for (let cc = 0; cc < brickColumnCount; cc++) {
+              for (let rr = 0; rr < brickRowCount; rr++) {
+                if (bricks[cc][rr].status === 1) { won = false; break outer; }
+              }
+            }
+            if (won) {
+              alert("Уровень пройден! Счёт: " + score);
+              initLevel();
+            }
+          }
+        }
       }
     }
   });
 
-  if (activeBricks === 0) {
-    running = false;
-    showOver("ПОБЕДА!");
+взять в учет падение шара ниже экрана
+  balls = balls.filter(ball => ball.y - ball.r < canvas.height);
+  if (balls.length === 0) {
+    lives--;
+    haptic();
+    if (lives <= 0) {
+      alert("Игра окончена! Счёт: " + score);
+      score = 0;
+      lives = 3;
+      paddle.w = 90;
+      initLevel();
+    }
+    balls.push({x: 180, y: 350, r: 6, vx: 3, vy: -3});
   }
-}
 
-function showOver(text) {
-  document.getElementById('overlay').classList.remove('hidden');
-  document.getElementById('title').textContent = text;
-  document.getElementById('startBtn').textContent = "ЕЩЕ РАЗ";
+  document.getElementById('scoreTxt').textContent = "СЧЕТ: " + score;
+  let hearts = "";
+  for(let i=0; i<lives; i++) hearts += "❤️";
+  document.getElementById('livesTxt').textContent = "ЖИЗНИ: " + hearts;
 }
 
 function draw() {
-  ctx.fillStyle = '#010206'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#20e8ff'; ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
-  ctx.fillStyle = '#ffd52c'; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fill();
-  bricks.forEach(b => {
-    if (b.status === 1) {
-      ctx.fillStyle = b.color; ctx.fillRect(b.x, b.y, b.w, b.h);
-      ctx.strokeStyle = '#000'; ctx.strokeRect(b.x, b.y, b.w, b.h);
+  ctx.fillStyle = '#010206';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Отрисовка блоков с 5 паттернами
+  for (let c = 0; c < brickColumnCount; c++) {
+    for (let r = 0; r < brickRowCount; r++) {
+      if (bricks[c][r].status === 1) {
+        let b = bricks[c][r];
+        drawBrickPattern(b.x, b.y, brickWidth, brickHeight, b.pattern);
+      }
     }
+  }
+
+  // Отрисовка бонусов
+  powerUps.forEach(p => {
+    ctx.fillStyle = p.type === 'wide' ? '#00ff88' : '#ffd52c';
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = ctx.fillStyle;
+    ctx.fillRect(p.x - 6, p.y - 6, 12, 12);
   });
+  ctx.shadowBlur = 0;
+
+  // Отрисовка платформы (стеклянный неон)
+  ctx.fillStyle = '#20e8ff';
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = '#20e8ff';
+  ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
+
+  // Отрисовка шаров
+  balls.forEach(ball => {
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffd52c';
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = '#ffd52c';
+    ctx.fill();
+    ctx.closePath();
+  });
+  ctx.shadowBlur = 0;
 }
 
-function loop() { update(); draw(); requestAnimationFrame(loop); }
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
 
-document.getElementById('btnLeft').addEventListener('pointerdown', () => dir = -1);
-document.getElementById('btnLeft').addEventListener('pointerup', () => dir = 0);
-document.getElementById('btnRight').addEventListener('pointerdown', () => dir = 1);
-document.getElementById('btnRight').addEventListener('pointerup', () => dir = 0);
-document.getElementById('startBtn').addEventListener('click', () => {
-  paddle.x = 160; ball.x = 200; ball.y = 300; ball.vx = 3; ball.vy = -3;
-  initBricks(); running = true;
-  document.getElementById('overlay').classList.add('hidden');
-});
-loop();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>
