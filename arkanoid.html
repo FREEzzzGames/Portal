@@ -3,331 +3,392 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Arkanoid — FREEzzzGames</title>
+<title>Elektro Unternehmen — FREEzzzGames</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root {
-  --bg-grad: radial-gradient(circle at 50% 20%, rgba(41, 16, 95, 0.9) 0%, rgba(7, 9, 34, 0.95) 50%, rgba(1, 2, 8, 1) 100%);
-  --portal-bg: rgba(4, 7, 20, 0.92);
-  --border-col: rgba(32, 232, 255, 0.4);
-  --accent-col: #20e8ff;
+  --bg-grad: linear-gradient(135deg, #09192b 0%, #112d4e 50%, #06111c 100%);
+  --portal-bg: rgba(13, 35, 58, 0.96);
+  --border-col: rgba(74, 144, 226, 0.5);
+  --accent-col: #4a90e2;
   --title-col: #ffd52c;
-  --btn-bg: rgba(16, 26, 60, 0.95);
-  --btn-hover: #213c8f;
-  --glass-bg: rgba(32, 232, 255, 0.08);
-  --neon-glow: rgba(32, 232, 255, 0.35);
+  --btn-bg: rgba(18, 48, 80, 0.95);
+  --btn-hover: rgba(74, 144, 226, 0.3);
+  --glass-bg: rgba(255, 255, 255, 0.05);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
+html,body{margin:0;width:100%;height:100%;background:#06111c;color:#fff;font-family:monospace;overflow:hidden;}
 body{
-  padding:4px;display:flex;justify-content:center;align-items:center;
+  padding:6px;display:flex;justify-content:center;align-items:center;
   background: var(--bg-grad); position: fixed; inset: 0;
 }
 .portal{
   width: 100%; height: 100%; max-width: 420px; max-height: 100vh;
-  text-align: center; display: flex; flex-direction: column; gap: 6px;
-  overflow-y: auto; padding: 8px; z-index: 10;
-  background: var(--portal-bg); border: 2px solid var(--border-col);
-  border-radius: 12px; box-shadow: 0 0 25px rgba(0,0,0,0.8);
+  text-align: center; display: flex; flex-direction: column; gap: 8px;
+  overflow-y: auto; padding: 10px; z-index: 10;
+  background: var(--portal-bg); border: 2.5px solid var(--border-col);
+  border-radius: 14px; box-shadow: 0 0 30px rgba(13, 35, 58, 0.9);
   position: relative;
 }
-.game-ui-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; width: 100%; flex-shrink: 0; font-size: 11px; }
 
-#gameContainer { flex-grow: 1; width: 100%; position: relative; background: #010206; border: 2px solid var(--accent-col); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; }
-canvas { width: 100%; height: 100%; object-fit: contain; background: #010206; }
-
-/* УПРАВЛЕНИЕ АРКАНОИДОМ */
-.game-controls { display: flex; gap: 10px; justify-content: center; width: 100%; padding: 4px; flex-shrink: 0; }
-.ctrl-pad-btn { 
-  background: var(--glass-bg); backdrop-filter: blur(4px);
-  border: 2px solid var(--accent-col); color: var(--title-col); 
-  font-size: 16px; font-weight: bold; width: 140px; height: 50px; border-radius: 10px; 
-  display: flex; justify-content: center; align-items: center; 
-  cursor: pointer; user-select: none; box-shadow: 0 0 10px var(--neon-glow); 
-  transition: transform 0.1s;
+/* ШАПКА */
+.game-ui-header { 
+  display: flex; justify-content: space-between; align-items: center; 
+  padding: 10px 12px; background: var(--btn-bg); border: 1.5px solid var(--border-col); 
+  border-radius: 10px; width: 100%; flex-shrink: 0; font-size: 11px; 
+  z-index: 50; gap: 6px;
 }
-.ctrl-pad-btn:active { background: var(--btn-hover); transform: scale(0.92); border-color: var(--title-col); }
+.header-left { display: flex; gap: 4px; align-items: center; }
+.back-btn {
+  background: rgba(180, 40, 40, 0.95); border: 1.5px solid #ff6b55; color: #fff;
+  padding: 6px 10px; border-radius: 8px; text-decoration: none; font-weight: bold;
+  cursor: pointer; font-size: 10px;
+}
+.lang-btn {
+  background: rgba(74, 144, 226, 0.3); border: 1.5px solid var(--accent-col); color: #fff;
+  padding: 6px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 10px;
+}
+.lang-btn:active { background: rgba(74, 144, 226, 0.6); }
+
+/* КОНТЕЙНЕР */
+.clicker-body {
+  flex-grow: 1; background: rgba(8, 22, 38, 0.85); border: 2px solid var(--accent-col);
+  border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  padding: 10px; overflow-y: auto; gap: 8px; position: relative;
+}
+
+/* БЛОКИ РЕСУРСОВ */
+.resources-container { display: flex; gap: 8px; width: 100%; }
+.res-box {
+  flex: 1; background: var(--glass-bg); border: 1.5px solid var(--border-col); border-radius: 10px;
+  padding: 8px; text-align: center;
+}
+.res-title { font-size: 8.5px; color: #a1c4fd; text-transform: uppercase; font-weight: bold; }
+.res-val { font-size: 15px; font-weight: bold; color: var(--title-col); text-shadow: 0 0 8px rgba(255,213,44,0.5); margin-top: 2px; }
+.res-sub { font-size: 9px; color: var(--accent-col); margin-top: 3px; }
+
+/* КНОПКА ПРОДАЖИ ЭНЕРГИИ */
+.sell-energy-btn {
+  width: 100%; background: linear-gradient(135deg, rgba(255,213,44,0.22), rgba(74,144,226,0.22));
+  border: 1.5px solid var(--title-col); border-radius: 8px; padding: 9px; color: var(--title-col);
+  font-family: monospace; font-size: 10.5px; font-weight: bold; cursor: pointer; text-align: center;
+  transition: transform 0.1s; box-shadow: 0 0 10px rgba(255,213,44,0.2);
+}
+.sell-energy-btn:active { transform: scale(0.97); background: rgba(255,213,44,0.35); }
+
+/* ПРОГРЕСС-БАР */
+.progress-bar-container {
+  width: 100%; height: 6px; background: rgba(255,255,255,0.12); border-radius: 3px; overflow: hidden; border: 1px solid rgba(74,144,226,0.4);
+}
+.progress-bar-fill {
+  height: 100%; background: linear-gradient(90deg, #4a90e2, #ffd52c); width: 0%; transition: width 0.2s ease;
+}
+
+/* ЦЕНТРАЛЬНАЯ КНОПКА */
+.click-target-container { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.click-target {
+  width: 95px; height: 95px; background: radial-gradient(circle at 35% 35%, #ffd52c, #d39e00);
+  border: 4px solid #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+  font-size: 44px; cursor: pointer; box-shadow: 0 0 25px rgba(255,213,44,0.6); transition: transform 0.08s ease;
+  user-select: none; z-index: 40;
+}
+.click-target:active { transform: scale(0.86); background: radial-gradient(circle at 35% 35%, #e0b800, #997500); box-shadow: 0 0 12px #ffd52c; }
+
+/* СПИСОК КАРТОЧЕК */
+.upgrades-list { width: 100%; display: flex; flex-direction: column; gap: 6px; max-height: 210px; overflow-y: auto; padding-right: 2px; }
+.upgrade-card {
+  display: flex; justify-content: space-between; align-items: center; background: rgba(18, 48, 80, 0.9);
+  border: 1.5px solid var(--border-col); border-radius: 8px; padding: 9px 11px; font-size: 11px; text-align: left; cursor: pointer;
+  transition: all 0.15s ease; position: relative; overflow: hidden; z-index: 40;
+}
+.upgrade-card:active { transform: scale(0.98); background: var(--btn-hover); }
+.upgrade-info { display: flex; flex-direction: column; gap: 3px; z-index: 2; }
+.upgrade-name { color: var(--title-col); font-weight: bold; font-size: 11px; display: flex; align-items: center; gap: 6px; }
+.upgrade-desc { font-size: 8.5px; color: #a1c4fd; }
+.upgrade-cost { color: #6bc5ff; font-weight: bold; font-size: 10px; }
+.upgrade-count { font-size: 13px; font-weight: bold; color: #fff; background: rgba(0,0,0,0.6); padding: 5px 10px; border-radius: 6px; border: 1.5px solid var(--border-col); z-index: 2; }
+
+/* АНИМАЦИИ */
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-40px) scale(1.3); opacity: 0; }
+}
+.floating-text {
+  position: fixed; color: #ffd52c; font-size: 15px; font-weight: bold; pointer-events: none; z-index: 99999;
+  animation: floatUp 0.45s ease-out forwards; text-shadow: 0 0 6px rgba(0,0,0,0.9);
+}
 </style>
 </head>
 <body>
 
-<!-- УНИВЕРСАЛЬНАЯ ПЛАВАЮЩАЯ КНОПКА ВОЗВРАТА В МЕНЮ -->
-<div style="position: fixed; top: 10px; left: 10px; z-index: 99999;">
-  <a href="index.html" style="display: flex; align-items: center; gap: 4px; background: rgba(140, 5, 5, 0.95); border: 2px solid #ff6b55; color: #fff; padding: 8px 14px; border-radius: 8px; text-decoration: none; font-family: monospace; font-size: 11px; font-weight: bold; box-shadow: 0 0 15px rgba(255,0,0,0.7); -webkit-tap-highlight-color: transparent;">
-    ⬅ МЕНЮ
-  </a>
-</div>
-
 <div class="portal">
   <div class="game-ui-header">
-    <div id="scoreTxt" style="color:var(--title-col);">СЧЕТ: 0</div>
-    <div id="livesTxt" style="color:var(--accent-col);">ЖИЗНИ: ❤️❤️❤️</div>
+    <div class="header-left">
+      <a href="index.html" class="back-btn" id="menuBtnTxt">⬅ МЕНЮ</a>
+      <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">🇩🇪 DE</button>
+    </div>
+    <div id="licenseTxt" style="color:var(--title-col); font-weight:bold; font-size: 10px;">⚡ Электро Компания</div>
   </div>
 
-  <div id="gameContainer">
-    <canvas id="aCanvas" width="360" height="480"></canvas>
-  </div>
+  <div class="clicker-body">
+    <!-- ШКАЛЫ РЕСУРСОВ -->
+    <div class="resources-container">
+      <div class="res-box">
+        <div class="res-title" id="resBudgetTitle">Бюджет (€)</div>
+        <div class="res-val" id="moneyTxt">0.00 €</div>
+        <div class="res-sub" id="cpsTxt">+0.0 €/сек</div>
+      </div>
+      <div class="res-box">
+        <div class="res-title" id="resEnergyTitle">Энергия (МВт·ч)</div>
+        <div class="res-val" id="energyTxt" style="color:#6bc5ff;">0.0 МВт</div>
+        <div class="res-sub" id="epsTxt">+0.0 МВт/с</div>
+      </div>
+    </div>
 
-  <div class="game-controls">
-    <button class="ctrl-pad-btn" id="btnLeft">◀ НАЛЕВО</button>
-    <button class="ctrl-pad-btn" id="btnRight">НАПРАВО ▶</button>
+    <!-- КНОПКА ПРОДАЖИ ЭНЕРГИИ -->
+    <button class="sell-energy-btn" id="sellBtnTxt" onclick="sellEnergy()">⚡ ПРОДАТЬ ЭНЕРГИЮ (1 МВт = 2.50 €)</button>
+
+    <!-- ПРОГРЕСС-БАР -->
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+
+    <!-- ЦЕНТРАЛЬНАЯ КНОПКА -->
+    <div class="click-target-container">
+      <div class="click-target" onclick="clickEnergy(event)">⚡</div>
+      <div style="font-size: 8.5px; color: #a1c4fd;" id="tapHintTxt">Тапай для подачи напряжения!</div>
+    </div>
+
+    <!-- СПИСОК ПОСТРОЕК -->
+    <div class="upgrades-list" id="upgradesList"></div>
   </div>
 </div>
 
 <script>
 const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
 let soundEnabled = localStorage.getItem("freezzzSound") !== "false";
-function haptic() {
-  if (soundEnabled && tg && tg.HapticFeedback) {
-    try { tg.HapticFeedback.impactOccurred('light'); } catch(e){}
+let currentLang = localStorage.getItem("freezzzLang") || "ru";
+
+const langData = {
+  ru: {
+    menu: "⬅ МЕНЮ",
+    license: "⚡ Электро Компания",
+    budget: "Бюджет (€)",
+    energy: "Энергия (МВт·ч)",
+    sellBtn: "⚡ ПРОДАТЬ ЭНЕРГИЮ (1 МВт = 2.50 €)",
+    tapHint: "Тапай для подачи напряжения!",
+    price: "Цена",
+    reqWorkers: "Требует раб.",
+    items: [
+      { name: "👨‍🔧 Электрик (Специалист)", desc: "Базовый мастер для выездов" },
+      { name: "👷‍♂️ Бригада электриков", desc: "Команда монтажников сетей" },
+      { name: "💨 Ветряная установка", desc: "Генератор зеленой энергии" },
+      { name: "☀️ Солнечная ферма", desc: "Панели (+ выработка МВт)" },
+      { name: "⚡ АЭС (Атомная станция)", desc: "Максимальная энергия и доход" }
+    ]
+  },
+  de: {
+    menu: "⬅ MENÜ",
+    license: "⚡ Elektro Unternehmen",
+    budget: "Budget (€)",
+    energy: "Energie (MWh)",
+    sellBtn: "⚡ ENERGIE VERKAUFEN (1 MWh = 2.50 €)",
+    tapHint: "Tippen für Stromversorgung!",
+    price: "Preis",
+    reqWorkers: "Benötigt Arb.",
+    items: [
+      { name: "👨‍🔧 Elektriker (Spezialist)", desc: "Grundmonteur für Einsätze" },
+      { name: "👷‍♂️ Elektriker-Team", desc: "Trupp für Netzmontage" },
+      { name: "💨 Windkraftanlage", desc: "Grüne Windenergie" },
+      { name: "☀️ Solarpark", desc: "Solarpanels (+ MWh)" },
+      { name: "⚡ Atomkraftwerk (AKW)", desc: "Maximale Energie & Ertrag" }
+    ]
   }
-}
-
-const canvas = document.getElementById('aCanvas');
-const ctx = canvas.getContext('2d');
-
-let score = 0;
-let lives = 3;
-
-// Платформа
-let paddle = {
-  x: 130,
-  y: 440,
-  w: 90,
-  h: 12,
-  dx: 0
 };
 
-// Шары
-let balls = [{
-  x: 180,
-  y: 400,
-  r: 6,
-  vx: 3,
-  vy: -3
-}];
+function toggleLanguage() {
+  currentLang = currentLang === "ru" ? "de" : "ru";
+  localStorage.setItem("freezzzLang", currentLang);
+  updateLanguageUI();
+  updateUI();
+}
 
-// Блоки
-const brickRowCount = 6;
-const brickColumnCount = 10;
-const brickWidth = 33;
-const brickHeight = 14;
-const brickPadding = 3;
-const brickOffsetTop = 40;
-const brickOffsetLeft = 12;
+function updateLanguageUI() {
+  let t = langData[currentLang];
+  document.getElementById('menuBtnTxt').textContent = t.menu;
+  document.getElementById('licenseTxt').textContent = t.license;
+  document.getElementById('resBudgetTitle').textContent = t.budget;
+  document.getElementById('resEnergyTitle').textContent = t.energy;
+  document.getElementById('sellBtnTxt').textContent = t.sellBtn;
+  document.getElementById('tapHintTxt').textContent = t.tapHint;
+  document.getElementById('langBtn').textContent = currentLang === "ru" ? "🇩🇪 DE" : "🇷🇺 RU";
+}
 
-let bricks = [];
-let powerUps = []; 
+let money = Number(localStorage.getItem("zeitarbeitMoney") || 0);
+let totalEnergyMWh = Number(localStorage.getItem("zeitarbeitEnergy") || 0);
 
-function initLevel() {
-  bricks = [];
-  for (let c = 0; c < brickColumnCount; c++) {
-    bricks[c] = [];
-    for (let r = 0; r < brickRowCount; r++) {
-      let patternType = (r + c) % 5 + 1;
-      bricks[c][r] = {
-        x: (c * (brickWidth + brickPadding)) + brickOffsetLeft,
-        y: (r * (brickHeight + brickPadding)) + brickOffsetTop,
-        status: 1,
-        pattern: patternType,
-        hasPowerUp: Math.random() < 0.25 
-      };
-    }
+// Постройки по возрастанию: 2 рабочих юнита, затем 3 станции
+let upgrades = [
+  { id: 'elektrik', cost: 15, incomeEur: 0.4, energyMWh: 0.1, count: Number(localStorage.getItem("up_elektrik") || 0), mult: 1.15, type: 'worker' },
+  { id: 'brigade', cost: 120, incomeEur: 2, energyMWh: 0.8, count: Number(localStorage.getItem("up_brigade") || 0), mult: 1.18, type: 'worker' },
+  { id: 'wind', cost: 950, incomeEur: 14, energyMWh: 8.5, workersNeeded: 2, count: Number(localStorage.getItem("up_wind") || 0), mult: 1.20, type: 'station' },
+  { id: 'solar', cost: 12000, incomeEur: 110, energyMWh: 65, workersNeeded: 8, count: Number(localStorage.getItem("up_solar") || 0), mult: 1.22, type: 'station' },
+  { id: 'aes', cost: 150000, incomeEur: 850, energyMWh: 450, workersNeeded: 30, count: Number(localStorage.getItem("up_aes") || 0), mult: 1.25, type: 'station' }
+];
+
+let audioCtx = null;
+function playSound(freq, type='square', duration=0.1) {
+  if (!soundEnabled) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch(e) {}
+}
+
+function haptic(style='light') {
+  if (soundEnabled && tg && tg.HapticFeedback) {
+    try { tg.HapticFeedback.impactOccurred(style); } catch(e){}
   }
 }
 
-initLevel();
+function clickEnergy(e) {
+  money += 1;
+  totalEnergyMWh += 0.2;
+  playSound(520, 'triangle', 0.08);
+  haptic('light');
+  updateUI();
 
-// Отрисовка 5 разных узоров на блоках
-function drawBrickPattern(bx, by, bw, bh, pattern) {
-  ctx.fillStyle = '#010206';
-  ctx.fillRect(bx, by, bw, bh);
+  let pop = document.createElement('div');
+  pop.textContent = "+1 € / ⚡";
+  pop.className = "floating-text";
+  pop.style.left = (e.clientX - 15) + "px";
+  pop.style.top = (e.clientY - 25) + "px";
+  document.body.appendChild(pop);
+  setTimeout(() => pop.remove(), 450);
+}
 
-  if (pattern === 1) {
-    ctx.fillStyle = '#20e8ff';
-    ctx.fillRect(bx+1, by+1, bw-2, bh-2);
-    ctx.fillStyle = '#010206';
-    ctx.fillRect(bx+4, by+4, bw-8, bh-8);
-  } else if (pattern === 2) {
-    ctx.fillStyle = '#ff3366';
-    ctx.fillRect(bx+1, by+1, bw-2, bh-2);
-    ctx.fillStyle = '#ffd52c';
-    ctx.fillRect(bx+4, by+2, 4, bh-4);
-    ctx.fillRect(bx+14, by+2, 4, bh-4);
-    ctx.fillRect(bx+24, by+2, 4, bh-4);
-  } else if (pattern === 3) {
-    ctx.fillStyle = '#00ff88';
-    ctx.fillRect(bx+1, by+1, bw-2, bh-2);
-    ctx.fillStyle = '#010206';
-    ctx.fillRect(bx+2, by+4, bw-4, bh-8);
-  } else if (pattern === 4) {
-    ctx.fillStyle = '#b033ff';
-    ctx.fillRect(bx+1, by+1, bw-2, bh-2);
-    ctx.fillStyle = '#ffd52c';
-    ctx.fillRect(bx + bw/2 - 3, by + 2, 6, bh - 4);
+function sellEnergy() {
+  if (totalEnergyMWh < 1) {
+    playSound(150, 'sawtooth', 0.15);
+    return;
+  }
+  let earned = totalEnergyMWh * 2.50;
+  money += earned;
+  totalEnergyMWh = 0;
+  playSound(880, 'square', 0.2);
+  haptic('heavy');
+  updateUI();
+}
+
+function buyUpgrade(index) {
+  let up = upgrades[index];
+  if (money >= up.cost) {
+    money -= up.cost;
+    up.count++;
+    up.cost = Math.floor(up.cost * up.mult);
+    localStorage.setItem("up_" + up.id, up.count);
+    playSound(720, 'square', 0.15);
+    haptic('medium');
+    updateUI();
   } else {
-    ctx.fillStyle = '#ffd52c';
-    ctx.fillRect(bx+1, by+1, bw-2, bh-2);
-    ctx.fillStyle = '#ff3366';
-    ctx.fillRect(bx+3, by+3, bw-6, bh-6);
+    playSound(140, 'sawtooth', 0.2);
   }
 }
 
-let isLeft = false;
-let isRight = false;
-
-document.getElementById('btnLeft').addEventListener('pointerdown', () => isLeft = true);
-document.getElementById('btnLeft').addEventListener('pointerup', () => isLeft = false);
-document.getElementById('btnLeft').addEventListener('pointerleave', () => isLeft = false);
-
-document.getElementById('btnRight').addEventListener('pointerdown', () => isRight = true);
-document.getElementById('btnRight').addEventListener('pointerup', () => isRight = false);
-document.getElementById('btnRight').addEventListener('pointerleave', () => isRight = false);
-
-function update() {
-  if (isLeft) paddle.x -= 6;
-  if (isRight) paddle.x += 6;
-
-  if (paddle.x < 0) paddle.x = 0;
-  if (paddle.x + paddle.w > canvas.width) paddle.x = canvas.width - paddle.w;
-
-  // Движение падающих бонусов
-  powerUps.forEach(p => {
-    p.y += 2;
-    if (p.y + 10 >= paddle.y && p.x >= paddle.x && p.x <= paddle.x + paddle.w) {
-      haptic();
-      if (p.type === 'wide') {
-        paddle.w = Math.min(140, paddle.w + 30);
-      } else if (p.type === 'multi') {
-        let newBall = {x: balls[0].x, y: balls[0].y, r: 6, vx: -3, vy: -3};
-        let newBall2 = {x: balls[0].x, y: balls[0].y, r: 6, vx: 2, vy: -4};
-        balls.push(newBall, newBall2);
-      } else {
-        score += 200;
-      }
-      p.dead = true;
-    }
+function calculateStats() {
+  let totalEurSec = 0;
+  let totalEnergySec = 0;
+  let totalWorkers = 0;
+  
+  upgrades.forEach(up => {
+    if (up.type === 'worker') totalWorkers += up.count;
   });
-  powerUps = powerUps.filter(p => !p.dead && p.y < canvas.height);
 
-  // Движение шаров
-  balls.forEach(ball => {
-    ball.x += ball.vx;
-    ball.y += ball.vy;
+  upgrades.forEach(up => {
+    if (up.type === 'worker') {
+      totalEurSec += up.incomeEur * up.count;
+      totalEnergySec += up.energyMWh * up.count;
+    } else if (up.type === 'station') {
+      let requiredWorkersTotal = up.workersNeeded * up.count;
+      let efficiency = requiredWorkersTotal > 0 ? Math.min(1.0, totalWorkers / requiredWorkersTotal) : 1.0;
+      if (totalWorkers === 0 && up.workersNeeded > 0) efficiency = 0.1;
 
-    if (ball.x - ball.r < 0 || ball.x + ball.r > canvas.width) {
-      ball.vx *= -1;
-      haptic();
-    }
-    if (ball.y - ball.r < 0) {
-      ball.vy *= -1;
-      haptic();
-    }
-
-    if (ball.y + ball.r >= paddle.y && ball.x >= paddle.x && ball.x <= paddle.x + paddle.w) {
-      let hitPoint = (ball.x - (paddle.x + paddle.w / 2)) / (paddle.w / 2);
-      ball.vx = hitPoint * 5;
-      ball.vy = -Math.abs(ball.vy);
-      haptic();
-    }
-
-    for (let c = 0; c < brickColumnCount; c++) {
-      for (let r = 0; r < brickRowCount; r++) {
-        let b = bricks[c][r];
-        if (b.status === 1) {
-          if (ball.x > b.x && ball.x < b.x + brickWidth && ball.y > b.y && ball.y < b.y + brickHeight) {
-            ball.vy *= -1;
-            b.status = 0;
-            score += 50;
-            haptic();
-
-            if (b.hasPowerUp) {
-              let pType = Math.random() < 0.5 ? 'wide' : 'multi';
-              powerUps.push({x: b.x + brickWidth/2, y: b.y, type: pType});
-            }
-
-            let won = true;
-            outer: for (let cc = 0; cc < brickColumnCount; cc++) {
-              for (let rr = 0; rr < brickRowCount; rr++) {
-                if (bricks[cc][rr].status === 1) { won = false; break outer; }
-              }
-            }
-            if (won) {
-              alert("Уровень пройден! Счёт: " + score);
-              initLevel();
-            }
-          }
-        }
-      }
+      totalEurSec += (up.incomeEur * up.count) * efficiency;
+      totalEnergySec += (up.energyMWh * up.count) * efficiency;
     }
   });
 
-  // Проверка падения шаров ниже экрана
-  balls = balls.filter(ball => ball.y - ball.r < canvas.height);
-  if (balls.length === 0) {
-    lives--;
-    haptic();
-    if (lives <= 0) {
-      alert("Игра окончена! Счёт: " + score);
-      score = 0;
-      lives = 3;
-      paddle.w = 90;
-      initLevel();
+  return { totalEurSec, totalEnergySec, totalWorkers };
+}
+
+function updateUI() {
+  let stats = calculateStats();
+  let t = langData[currentLang];
+  
+  document.getElementById('moneyTxt').textContent = money.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
+  document.getElementById('cpsTxt').textContent = `+${stats.totalEurSec.toFixed(1)} €/s`;
+  
+  document.getElementById('energyTxt').textContent = totalEnergyMWh.toFixed(1) + (currentLang === 'ru' ? " МВт" : " MWh");
+  document.getElementById('epsTxt').textContent = `+${stats.totalEnergySec.toFixed(1)} ${currentLang === 'ru' ? 'МВт/с' : 'MWh/s'}`;
+
+  let cheapestCost = Math.min(...upgrades.map(u => u.cost));
+  let progressPercent = Math.min(100, (money / cheapestCost) * 100);
+  document.getElementById('progressFill').style.width = progressPercent + "%";
+
+  let listHtml = "";
+  upgrades.forEach((up, idx) => {
+    let currentCost = Math.floor(up.cost);
+    let canBuy = money >= currentCost;
+    let localizedItem = t.items[idx];
+    
+    let subInfo = `${currentLang === 'ru' ? 'Доход' : 'Eink.'}: +${up.incomeEur}€/s, +${up.energyMWh}MWh/s`;
+    if (up.type === 'station') {
+      subInfo = `${t.reqWorkers}: ${up.workersNeeded} | +${up.energyMWh}MWh`;
     }
-    balls.push({x: 180, y: 350, r: 6, vx: 3, vy: -3});
+
+    listHtml += `
+      <div class="upgrade-card" style="opacity: ${canBuy ? 1 : 0.65}; border-color: ${canBuy ? 'var(--title-col)' : 'var(--border-col)'};" onclick="buyUpgrade(${idx})">
+        <div class="upgrade-info">
+          <div class="upgrade-name">${localizedItem.name}</div>
+          <div class="upgrade-desc">${subInfo}</div>
+          <div class="upgrade-cost">${t.price}: ${currentCost.toLocaleString()} €</div>
+        </div>
+        <div class="upgrade-count">${up.count}</div>
+      </div>
+    `;
+  });
+  
+  document.getElementById('upgradesList').innerHTML = listHtml;
+  localStorage.setItem("zeitarbeitMoney", money);
+  localStorage.setItem("zeitarbeitEnergy", totalEnergyMWh);
+}
+
+setInterval(() => {
+  let stats = calculateStats();
+  if (stats.totalEurSec > 0 || stats.totalEnergySec > 0) {
+    money += stats.totalEurSec / 10;
+    totalEnergyMWh += stats.totalEnergySec / 10;
+    updateUI();
   }
+}, 100);
 
-  document.getElementById('scoreTxt').textContent = "СЧЕТ: " + score;
-  let hearts = "";
-  for(let i=0; i<lives; i++) hearts += "❤️";
-  document.getElementById('livesTxt').textContent = "ЖИЗНИ: " + hearts;
-}
+setInterval(() => {
+  localStorage.setItem("zeitarbeitMoney", money);
+  localStorage.setItem("zeitarbeitEnergy", totalEnergyMWh);
+}, 5000);
 
-function draw() {
-  ctx.fillStyle = '#010206';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  for (let c = 0; c < brickColumnCount; c++) {
-    for (let r = 0; r < brickRowCount; r++) {
-      if (bricks[c][r].status === 1) {
-        let b = bricks[c][r];
-        drawBrickPattern(b.x, b.y, brickWidth, brickHeight, b.pattern);
-      }
-    }
-  }
-
-  powerUps.forEach(p => {
-    ctx.fillStyle = p.type === 'wide' ? '#00ff88' : '#ffd52c';
-    ctx.shadowBlur = 8;
-    ctx.shadowColor = ctx.fillStyle;
-    ctx.fillRect(p.x - 6, p.y - 6, 12, 12);
-  });
-  ctx.shadowBlur = 0;
-
-  ctx.fillStyle = '#20e8ff';
-  ctx.shadowBlur = 10;
-  ctx.shadowColor = '#20e8ff';
-  ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
-
-  balls.forEach(ball => {
-    ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
-    ctx.fillStyle = '#ffd52c';
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = '#ffd52c';
-    ctx.fill();
-    ctx.closePath();
-  });
-  ctx.shadowBlur = 0;
-}
-
-function loop() {
-  update();
-  draw();
-  requestAnimationFrame(loop);
-}
-
-requestAnimationFrame(loop);
+updateLanguageUI();
+updateUI();
 </script>
 </body>
 </html>
