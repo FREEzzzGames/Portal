@@ -1,234 +1,243 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Duck Mudack — FREEzzzGames</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-:root {
-  --bg-grad: radial-gradient(circle at 50% 20%, rgba(41, 16, 95, 0.9) 0%, rgba(7, 9, 34, 0.95) 50%, rgba(1, 2, 8, 1) 100%);
-  --portal-bg: rgba(4, 7, 20, 0.92);
-  --border-col: rgba(32, 232, 255, 0.4);
-  --accent-col: #20e8ff;
-  --title-col: #ffd52c;
-  --btn-bg: rgba(16, 26, 60, 0.95);
-  --btn-hover: #213c8f;
-  --glass-bg: rgba(32, 232, 255, 0.08);
-  --neon-glow: rgba(32, 232, 255, 0.35);
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
-body{
-  padding:4px;display:flex;justify-content:center;align-items:center;
-  background: var(--bg-grad); position: fixed; inset: 0;
-}
-.portal{
-  width: 100%; height: 100%; max-width: 420px; max-height: 100vh;
-  text-align: center; display: flex; flex-direction: column; gap: 6px;
-  overflow-y: auto; padding: 8px; z-index: 10;
-  background: var(--portal-bg); border: 2px solid var(--border-col);
-  border-radius: 12px; box-shadow: 0 0 25px rgba(0,0,0,0.8);
-  position: relative;
-}
-.game-ui-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; width: 100%; flex-shrink: 0; font-size: 11px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Утиная охота</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #87CEEB; /* Цвет неба */
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: crosshair; /* Прицел вместо курсора */
+            user-select: none;
+        }
 
-#gameContainer { flex-grow: 1; width: 100%; position: relative; background: #050b1a; border: 2px solid var(--accent-col); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; cursor: crosshair; }
-canvas { width: 100%; height: 100%; object-fit: contain; background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d); }
+        /* Игровое поле (небо + земля) */
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
 
-.game-info-footer { display: flex; justify-content: space-around; padding: 6px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; font-size: 10px; flex-shrink: 0; }
-</style>
+        /* Земля внизу */
+        #ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 15vh;
+            background: #228B22;
+            border-top: 5px solid #006400;
+        }
+
+        /* Панель с очками */
+        #scoreboard {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px #000;
+            z-index: 10;
+        }
+
+        /* Утка */
+        .duck {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            /* Используем эмодзи или простую картинку утки */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="20" font-size="20">🦆</text></svg>');
+            cursor: crosshair;
+            transition: transform 0.1s;
+        }
+
+        /* Экран окончания игры */
+        #game-over {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 10px;
+            color: white;
+            z-index: 100;
+        }
+
+        #game-over h1 {
+            margin-top: 0;
+            font-size: 40px;
+            color: #ff4444;
+        }
+
+        #restart-btn {
+            padding: 10px 20px;
+            font-size: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #restart-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
 
-<div style="position: fixed; top: 10px; left: 10px; z-index: 99999;">
-  <a href="index.html" style="display: flex; align-items: center; gap: 4px; background: rgba(140, 5, 5, 0.95); border: 2px solid #ff6b55; color: #fff; padding: 8px 14px; border-radius: 8px; text-decoration: none; font-family: monospace; font-size: 11px; font-weight: bold; box-shadow: 0 0 15px rgba(255,0,0,0.7); -webkit-tap-highlight-color: transparent;">
-    ⬅ МЕНЮ
-  </a>
-</div>
+    <div id="game-container">
+        <div id="scoreboard">Счет: <span id="score">0</span> | Промахи: <span id="misses">0</span>/5</div>
+        <div id="ground"></div>
+        
+        <div id="game-over">
+            <h1>Игра окончена!</h1>
+            <p>Ваш итоговый счет: <span id="final-score">0</span></p>
+            <button id="restart-btn" onclick="startGame()">Играть снова</button>
+        </div>
+    </div>
 
-<div class="portal">
-  <div class="game-ui-header">
-    <div id="scoreTxt" style="color:var(--title-col);">СЧЕТ: 0</div>
-  </div>
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const scoreDisplay = document.getElementById('score');
+        const missesDisplay = document.getElementById('misses');
+        const gameOverScreen = document.getElementById('game-over');
+        const finalScoreDisplay = document.getElementById('final-score');
 
-  <div id="gameContainer">
-    <canvas id="dCanvas" width="360" height="420"></canvas>
-  </div>
+        let score = 0;
+        let misses = 0;
+        let gameInterval;
+        let duckSpeed = 3;
+        let isPlaying = false;
 
-  <div class="game-info-footer">
-    <span style="color:var(--title-col);">ЦЕЛИЙСЯ И СТРЕЙЛЯЙ ПО УТКАМ! 🎯</span>
-  </div>
-</div>
+        function startGame() {
+            // Очищаем старых уток
+            document.querySelectorAll('.duck').forEach(d => d.remove());
+            
+            score = 0;
+            misses = 0;
+            duckSpeed = 3;
+            isPlaying = true;
+            scoreDisplay.textContent = score;
+            missesDisplay.textContent = misses;
+            gameOverScreen.style.display = 'none';
 
-<script>
-const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
-let soundEnabled = localStorage.getItem("freezzzSound") !== "false";
+            // Запускаем спаун уток
+            clearInterval(gameInterval);
+            gameInterval = setInterval(spawnDuck, 1200);
+        }
 
-let audioCtx = null;
-function getAudioContext() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-  return audioCtx;
-}
+        function spawnDuck() {
+            if (!isPlaying) return;
 
-function playShootSound() {
-  if (!soundEnabled) return;
-  try {
-    let ctx = getAudioContext();
-    let osc = ctx.createOscillator();
-    let gain = ctx.createGain();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(180, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.15);
+            const duck = document.createElement('div');
+            duck.classList.add('duck');
 
-    gain.gain.setValueAtTime(0.25, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+            // Случайная стартовая позиция по вертикали (не выше верха и не ниже земли)
+            const minY = 50;
+            const maxY = window.innerHeight * 0.75 - 80;
+            let y = Math.random() * (maxY - minY) + minY;
+            
+            // Утка появляется слева или справа
+            let x, direction;
+            if (Math.random() > 0.5) {
+                x = -80;
+                direction = 1; // летит вправо
+                duck.style.transform = 'scaleX(1)';
+            } else {
+                x = window.innerWidth;
+                direction = -1; // летит влево
+                duck.style.transform = 'scaleX(-1)';
+            }
 
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.15);
-  } catch(e) {}
-}
+            duck.style.left = x + 'px';
+            duck.style.top = y + 'px';
 
-function playQuackSound() {
-  if (!soundEnabled) return;
-  try {
-    let ctx = getAudioContext();
-    let osc = ctx.createOscillator();
-    let gain = ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(320, ctx.currentTime);
-    osc.frequency.linearRampToValueAtTime(190, ctx.currentTime + 0.1);
-    osc.frequency.linearRampToValueAtTime(270, ctx.currentTime + 0.2);
+            // Клик по утке (выстрел)
+            duck.addEventListener('mousedown', (e) => {
+                e.stopPropagation(); // чтобы клик не засчитывался как промах по фону
+                if (!isPlaying) return;
 
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+                score += 10;
+                scoreDisplay.textContent = score;
 
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.25);
-  } catch(e) {}
-}
+                // Усложняем игру каждые 50 очков
+                if (score % 50 === 0) {
+                    duckSpeed += 0.5;
+                }
 
-const canvas = document.getElementById('dCanvas');
-const ctx = canvas.getContext('2d');
+                // Эффект попадания (падение вниз)
+                duck.style.backgroundImage = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="20" font-size="20">💥</text></svg>')`;
+                
+                let fallInterval = setInterval(() => {
+                    y += 10;
+                    duck.style.top = y + 'px';
+                    if (y > window.innerHeight) {
+                        clearInterval(fallInterval);
+                        duck.remove();
+                    }
+                }, 20);
 
-let score = 0;
-let ducks = [];
-let crosshair = { x: 180, y: 210 };
+                // Убираем старый обработчик, чтобы нельзя было кликнуть повторно
+                duck.replaceWith(duck.cloneNode(true));
+            });
 
-class Duck {
-  constructor() {
-    this.reset();
-  }
-  reset() {
-    this.w = 36;
-    this.h = 28;
-    this.x = Math.random() < 0.5 ? -40 : canvas.width + 40;
-    this.y = Math.random() * (canvas.height - 180) + 30;
-    this.vx = (this.x < 0) ? 2 : -2;
-    this.vy = (Math.random() - 0.5) * 1.5;
-    this.isDead = false;
-    this.fallAnim = 0;
-  }
-  update() {
-    if (!this.isDead) {
-      this.x += this.vx;
-      this.y += this.vy;
-      if (this.y < 20 || this.y > canvas.height - 100) this.vy *= -1;
+            gameContainer.appendChild(duck);
 
-      if ((this.vx > 0 && this.x > canvas.width + 40) || (this.vx < 0 && this.x < -40)) {
-        this.reset();
-      }
-    } else {
-      this.fallAnim += 4;
-      this.y += this.fallAnim;
-      if (this.y > canvas.height + 40) {
-        this.reset();
-      }
-    }
-  }
-  draw() {
-    ctx.font = '28px monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    let emoji = this.isDead ? '💥' : (this.vx > 0 ? '🦆' : '🐥');
-    ctx.fillText(emoji, this.x, this.y);
-  }
-}
+            // Движение утки
+            let currentX = x;
+            let moveInterval = setInterval(() => {
+                if (!isPlaying) {
+                    clearInterval(moveInterval);
+                    return;
+                }
 
-for (let i = 0; i < 3; i++) {
-  ducks.push(new Duck());
-}
+                currentX += duckSpeed * direction;
+                duck.style.left = currentX + 'px';
 
-canvas.addEventListener('pointermove', (e) => {
-  let rect = canvas.getBoundingClientRect();
-  crosshair.x = (e.clientX - rect.left) * (canvas.width / rect.width);
-  crosshair.y = (e.clientY - rect.top) * (canvas.height / rect.height);
-});
+                // Если утка улетела за пределы экрана
+                if ((direction === 1 && currentX > window.innerWidth) || 
+                    (direction === -1 && currentX < -80)) {
+                    clearInterval(moveInterval);
+                    duck.remove();
+                    
+                    // Засчитываем промах, если утка не была подбита (проверяем по эмодзи)
+                    if (!duck.innerHTML.includes('💥')) {
+                        misses++;
+                        missesDisplay.textContent = misses;
+                        if (misses >= 5) {
+                            endGame();
+                        }
+                    }
+                }
+            }, 20);
+        }
 
-canvas.addEventListener('pointerdown', (e) => {
-  let rect = canvas.getBoundingClientRect();
-  let clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
-  let clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+        // Клик мимо утки (промах)
+        gameContainer.addEventListener('mousedown', () => {
+            if (!isPlaying) return;
+            // Можно добавить звук выстрела или эффект, если захочешь
+        });
 
-  crosshair.x = clickX;
-  crosshair.y = clickY;
+        function endGame() {
+            isPlaying = false;
+            clearInterval(gameInterval);
+            finalScoreDisplay.textContent = score;
+            gameOverScreen.style.display = 'block';
+        }
 
-  playShootSound();
-  if (soundEnabled && tg && tg.HapticFeedback) {
-    try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
-  }
-
-  ducks.forEach(duck => {
-    if (!duck.isDead && Math.abs(clickX - duck.x) < 26 && Math.abs(clickY - duck.y) < 26) {
-      duck.isDead = true;
-      duck.vx = 0;
-      duck.vy = 0;
-      score += 1000;
-      playQuackSound();
-    }
-  });
-
-  document.getElementById('scoreTxt').textContent = "СЧЕТ: " + score;
-});
-
-function gameLoop() {
-  ctx.fillStyle = '#050b1a';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = '#112244';
-  ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
-  ctx.fillStyle = '#1e7b34';
-  ctx.beginPath();
-  ctx.arc(90, canvas.height - 40, 80, Math.PI, 0, false);
-  ctx.arc(270, canvas.height - 30, 100, Math.PI, 0, false);
-  ctx.fill();
-
-  ducks.forEach(duck => {
-    duck.update();
-    duck.draw();
-  });
-
-  ctx.strokeStyle = '#ff3366';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(crosshair.x, crosshair.y, 12, 0, Math.PI * 2);
-  ctx.moveTo(crosshair.x - 16, crosshair.y); ctx.lineTo(crosshair.x + 16, crosshair.y);
-  ctx.moveTo(crosshair.x, crosshair.y - 16); ctx.lineTo(crosshair.x, crosshair.y + 16);
-  ctx.stroke();
-
-  requestAnimationFrame(gameLoop);
-}
-
-requestAnimationFrame(gameLoop);
-</script>
+        // Автоматически запускаем игру при загрузке
+        window.onload = startGame;
+    </script>
 </body>
 </html>
