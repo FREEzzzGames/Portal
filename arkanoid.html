@@ -107,7 +107,7 @@ let balls = [{
   vy: -3
 }];
 
-// Блоки (меньшего размера, плотная сетка)
+// Блоки
 const brickRowCount = 6;
 const brickColumnCount = 10;
 const brickWidth = 33;
@@ -117,23 +117,20 @@ const brickOffsetTop = 40;
 const brickOffsetLeft = 12;
 
 let bricks = [];
-
-// Падающие бонусы
-let powerUps = []; // {x, y, type}
+let powerUps = []; 
 
 function initLevel() {
   bricks = [];
   for (let c = 0; c < brickColumnCount; c++) {
     bricks[c] = [];
     for (let r = 0; r < brickRowCount; r++) {
-      // 5 разных типов рисунков/узоров (значения от 1 до 5)
       let patternType = (r + c) % 5 + 1;
       bricks[c][r] = {
         x: (c * (brickWidth + brickPadding)) + brickOffsetLeft,
         y: (r * (brickHeight + brickPadding)) + brickOffsetTop,
         status: 1,
         pattern: patternType,
-        hasPowerUp: Math.random() < 0.25 // 25% шанс скрытого улучшения в блоке
+        hasPowerUp: Math.random() < 0.25 
       };
     }
   }
@@ -141,19 +138,17 @@ function initLevel() {
 
 initLevel();
 
-// Отрисовка текстуры/рисунка блока (5 разных видов)
+// Отрисовка 5 разных узоров на блоках
 function drawBrickPattern(bx, by, bw, bh, pattern) {
   ctx.fillStyle = '#010206';
   ctx.fillRect(bx, by, bw, bh);
 
   if (pattern === 1) {
-    // Стиль 1: Неоновая рамка + точка
     ctx.fillStyle = '#20e8ff';
     ctx.fillRect(bx+1, by+1, bw-2, bh-2);
     ctx.fillStyle = '#010206';
     ctx.fillRect(bx+4, by+4, bw-8, bh-8);
   } else if (pattern === 2) {
-    // Стиль 2: Полоски
     ctx.fillStyle = '#ff3366';
     ctx.fillRect(bx+1, by+1, bw-2, bh-2);
     ctx.fillStyle = '#ffd52c';
@@ -161,19 +156,16 @@ function drawBrickPattern(bx, by, bw, bh, pattern) {
     ctx.fillRect(bx+14, by+2, 4, bh-4);
     ctx.fillRect(bx+24, by+2, 4, bh-4);
   } else if (pattern === 3) {
-    // Стиль 3: Крест / Шахматка
     ctx.fillStyle = '#00ff88';
     ctx.fillRect(bx+1, by+1, bw-2, bh-2);
     ctx.fillStyle = '#010206';
     ctx.fillRect(bx+2, by+4, bw-4, bh-8);
   } else if (pattern === 4) {
-    // Стиль 4: Двойной алмаз
     ctx.fillStyle = '#b033ff';
     ctx.fillRect(bx+1, by+1, bw-2, bh-2);
     ctx.fillStyle = '#ffd52c';
     ctx.fillRect(bx + bw/2 - 3, by + 2, 6, bh - 4);
   } else {
-    // Стиль 5: Золотой ошейник
     ctx.fillStyle = '#ffd52c';
     ctx.fillRect(bx+1, by+1, bw-2, bh-2);
     ctx.fillStyle = '#ff3366';
@@ -181,7 +173,6 @@ function drawBrickPattern(bx, by, bw, bh, pattern) {
   }
 }
 
-// Управление движением платформы
 let isLeft = false;
 let isRight = false;
 
@@ -200,10 +191,9 @@ function update() {
   if (paddle.x < 0) paddle.x = 0;
   if (paddle.x + paddle.w > canvas.width) paddle.x = canvas.width - paddle.w;
 
-  // Движение бонусов
+  // Движение падающих бонусов
   powerUps.forEach(p => {
     p.y += 2;
-    // Столкновение с платформой
     if (p.y + 10 >= paddle.y && p.x >= paddle.x && p.x <= paddle.x + paddle.w) {
       haptic();
       if (p.type === 'wide') {
@@ -225,7 +215,6 @@ function update() {
     ball.x += ball.vx;
     ball.y += ball.vy;
 
-    // Стены
     if (ball.x - ball.r < 0 || ball.x + ball.r > canvas.width) {
       ball.vx *= -1;
       haptic();
@@ -235,7 +224,6 @@ function update() {
       haptic();
     }
 
-    // Платформа
     if (ball.y + ball.r >= paddle.y && ball.x >= paddle.x && ball.x <= paddle.x + paddle.w) {
       let hitPoint = (ball.x - (paddle.x + paddle.w / 2)) / (paddle.w / 2);
       ball.vx = hitPoint * 5;
@@ -243,7 +231,6 @@ function update() {
       haptic();
     }
 
-    // Столкновение с блоками
     for (let c = 0; c < brickColumnCount; c++) {
       for (let r = 0; r < brickRowCount; r++) {
         let b = bricks[c][r];
@@ -254,13 +241,11 @@ function update() {
             score += 50;
             haptic();
 
-            // Шанс выпадения скрытого улучшения
             if (b.hasPowerUp) {
               let pType = Math.random() < 0.5 ? 'wide' : 'multi';
               powerUps.push({x: b.x + brickWidth/2, y: b.y, type: pType});
             }
 
-            // Проверка победы
             let won = true;
             outer: for (let cc = 0; cc < brickColumnCount; cc++) {
               for (let rr = 0; rr < brickRowCount; rr++) {
@@ -277,7 +262,7 @@ function update() {
     }
   });
 
-взять в учет падение шара ниже экрана
+  // Проверка падения шаров ниже экрана
   balls = balls.filter(ball => ball.y - ball.r < canvas.height);
   if (balls.length === 0) {
     lives--;
@@ -302,7 +287,6 @@ function draw() {
   ctx.fillStyle = '#010206';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Отрисовка блоков с 5 паттернами
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
       if (bricks[c][r].status === 1) {
@@ -312,7 +296,6 @@ function draw() {
     }
   }
 
-  // Отрисовка бонусов
   powerUps.forEach(p => {
     ctx.fillStyle = p.type === 'wide' ? '#00ff88' : '#ffd52c';
     ctx.shadowBlur = 8;
@@ -321,13 +304,11 @@ function draw() {
   });
   ctx.shadowBlur = 0;
 
-  // Отрисовка платформы (стеклянный неон)
   ctx.fillStyle = '#20e8ff';
   ctx.shadowBlur = 10;
   ctx.shadowColor = '#20e8ff';
   ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
 
-  // Отрисовка шаров
   balls.forEach(ball => {
     ctx.beginPath();
     ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
