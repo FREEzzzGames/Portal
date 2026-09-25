@@ -14,8 +14,8 @@
   --border-col: #20e8ff;
   --accent-col: #20e8ff;
   --title-col: #ffd52c;
-  --btn-bg: rgba(16, 26, 60, 0.95);
-  --btn-hover: #213c8f;
+  --glass-bg: rgba(32, 232, 255, 0.06);
+  --glass-hover: rgba(32, 232, 255, 0.18);
   --neon-glow: rgba(32, 232, 255, 0.35);
 }
 body.theme-matrix {
@@ -26,8 +26,8 @@ body.theme-matrix {
   --border-col: #00ff88;
   --accent-col: #00ff88;
   --title-col: #00ff88;
-  --btn-bg: rgba(8, 38, 18, 0.95);
-  --btn-hover: #135c2e;
+  --glass-bg: rgba(0, 255, 136, 0.06);
+  --glass-hover: rgba(0, 255, 136, 0.18);
   --neon-glow: rgba(0, 255, 136, 0.35);
 }
 body.theme-fire {
@@ -38,8 +38,8 @@ body.theme-fire {
   --border-col: #ff6b30;
   --accent-col: #ff6b30;
   --title-col: #ffd52c;
-  --btn-bg: rgba(40, 14, 10, 0.95);
-  --btn-hover: #802219;
+  --glass-bg: rgba(255, 107, 48, 0.06);
+  --glass-hover: rgba(255, 107, 48, 0.18);
   --neon-glow: rgba(255, 107, 48, 0.35);
 }
 
@@ -94,14 +94,14 @@ body{
 }
 .profile-box {
   font-size: 10px; color: var(--accent-col); display: flex; align-items: center; gap: 5px;
-  cursor: pointer; background: var(--btn-bg); padding: 3px 6px; border-radius: 5px; border: 1px solid var(--border-col);
+  cursor: pointer; background: rgba(16, 26, 60, 0.8); padding: 3px 6px; border-radius: 5px; border: 1px solid var(--border-col);
 }
-.profile-box:active { background: var(--btn-hover); }
+.profile-box:active { background: var(--glass-hover); }
 .user-avatar { width: 18px; height: 18px; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-size: 11px; border: 1px solid var(--accent-col); }
 
 .cabinet-btns { display: flex; gap: 4px; }
 .cab-btn {
-  background: var(--btn-bg); border: 1px solid var(--border-col); color: var(--title-col);
+  background: rgba(16, 26, 60, 0.8); border: 1px solid var(--border-col); color: var(--title-col);
   padding: 3px 8px; border-radius: 5px; font-size: 11px; cursor: pointer;
 }
 
@@ -123,13 +123,13 @@ body{
 /* КНОПКИ ДЕЙСТВИЙ */
 .actions-row { display: flex; gap: 6px; justify-content: center; flex-shrink: 0; z-index: 55; }
 .action-btn {
-  background: var(--btn-bg); border: 1px solid var(--border-col); color: var(--title-col);
+  background: rgba(16, 26, 60, 0.8); border: 1px solid var(--border-col); color: var(--title-col);
   padding: 4px 10px; border-radius: 5px; font: bold 9px monospace; cursor: pointer;
   box-shadow: 0 0 5px var(--neon-glow); transition: .15s;
 }
-.action-btn:active { background: var(--btn-hover); transform: scale(0.95); }
+.action-btn:active { background: var(--glass-hover); transform: scale(0.95); }
 
-/* СЕТКА ИКОНОК 3x4 (ЧЕТКО ВПИСАНА В ЭКРАН) */
+/* СЕТКА ИКОНОК 3x4 С ЭФФЕКТОМ СТЕКЛА */
 .grid-menu { 
   display: grid; 
   grid-template-columns: repeat(3, 1fr); 
@@ -142,13 +142,20 @@ body{
 }
 .icon-btn {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  border: 2px solid var(--accent-col); border-radius: 7px;
-  background: var(--btn-bg); color: #fff; text-decoration: none; cursor: pointer;
-  box-shadow: 0 0 5px var(--neon-glow); transition: .15s; padding: 2px; gap: 2px;
+  border: 1.5px solid var(--border-col); border-radius: 8px;
+  background: var(--glass-bg); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  color: #fff; text-decoration: none; cursor: pointer;
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.05), 0 0 6px var(--neon-glow);
+  transition: all 0.15s ease; width: 100%; height: 100%; padding: 2px; gap: 2px;
 }
-.icon-btn:active { transform: scale(0.93); background: var(--btn-hover); border-color: var(--title-col); }
-.icon-emoji { font-size: 20px; filter: drop-shadow(0 0 3px var(--accent-col)); }
-.icon-title { font-size: 7.5px; font-weight: bold; color: var(--title-col); text-align: center; line-height: 1; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.icon-btn:active { 
+  transform: scale(0.94); 
+  background: var(--glass-hover); 
+  border-color: var(--title-col);
+  box-shadow: inset 0 0 15px rgba(255,255,255,0.15), 0 0 10px var(--title-col);
+}
+.icon-emoji { font-size: 24px; filter: drop-shadow(0 0 4px var(--accent-col)); }
+.icon-title { font-size: 7.5px; font-weight: bold; color: var(--title-col); text-align: center; line-height: 1; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-shadow: 0 1px 2px rgba(0,0,0,0.9); }
 
 /* ПАНЕЛЬ УПРАВЛЕНИЯ ВНИЗУ */
 .arcade-deck {
@@ -191,11 +198,11 @@ body{
   border-radius: 6px; border: 1px solid var(--border-col);
 }
 .avatar-item { 
-  aspect-ratio: 1/1; background: var(--btn-bg); border: 1px solid var(--border-col); 
+  aspect-ratio: 1/1; background: var(--glass-bg); border: 1px solid var(--border-col); 
   border-radius: 6px; display: flex; justify-content: center; align-items: center; 
-  font-size: 22px; cursor: pointer; 
+  font-size: 22px; cursor: pointer; backdrop-filter: blur(2px);
 }
-.avatar-item.active { border-color: var(--title-col); box-shadow: 0 0 8px var(--title-col); background: var(--btn-hover); }
+.avatar-item.active { border-color: var(--title-col); box-shadow: 0 0 8px var(--title-col); background: var(--glass-hover); }
 
 .footer-info { color: #83a4c9; font-size: 7px; letter-spacing: 1px; text-align: center; flex-shrink: 0; }
 </style>
@@ -228,7 +235,7 @@ body{
       <button class="action-btn" onclick="sharePortal()">📤 ДРУЗЬЯМ</button>
     </div>
 
-    <!-- Сетка иконок 3x4 (Строго фиксирована) -->
+    <!-- Сетка иконок 3x4 (эффект стекла) -->
     <div class="grid-menu">
       <a href="snake.html" class="icon-btn"><div class="icon-emoji">🐍</div><div class="icon-title">SNAKE</div></a>
       <a href="tetris.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">TETRIS</div></a>
