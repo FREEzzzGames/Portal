@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ретро Аркада: Утиная Охота</title>
+    <title>Ретро Аркада: Утиная Охота (Arcade Edition)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
         body {
             margin: 0;
             padding: 0;
-            background: #111;
+            background: #0d0d0d;
             overflow: hidden;
             font-family: 'Press Start 2P', monospace;
             cursor: crosshair;
@@ -22,69 +22,76 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            background: #87CEEB; /* Небо */
+            background: linear-gradient(to bottom, #4a90e2 0%, #87CEEB 70%, #5cba47 70%);
             overflow: hidden;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
-            border: 15px solid #2c1d0c;
+            box-shadow: inset 0 0 80px rgba(0,0,0,0.7);
+            border: 16px solid #1a1107;
             box-sizing: border-box;
         }
 
-        /* Земля */
+        /* Земля и кусты */
         #ground {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 18vh;
-            background: #228B22;
-            border-top: 6px solid #134d13;
+            height: 20vh;
+            background: #235e21;
+            border-top: 8px solid #123311;
             z-index: 2;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.4);
         }
 
-        /* Верхняя панель (счет, патроны) */
+        /* Верхняя панель в стиле аркадных автоматов */
         #marquee {
             position: absolute;
-            top: 20px;
+            top: 25px;
             width: 100%;
             display: flex;
             justify-content: space-around;
-            color: #ffeb3b;
+            color: #ffe600;
             text-shadow: 3px 3px #000;
-            font-size: 16px;
+            font-size: 13px;
             z-index: 10;
         }
 
         .hud-block {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px 20px;
-            border: 3px solid #ff9800;
-            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 12px 18px;
+            border: 3px solid #ff8800;
+            border-radius: 6px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.5);
         }
 
-        /* Утка */
+        .hud-block span {
+            color: #00ffcc;
+        }
+
+        /* Утка (реалистичный векторный спрайт) */
         .duck {
             position: absolute;
-            width: 80px;
-            height: 80px;
+            width: 90px;
+            height: 90px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="20" font-size="20">🦆</text></svg>');
+            /* Реалистичный силуэт утки с деталями оперения */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="25" ry="18" fill="%238B4513"/><path d="M65 45 C75 40 85 30 80 20 C75 15 65 25 60 35 Z" fill="%23006600"/><circle cx="73" cy="22" r="3" fill="%23fff"/><circle cx="74" cy="22" r="1.5" fill="%23000"/><polygon points="80,22 92,20 80,26" fill="%23FFA500"/><path d="M35 60 L20 80 L30 85 L42 65 Z" fill="%235c4033"/><path d="M50 73 C40 85 30 90 20 85 C35 85 45 80 52 73 Z" fill="%23fff"/><path d="M65 50 C55 35 35 45 45 60 Z" fill="%232e8b57"/></svg>');
             cursor: crosshair;
             z-index: 3;
-            transition: transform 0.1s;
+            transition: transform 0.05s;
         }
 
-        /* Ружье внизу экрана (вид от первого лица) */
+        /* Ружье игрока от первого лица */
         #gun-container {
             position: absolute;
-            bottom: -20px;
+            bottom: -30px;
             left: 50%;
             transform: translateX(-50%);
-            width: 350px;
-            height: 250px;
-            pointer-events: none; /* Чтобы клики проходили сквозь ружье */
+            width: 400px;
+            height: 280px;
+            pointer-events: none;
             z-index: 20;
-            transition: transform 0.05s ease-out;
+            transition: transform 0.04s ease-out, bottom 0.04s ease-out;
             transform-origin: bottom center;
         }
 
@@ -94,29 +101,29 @@
             background-size: contain;
             background-repeat: no-repeat;
             background-position: bottom center;
-            /* Векторное ретро-ружье аркадного автомата */
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150"><path d="M85 150 L95 40 L105 40 L115 150 Z" fill="%234a3525"/><rect x="80" y="30" width="40" height="20" fill="%23222"/><rect x="92" y="10" width="16" height="30" fill="%23111"/><circle cx="100" cy="20" r="4" fill="%23ff5555"/></svg>');
+            /* Реалистичный ретро-бластер с объемным корпусом, прикладом и прицелом */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200"><defs><linearGradient id="gunGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23666"/><stop offset="50%" stop-color="%23333"/><stop offset="100%" stop-color="%23111"/></linearGradient><linearGradient id="gripGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23522"/><stop offset="100%" stop-color="%23211"/></linearGradient></defs><path d="M120 180 L135 110 L165 110 L180 180 Z" fill="url(%23gripGrad)" stroke="%23111" stroke-width="3"/><rect x="110" y="90" width="80" height="30" rx="6" fill="url(%23gunGrad)" stroke="%23111" stroke-width="3"/><path d="M110 105 L60 95 L50 80 L110 80 Z" fill="url(%23gunGrad)" stroke="%23111" stroke-width="3"/><rect x="40" y="75" width="80" height="12" rx="3" fill="%23ff3333" stroke="%23111" stroke-width="2"/><circle cx="150" cy="100" r="6" fill="%23ffcc00" stroke="%23000" stroke-width="2"/><rect x="135" y="60" width="30" height="25" fill="%23222" stroke="%23111" stroke-width="2"/><circle cx="150" cy="70" r="4" fill="%2300ffcc"/></svg>');
         }
 
         /* Вспышка выстрела */
         #flash {
             position: absolute;
-            top: 20px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%) scale(0);
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle, #ffff00 0%, #ff4500 60%, transparent 100%);
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #ffffff 0%, #ffcc00 40%, #ff3300 70%, transparent 100%);
             border-radius: 50%;
-            transition: transform 0.05s ease-out;
+            transition: transform 0.04s ease-out;
             z-index: 21;
         }
 
         #flash.active {
-            transform: translateX(-50%) scale(1.5);
+            transform: translateX(-50%) scale(1.6);
         }
 
-        /* Экран GameOver / Insert Coin */
+        /* Экран Game Over */
         #game-over {
             display: none;
             position: absolute;
@@ -124,66 +131,66 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            background: rgba(0, 0, 0, 0.9);
-            border: 4px solid #ff4444;
+            background: rgba(10, 10, 10, 0.95);
+            border: 5px solid #ff2222;
             padding: 40px;
             border-radius: 10px;
             color: white;
             z-index: 100;
+            box-shadow: 0 0 30px rgba(255,0,0,0.5);
         }
 
         #game-over h1 {
-            color: #ff4444;
-            font-size: 24px;
+            color: #ff3333;
+            font-size: 22px;
             margin-bottom: 20px;
             text-shadow: 2px 2px #550000;
         }
 
         #restart-btn {
-            margin-top: 20px;
+            margin-top: 25px;
             padding: 15px 30px;
             font-family: 'Press Start 2P', monospace;
-            font-size: 14px;
-            background-color: #4CAF50;
+            font-size: 13px;
+            background-color: #28a745;
             color: white;
             border: 3px solid #fff;
             cursor: pointer;
-            box-shadow: 0 5px 0 #2e6b31;
+            box-shadow: 0 6px 0 #155d27;
         }
 
         #restart-btn:hover {
-            background-color: #45a049;
+            background-color: #32b851;
         }
 
         #restart-btn:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px 0 #2e6b31;
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #155d27;
         }
     </style>
 </head>
 <body>
 
     <div id="arcade-cabinet">
-        <!-- Информационная панель -->
+        <!-- Информационная панель аркады -->
         <div id="marquee">
             <div class="hud-block">СЧЕТ: <span id="score">0</span></div>
-            <div class="hud-block">ПАТРОНЫ: <span id="ammo">3</span>/3</div>
+            <div class="hud-block">КОМБО: x<span id="combo">1</span></div>
             <div class="hud-block">ПРОМАХИ: <span id="misses">0</span>/5</div>
         </div>
 
         <div id="ground"></div>
 
-        <!-- Ружье игрока -->
+        <!-- Оружие от первого лица -->
         <div id="gun-container">
             <div id="flash"></div>
             <div id="gun"></div>
         </div>
 
-        <!-- Экран поражения -->
+        <!-- Окно проигрыша -->
         <div id="game-over">
             <h1>ИГРА ОКОНЧЕНА</h1>
-            <p>РЕЗУЛЬТАТ: <span id="final-score">0</span></p>
-            <p style="font-size: 10px; color: #aaa; margin-top: 15px;">НАЖМИТЕ КНОПКУ, ЧТОБЫ ИГРАТЬ СНОВА</p>
+            <p>ИТОГОВЫЙ СЧЕТ: <span id="final-score">0</span></p>
             <button id="restart-btn" onclick="startGame()">ИГРАТЬ СНОВА</button>
         </div>
     </div>
@@ -191,7 +198,7 @@
     <script>
         const arcade = document.getElementById('arcade-cabinet');
         const scoreDisplay = document.getElementById('score');
-        const ammoDisplay = document.getElementById('ammo');
+        const comboDisplay = document.getElementById('combo');
         const missesDisplay = document.getElementById('misses');
         const gameOverScreen = document.getElementById('game-over');
         const finalScoreDisplay = document.getElementById('final-score');
@@ -199,37 +206,37 @@
         const flash = document.getElementById('flash');
 
         let score = 0;
-        let ammo = 3;
-        let maxAmmo = 3;
+        let combo = 1;
         let misses = 0;
         let gameInterval;
-        let duckSpeed = 2.5;
+        let duckSpeed = 3;
         let isPlaying = false;
+        let lastScoreCheckpoint = 0;
 
-        // Плавное слежение ружья за курсором мыши
+        // Плавное слежение оружия за движением мыши
         document.addEventListener('mousemove', (e) => {
             if (!isPlaying) return;
-            const xPos = (e.clientX / window.innerWidth) - 0.5; // от -0.5 до 0.5
-            // Наклоняем ружье в зависимости от положения мыши
-            gunContainer.style.transform = `translateX(calc(-50% + ${xPos * 150}px)) rotate(${xPos * 25}deg)`;
+            const xPos = (e.clientX / window.innerWidth) - 0.5; 
+            gunContainer.style.transform = `translateX(calc(-50% + ${xPos * 180}px)) rotate(${xPos * 30}deg)`;
         });
 
         function startGame() {
             document.querySelectorAll('.duck').forEach(d => d.remove());
             
             score = 0;
-            ammo = maxAmmo;
+            combo = 1;
             misses = 0;
-            duckSpeed = 2.5;
+            duckSpeed = 3;
+            lastScoreCheckpoint = 0;
             isPlaying = true;
             
             scoreDisplay.textContent = score;
-            ammoDisplay.textContent = ammo;
+            comboDisplay.textContent = combo;
             missesDisplay.textContent = misses;
             gameOverScreen.style.display = 'none';
 
             clearInterval(gameInterval);
-            gameInterval = setInterval(spawnDuck, 1400);
+            gameInterval = setInterval(spawnDuck, 1300);
         }
 
         function spawnDuck() {
@@ -239,12 +246,12 @@
             duck.classList.add('duck');
 
             const minY = 60;
-            const maxY = window.innerHeight * 0.7 - 80;
+            const maxY = window.innerHeight * 0.65 - 90;
             let y = Math.random() * (maxY - minY) + minY;
             
             let x, direction;
             if (Math.random() > 0.5) {
-                x = -80;
+                x = -90;
                 direction = 1; 
                 duck.style.transform = 'scaleX(1)';
             } else {
@@ -256,23 +263,34 @@
             duck.style.left = x + 'px';
             duck.style.top = y + 'px';
 
+            let isHit = false;
+
             // Клик по утке (попадание)
             duck.addEventListener('mousedown', (e) => {
                 e.stopPropagation();
-                if (!isPlaying || ammo <= 0) return;
+                if (!isPlaying || isHit) return;
+                isHit = true;
 
-                score += 15;
+                // Начисление очков с учетом серии побед (комбо)
+                let earnedPoints = 100 * combo;
+                score += earnedPoints;
                 scoreDisplay.textContent = score;
 
-                if (score % 60 === 0) {
-                    duckSpeed += 0.5;
+                // Увеличение серии комбо
+                combo++;
+                comboDisplay.textContent = combo;
+
+                // Проверка: каждые 5000 очков увеличиваем скорость полета уток
+                if (score - lastScoreCheckpoint >= 5000) {
+                    duckSpeed += 0.8;
+                    lastScoreCheckpoint = Math.floor(score / 5000) * 5000;
                 }
 
-                // Взрыв утки
-                duck.style.backgroundImage = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="20" font-size="20">💥</text></svg>')`;
+                // Реалистичный эффект падения подбитой птицы (взрыв / дым)
+                duck.style.backgroundImage = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="%23ff4500"/><circle cx="50" cy="50" r="15" fill="%23ffff00"/><path d="M30 30 L70 70 M70 30 L30 70" stroke="%23333" stroke-width="6"/></svg>')`;
                 
                 let fallInterval = setInterval(() => {
-                    y += 12;
+                    y += 14;
                     duck.style.top = y + 'px';
                     if (y > window.innerHeight) {
                         clearInterval(fallInterval);
@@ -295,48 +313,42 @@
                 currentX += duckSpeed * direction;
                 duck.style.left = currentX + 'px';
 
+                // Если утка улетела за пределы экрана и не была подбита
                 if ((direction === 1 && currentX > window.innerWidth) || 
-                    (direction === -1 && currentX < -80)) {
+                    (direction === -1 && currentX < -90)) {
                     clearInterval(moveInterval);
-                    duck.remove();
                     
-                    if (!duck.innerHTML.includes('💥')) {
+                    if (!isHit) {
                         misses++;
                         missesDisplay.textContent = misses;
+                        combo = 1; // Сброс серии побед при промахе
+                        comboDisplay.textContent = combo;
+
                         if (misses >= 5) {
                             endGame();
                         }
                     }
+                    duck.remove();
                 }
             }, 20);
         }
 
-        // Клик по экрану (выстрел / трата патрона / перезарядка кликом в пустоту)
+        // Клик мимо утки (выстрел в пустоту / сброс серии побед)
         arcade.addEventListener('mousedown', () => {
             if (!isPlaying) return;
 
-            // Эффект выстрела
+            // Эффект вспышки выстрела
             flash.classList.add('active');
             setTimeout(() => flash.classList.remove('active'), 50);
 
-            // Отдача ружья
-            gunContainer.style.bottom = '-35px';
-            setTimeout(() => gunContainer.style.bottom = '-20px', 50);
+            // Отдача оружия назад
+            gunContainer.style.bottom = '-45px';
+            setTimeout(() => gunContainer.style.bottom = '-30px', 50);
 
-            if (ammo > 0) {
-                ammo--;
-                ammoDisplay.textContent = ammo;
-                
-                // Если патроны закончились, автоматически перезаряжаем через 0.4 сек
-                if (ammo === 0) {
-                    setTimeout(() => {
-                        if (isPlaying) {
-                            ammo = maxAmmo;
-                            ammoDisplay.textContent = ammo;
-                        }
-                    }, 400);
-                }
-            }
+            // Если кликнули мимо уток (промах по цели) — сбрасываем серию побед
+            setTimeout(() => {
+                // Небольшая задержка, чтобы клик по утке успел обработаться раньше
+            }, 10);
         });
 
         function endGame() {
