@@ -25,26 +25,42 @@ body::before {
   border-radius: 16px;
   box-shadow: 0 0 30px rgba(21, 60, 255, 0.25);
 }
+
+/* ПРОФИЛЬ ИГРОКА В ШАПКЕ */
+.header-top {
+  display: flex; justify-content: space-between; align-items: center; padding: 2px 4px;
+}
+.profile-box {
+  font-size: 10px; color: #20eaff; text-align: left; display: flex; align-items: center; gap: 6px;
+  background: rgba(6, 10, 27, 0.9); padding: 4px 8px; border-radius: 8px; border: 1px solid #20e8ff33;
+}
+.sound-btn {
+  background: rgba(6, 10, 27, 0.9); border: 1px solid #20e8ff33; color: #ffd52c;
+  padding: 4px 8px; border-radius: 8px; font-size: 12px; cursor: pointer;
+}
+
 h1{
-  color:#ffd52c;font-size:22px;margin:3px 0 0;
+  color:#ffd52c;font-size:22px;margin:2px 0 0;
   text-shadow:2px 2px #e52225, 0 0 12px #ffd52c88; letter-spacing:2px;
 }
 .subtitle {
   color: #20eaff; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px;
 }
 
-/* КНОПКА ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК */
-.tabs {
+/* ВКЛАДКИ И ДОП. КНОПКИ (РАНДОМ И ПОДЕЛИТЬСЯ) */
+.actions-row {
   display: flex; gap: 6px; justify-content: center; margin-bottom: 2px;
 }
-.tab-btn {
+.action-btn {
   background: rgba(6, 10, 27, 0.9); border: 2px solid #20e8ff55; color: #83a4c9;
-  padding: 6px 12px; border-radius: 8px; font: bold 10px monospace; cursor: pointer; transition: .2s;
+  padding: 5px 8px; border-radius: 8px; font: bold 9px monospace; cursor: pointer; transition: .2s;
+  display: flex; align-items: center; gap: 4px;
 }
-.tab-btn.active {
+.action-btn.active {
   background: #0f2766; border-color: #20e8ff; color: #ffd52c;
   box-shadow: 0 0 10px #00d9ff33;
 }
+.action-btn.special { border-color: #ffd42a55; color: #ffd42a; }
 
 /* СЕТКА ИКОНОК */
 .grid-menu{display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;padding:2px;}
@@ -66,7 +82,7 @@ h1{
 
 /* ТАБЛИЦА ЛИДЕРОВ */
 .leaderboard {
-  display: flex; flex-direction: column; gap: 5px; padding: 2px; max-height: 280px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 5px; padding: 2px; max-height: 260px; overflow-y: auto;
 }
 .leaderboard.hidden { display: none; }
 .score-row {
@@ -82,15 +98,23 @@ h1{
 </head>
 <body>
 <div class="portal">
+  <!-- ШАПКА С ПРОФИЛЕМ И ЗВУКОМ -->
+  <div class="header-top">
+    <div class="profile-box" id="userProfile">👤 Игрок</div>
+    <button class="sound-btn" id="soundToggle" onclick="toggleSound()">🔊 Звук</button>
+  </div>
+
   <div>
     <h1>FREEzzzGames</h1>
     <div class="subtitle">ARCADE PORTAL 🕹️</div>
   </div>
 
-  <!-- Кнопки переключения: Игры / Топ -->
-  <div class="tabs">
-    <button class="tab-btn active" id="tabGames" onclick="switchTab('games')">🎮 АРКАДЫ</button>
-    <button class="tab-btn" id="tabTop" onclick="switchTab('top')">🏆 ТОП ИГРОКОВ</button>
+  <!-- КНОПКИ НАВИГАЦИИ И СПЕЦ-ФУНКЦИЙ -->
+  <div class="actions-row">
+    <button class="action-btn active" id="tabGames" onclick="switchTab('games')">🎮 ИГРЫ</button>
+    <button class="action-btn" id="tabTop" onclick="switchTab('top')">🏆 ТОП</button>
+    <button class="action-btn special" onclick="playRandomGame()">🎲 РАНДОМ</button>
+    <button class="action-btn" onclick="sharePortal()">📤 ДРУЗЬЯМ</button>
   </div>
   
   <!-- Сетка игр -->
@@ -117,12 +141,33 @@ h1{
     <div class="score-row"><span class="score-name">🦘 Retro Jumper</span><span class="score-val" id="scoreJumper">0</span></div>
   </div>
 
-  <div class="footer-info">ВЫБЕРИ ИГРУ ИЛИ ПРОВЕРЬ РЕКОРДЫ</div>
+  <div class="footer-info">ВЫБЕРИ ИГРУ ИЛИ ИСПЫТАЙ УДАЧУ</div>
 </div>
 
 <script>
 const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
 
+// 1. Профиль игрока из Telegram
+if (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.first_name) {
+  document.getElementById('userProfile').innerHTML = `👤 ${tg.initDataUnsafe.user.first_name}`;
+}
+
+// 2. Звуковой переключатель (состояние в localStorage)
+let soundEnabled = localStorage.getItem("freezzzSound") !== "false";
+updateSoundBtn();
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem("freezzzSound", soundEnabled);
+  updateSoundBtn();
+}
+
+function updateSoundBtn() {
+  const btn = document.getElementById('soundToggle');
+  btn.textContent = soundEnabled ? "🔊 Звук" : "🔇 Вих.";
+}
+
+// 3. Переключение вкладок (Игры / Топ)
 function switchTab(tab) {
   const gamesGrid = document.getElementById('gamesGrid');
   const lbView = document.getElementById('leaderboardView');
@@ -143,6 +188,7 @@ function switchTab(tab) {
   }
 }
 
+// 4. Загрузка рекордов
 function loadScores() {
   document.getElementById('scoreDuck').textContent = localStorage.getItem("duckMudackHighScore") || "0";
   let bestLap = localStorage.getItem("f1WallBestLap") || localStorage.getItem("retroBestLap");
@@ -151,6 +197,24 @@ function loadScores() {
   document.getElementById('scoreSnake').textContent = localStorage.getItem("snakeHighScore") || "0";
   document.getElementById('scorePlatformer').textContent = localStorage.getItem("platformerBest") || "0";
   document.getElementById('scoreJumper').textContent = localStorage.getItem("doodleBest") || "0";
+}
+
+// 5. Рандомный выбор игры
+const gamesList = ["duck.html", "race.html", "tetris.html", "snake.html", "mario.html", "pong.html", "arkanoid.html", "invaders.html", "doodle.html", "minesweeper.html"];
+function playRandomGame() {
+  const randomGame = gamesList[Math.floor(Math.random() * gamesList.length)];
+  window.location.href = randomGame;
+}
+
+// 6. Поделиться ботом с друзьями
+function sharePortal() {
+  const botUrl = "https://t.me/" + (tg.initDataUnsafe && tg.initDataUnsafe.bot ? tg.initDataUnsafe.bot.username : "your_bot_username");
+  const shareText = "🕹️ Крутой аркадный портал FREEzzzGames! 10 ретро-игр прямо в Telegram:";
+  if (tg.openTelegramLink) {
+    tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(shareText)}`);
+  } else {
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(shareText)}`);
+  }
 }
 </script>
 </body>
