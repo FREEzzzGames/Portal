@@ -50,7 +50,6 @@ canvas { width: 100%; height: 100%; object-fit: contain; background: linear-grad
 <div class="portal">
   <div class="game-ui-header">
     <div id="scoreTxt" style="color:var(--title-col);">СЧЕТ: 0</div>
-    <div id="speedTxt" style="color:var(--accent-col);">СКОРОСТЬ: 1/10</div>
   </div>
 
   <div id="gameContainer">
@@ -118,12 +117,6 @@ function playQuackSound() {
   } catch(e) {}
 }
 
-function haptic() {
-  if (soundEnabled && tg && tg.HapticFeedback) {
-    try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
-  }
-}
-
 const canvas = document.getElementById('dCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -140,12 +133,8 @@ class Duck {
     this.h = 28;
     this.x = Math.random() < 0.5 ? -40 : canvas.width + 40;
     this.y = Math.random() * (canvas.height - 180) + 30;
-    
-    let speedLevel = Math.min(10, Math.floor(score / 10000) + 1);
-    let baseSpeed = 1.0 + (speedLevel * 0.35);
-    
-    this.vx = (this.x < 0) ? baseSpeed : -baseSpeed;
-    this.vy = (Math.random() - 0.5) * 0.8;
+    this.vx = (this.x < 0) ? 2 : -2;
+    this.vy = (Math.random() - 0.5) * 1.5;
     this.isDead = false;
     this.fallAnim = 0;
   }
@@ -194,7 +183,9 @@ canvas.addEventListener('pointerdown', (e) => {
   crosshair.y = clickY;
 
   playShootSound();
-  haptic();
+  if (soundEnabled && tg && tg.HapticFeedback) {
+    try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
+  }
 
   ducks.forEach(duck => {
     if (!duck.isDead && Math.abs(clickX - duck.x) < 26 && Math.abs(clickY - duck.y) < 26) {
@@ -206,9 +197,7 @@ canvas.addEventListener('pointerdown', (e) => {
     }
   });
 
-  let speedLevel = Math.min(10, Math.floor(score / 10000) + 1);
   document.getElementById('scoreTxt').textContent = "СЧЕТ: " + score;
-  document.getElementById('speedTxt').textContent = `СКОРОСТЬ: ${speedLevel}/10`;
 });
 
 function gameLoop() {
