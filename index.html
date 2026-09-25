@@ -139,15 +139,9 @@ body{
   flex-grow: 1; position: relative; z-index: 150; display: flex; flex-direction: column; overflow: hidden;
 }
 
-/* СПИСОК ИГР (УДОБНЫЕ КАРТОЧКИ В ВЕРТИКАЛЬНОМ СКРОЛЛЕ) */
+/* СПИСОК ИГР */
 .games-list { 
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  padding-right: 2px;
+  display: flex; flex-direction: column; gap: 6px; width: 100%; height: 100%; overflow-y: auto; padding-right: 2px;
 }
 .game-card {
   display: flex; align-items: center; gap: 10px;
@@ -157,11 +151,7 @@ body{
   box-shadow: inset 0 0 10px rgba(255,255,255,0.03), 0 0 5px var(--neon-glow);
   transition: all 0.15s ease; padding: 6px 10px; width: 100%; flex-shrink: 0;
 }
-.game-card:active { 
-  transform: scale(0.98); 
-  background: var(--glass-hover); 
-  border-color: var(--title-col);
-}
+.game-card:active { transform: scale(0.98); background: var(--glass-hover); border-color: var(--title-col); }
 .game-card-emoji { font-size: 24px; filter: drop-shadow(0 0 3px var(--accent-col)); flex-shrink: 0; }
 .game-card-info { display: flex; flex-direction: column; gap: 2px; text-align: left; flex-grow: 1; overflow: hidden; }
 .game-card-title { font-size: 11px; font-weight: bold; color: var(--title-col); }
@@ -249,7 +239,7 @@ body{
 
   <!-- ЭКРАН ЭЛТ (CRT МОНИТОР) -->
   <div class="arcade-screen">
-    <!-- РАВНОМЕРНО РАСПРЕДЕЛЕННАЯ ПАНЕЛЬ МЕНЮ -->
+    <!-- ПАНЕЛЬ МЕНЮ -->
     <div class="actions-grid">
       <button class="action-btn active" id="tabGames" onclick="switchTab('games')">🎮 ИГРЫ</button>
       <button class="action-btn" id="tabTop" onclick="switchTab('top')">🏆 ТОП</button>
@@ -260,7 +250,7 @@ body{
 
     <!-- КОНТЕЙНЕР ВКЛАДОК -->
     <div class="screen-content">
-      <!-- Список игр (Вкладка Игры) -->
+      <!-- Список игр -->
       <div class="games-list" id="gamesGrid">
         <a href="snake.html" class="game-card"><div class="game-card-emoji">🐍</div><div class="game-card-info"><div class="game-card-title">SNAKE</div><div class="game-card-desc">Классическая змейка</div></div></a>
         <a href="tetris.html" class="game-card"><div class="game-card-emoji">🧱</div><div class="game-card-info"><div class="game-card-title">TETRIS</div><div class="game-card-desc">Ретро стакан с блоками</div></div></a>
@@ -274,14 +264,15 @@ body{
         <a href="minesweeper.html" class="game-card"><div class="game-card-emoji">💣</div><div class="game-card-info"><div class="game-card-title">MINESWEEPER</div><div class="game-card-desc">Классический сапёр</div></div></a>
       </div>
 
-      <!-- Таблица рекордов (Вкладка ТОП) -->
+      <!-- Таблица рекордов (ТОП) -->
       <div class="panel-view hidden" id="leaderboardView">
         <div class="row-card"><span class="row-name">🐍 Classic Snake</span><span class="row-val" id="scoreSnake">0</span></div>
         <div class="row-card"><span class="row-name">🧱 Tetris Classic</span><span class="row-val" id="scoreTetris">0</span></div>
         <div class="row-card"><span class="row-name">🦘 Retro Jumper</span><span class="row-val" id="scoreJumper">0</span></div>
+        <div class="row-card"><span class="row-name">🧱 Arkanoid</span><span class="row-val" id="scoreArkanoid">0</span></div>
       </div>
 
-      <!-- Система достижений (Вкладка АЧИВКИ) -->
+      <!-- Система достижений (АЧИВКИ) -->
       <div class="panel-view hidden" id="achievementsView">
         <div class="row-card achievement" id="achSnake"><div><span class="row-name">🐍 Мастер Змейки</span><div class="ach-desc">Счет от 100 в Snake</div></div><span class="row-val" id="statSnake">🔒</span></div>
         <div class="row-card achievement" id="achTetris"><div><span class="row-name">🧱 Архитектор Тетриса</span><div class="ach-desc">Счет от 500 в Tetris</div></div><span class="row-val" id="statTetris">🔒</span></div>
@@ -371,7 +362,7 @@ function applyTheme() {
   document.getElementById('bodyRoot').className = themes[currentThemeIdx] || "";
 }
 
-// ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+// ФУНКЦИОНАЛ ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК (ТОП И АЧИВКИ)
 function switchTab(tab) {
   haptic();
   ['gamesGrid', 'leaderboardView', 'achievementsView'].forEach(id => {
@@ -399,9 +390,11 @@ function loadScores() {
   document.getElementById('scoreSnake').textContent = localStorage.getItem("snakeHighScore") || "0";
   document.getElementById('scoreTetris').textContent = localStorage.getItem("tetrisHighScore") || "0";
   document.getElementById('scoreJumper').textContent = localStorage.getItem("doodleBest") || "0";
+  document.getElementById('scoreArkanoid').textContent = localStorage.getItem("arkanoidHighScore") || "0";
 }
 
 function checkAchievements() {
+  loadScores();
   if (Number(localStorage.getItem("snakeHighScore") || 0) >= 100) {
     document.getElementById('achSnake').classList.add('unlocked');
     document.getElementById('statSnake').textContent = "✅";
@@ -451,9 +444,4 @@ let noteIndex = 0;
 function playNote(freq) {
   if (!soundEnabled) return;
   try {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+    if (!audioCtx)
