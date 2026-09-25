@@ -14,6 +14,8 @@
   --title-col: #ffd52c;
   --btn-bg: rgba(16, 26, 60, 0.95);
   --btn-hover: #213c8f;
+  --glass-bg: rgba(32, 232, 255, 0.08);
+  --neon-glow: rgba(32, 232, 255, 0.35);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
@@ -22,17 +24,19 @@ body{
   background: var(--bg-grad); position: fixed; inset: 0;
 }
 .portal{
-  width: 100%; height: 100%; max-width: 480px; max-height: 100vh;
+  width: 100%; height: 100%; max-width: 420px; max-height: 100vh;
   text-align: center; display: flex; flex-direction: column; gap: 6px;
   overflow-y: auto; padding: 8px; z-index: 10;
   background: var(--portal-bg); border: 2px solid var(--border-col);
   border-radius: 12px; box-shadow: 0 0 25px rgba(0,0,0,0.8);
   position: relative;
 }
-.game-ui-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; width: 100%; flex-shrink: 0; }
+.game-ui-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; width: 100%; flex-shrink: 0; font-size: 11px; }
 
-#gameContainer { flex-grow: 1; width: 100%; position: relative; background: #5c94fc; border: 2px solid var(--accent-col); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; cursor: none; }
-canvas { width: 100%; height: 100%; object-fit: contain; background: #5c94fc; }
+#gameContainer { flex-grow: 1; width: 100%; position: relative; background: #050b1a; border: 2px solid var(--accent-col); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; cursor: crosshair; }
+canvas { width: 100%; height: 100%; object-fit: contain; background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d); }
+
+.game-info-footer { display: flex; justify-content: space-around; padding: 6px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; font-size: 10px; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -45,12 +49,16 @@ canvas { width: 100%; height: 100%; object-fit: contain; background: #5c94fc; }
 
 <div class="portal">
   <div class="game-ui-header">
-    <div style="color:var(--title-col); font-size:12px; font-weight:bold;" id="scoreTxt">СЧЕТ: 0</div>
-    <div id="speedTxt" style="color:var(--accent-col); font-size:10px;">СКОРОСТЬ: 1/10</div>
+    <div id="scoreTxt" style="color:var(--title-col);">СЧЕТ: 0</div>
+    <div id="speedTxt" style="color:var(--accent-col);">СКОРОСТЬ: 1/10</div>
   </div>
 
   <div id="gameContainer">
-    <canvas id="duckCanvas" width="360" height="420"></canvas>
+    <canvas id="dCanvas" width="360" height="420"></canvas>
+  </div>
+
+  <div class="game-info-footer">
+    <span style="color:var(--title-col);">ЦЕЛИЙСЯ И СТРЕЙЛЯЙ ПО УТКАМ! 🎯</span>
   </div>
 </div>
 
@@ -69,7 +77,6 @@ function getAudioContext() {
   return audioCtx;
 }
 
-// Звук выстрела бластера
 function playShootSound() {
   if (!soundEnabled) return;
   try {
@@ -80,7 +87,7 @@ function playShootSound() {
     osc.frequency.setValueAtTime(180, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.15);
 
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
 
     osc.connect(gain);
@@ -90,7 +97,6 @@ function playShootSound() {
   } catch(e) {}
 }
 
-// Звук кряканья утки
 function playQuackSound() {
   if (!soundEnabled) return;
   try {
@@ -102,7 +108,7 @@ function playQuackSound() {
     osc.frequency.linearRampToValueAtTime(190, ctx.currentTime + 0.1);
     osc.frequency.linearRampToValueAtTime(270, ctx.currentTime + 0.2);
 
-    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
 
     osc.connect(gain);
@@ -118,7 +124,7 @@ function haptic() {
   }
 }
 
-const canvas = document.getElementById('duckCanvas');
+const canvas = document.getElementById('dCanvas');
 const ctx = canvas.getContext('2d');
 
 let score = 0;
@@ -130,40 +136,41 @@ class Duck {
     this.reset();
   }
   reset() {
-    this.x = Math.random() < 0.5 ? -30 : canvas.width + 30;
-    this.y = Math.random() * 200 + 40;
+    this.w = 36;
+    this.h = 28;
+    this.x = Math.random() < 0.5 ? -40 : canvas.width + 40;
+    this.y = Math.random() * (canvas.height - 180) + 30;
     
-    // Плавная скорость, увеличивающаяся на 1 пункт каждые 10 000 очков (всего 10 скоростей)
     let speedLevel = Math.min(10, Math.floor(score / 10000) + 1);
-    let baseSpeed = 0.9 + (speedLevel * 0.35);
+    let baseSpeed = 1.0 + (speedLevel * 0.35);
     
     this.vx = (this.x < 0) ? baseSpeed : -baseSpeed;
     this.vy = (Math.random() - 0.5) * 0.8;
-    this.hit = false;
-    this.fallTimer = 0;
+    this.isDead = false;
+    this.fallAnim = 0;
   }
   update() {
-    if (!this.hit) {
+    if (!this.isDead) {
       this.x += this.vx;
       this.y += this.vy;
-      if (this.y < 30 || this.y > 280) this.vy *= -1;
+      if (this.y < 20 || this.y > canvas.height - 100) this.vy *= -1;
 
-      if ((this.vx > 0 && this.x > canvas.width + 30) || (this.vx < 0 && this.x < -30)) {
+      if ((this.vx > 0 && this.x > canvas.width + 40) || (this.vx < 0 && this.x < -40)) {
         this.reset();
       }
     } else {
-      this.fallTimer += 4;
-      this.y += this.fallTimer;
+      this.fallAnim += 4;
+      this.y += this.fallAnim;
       if (this.y > canvas.height + 40) {
         this.reset();
       }
     }
   }
   draw() {
-    ctx.font = '26px monospace';
+    ctx.font = '28px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    let emoji = this.hit ? '🎯' : (this.vx > 0 ? '🦆' : '🐥');
+    let emoji = this.isDead ? '💥' : (this.vx > 0 ? '🦆' : '🐥');
     ctx.fillText(emoji, this.x, this.y);
   }
 }
@@ -172,7 +179,6 @@ for (let i = 0; i < 3; i++) {
   ducks.push(new Duck());
 }
 
-// Прицел двигается за пальцем / курсором
 canvas.addEventListener('pointermove', (e) => {
   let rect = canvas.getBoundingClientRect();
   crosshair.x = (e.clientX - rect.left) * (canvas.width / rect.width);
@@ -190,11 +196,11 @@ canvas.addEventListener('pointerdown', (e) => {
   playShootSound();
   haptic();
 
-  ducks.forEach(d => {
-    if (!d.hit && Math.abs(clickX - d.x) < 25 && Math.abs(clickY - d.y) < 25) {
-      d.hit = true;
-      d.vx = 0;
-      d.vy = 0;
+  ducks.forEach(duck => {
+    if (!duck.isDead && Math.abs(clickX - duck.x) < 26 && Math.abs(clickY - duck.y) < 26) {
+      duck.isDead = true;
+      duck.vx = 0;
+      duck.vy = 0;
       score += 1000;
       playQuackSound();
     }
@@ -206,35 +212,28 @@ canvas.addEventListener('pointerdown', (e) => {
 });
 
 function gameLoop() {
-  // Ретро-фон приставки: небо (#5c94fc), холмы и кусты внизу
-  ctx.fillStyle = '#5c94fc';
+  ctx.fillStyle = '#050b1a';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Холмы заднего плана
-  ctx.fillStyle = '#70c048';
+  ctx.fillStyle = '#112244';
+  ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
+  ctx.fillStyle = '#1e7b34';
   ctx.beginPath();
-  ctx.arc(80, canvas.height - 50, 90, Math.PI, 0, false);
-  ctx.arc(280, canvas.height - 40, 110, Math.PI, 0, false);
+  ctx.arc(90, canvas.height - 40, 80, Math.PI, 0, false);
+  ctx.arc(270, canvas.height - 30, 100, Math.PI, 0, false);
   ctx.fill();
 
-  // Трава/кусты внизу
-  ctx.fillStyle = '#d88000';
-  ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
-  ctx.fillStyle = '#00a800';
-  ctx.fillRect(0, canvas.height - 35, canvas.width, 35);
-
-  ducks.forEach(d => {
-    d.update();
-    d.draw();
+  ducks.forEach(duck => {
+    duck.update();
+    duck.draw();
   });
 
-  // Прицел бластера (8-бит стиль)
-  ctx.strokeStyle = '#ff0000';
+  ctx.strokeStyle = '#ff3366';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.arc(crosshair.x, crosshair.y, 10, 0, Math.PI * 2);
-  ctx.moveTo(crosshair.x - 14, crosshair.y); ctx.lineTo(crosshair.x + 14, crosshair.y);
-  ctx.moveTo(crosshair.x, crosshair.y - 14); ctx.lineTo(crosshair.x, crosshair.y + 14);
+  ctx.arc(crosshair.x, crosshair.y, 12, 0, Math.PI * 2);
+  ctx.moveTo(crosshair.x - 16, crosshair.y); ctx.lineTo(crosshair.x + 16, crosshair.y);
+  ctx.moveTo(crosshair.x, crosshair.y - 16); ctx.lineTo(crosshair.x, crosshair.y + 16);
   ctx.stroke();
 
   requestAnimationFrame(gameLoop);
