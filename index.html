@@ -46,18 +46,18 @@ body.theme-fire {
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;width:100%;height:100%;background:#010206;color:#fff;font-family:monospace;overflow:hidden;}
 body{
-  padding:6px;display:flex;justify-content:center;align-items:center;
+  padding:4px;display:flex;justify-content:center;align-items:center;
   background: var(--bg-grad); position: fixed; inset: 0;
 }
 
 /* КОРПУС АРКАДНОГО АВТОМАТА */
 .arcade-cabinet {
-  width: 100%; height: 100%; max-width: 440px; max-height: 100vh;
+  width: 100%; height: 100%; max-width: 420px; max-height: 100vh;
   background: var(--cabinet-body);
-  border: 4px solid var(--cabinet-border);
-  border-radius: 20px;
-  box-shadow: 0 0 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(0,0,0,0.8);
-  display: flex; flex-direction: column; padding: 10px; gap: 8px;
+  border: 3px solid var(--cabinet-border);
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.9);
+  display: flex; flex-direction: column; padding: 6px; gap: 6px;
   position: relative; overflow: hidden;
 }
 
@@ -65,120 +65,124 @@ body{
 .arcade-marquee {
   background: rgba(0,0,0,0.6);
   border: 2px solid var(--border-col);
-  border-radius: 10px;
-  padding: 6px;
+  border-radius: 8px;
+  padding: 4px;
   text-align: center;
-  box-shadow: 0 0 15px var(--neon-glow);
+  box-shadow: 0 0 10px var(--neon-glow);
   flex-shrink: 0;
 }
 .marquee-title {
   color: var(--title-col);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   margin: 0;
-  text-shadow: 2px 2px #ff0055, 0 0 10px var(--title-col);
-  letter-spacing: 3px;
+  text-shadow: 2px 2px #ff0055, 0 0 8px var(--title-col);
+  letter-spacing: 2px;
 }
 .marquee-sub {
   color: var(--accent-col);
-  font-size: 8px;
-  letter-spacing: 4px;
+  font-size: 7px;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
-/* ПРОФИЛЬ И ПАНЕЛЬ УПРАВЛЕНИЯ НА КОРПУСЕ */
+/* ШАПКА КАБИНЕТА */
 .cabinet-top-panel {
   display: flex; justify-content: space-between; align-items: center;
   background: rgba(0,0,0,0.4); border: 1px solid var(--border-col);
-  border-radius: 8px; padding: 4px 8px; flex-shrink: 0;
+  border-radius: 6px; padding: 3px 6px; flex-shrink: 0;
 }
 .profile-box {
-  font-size: 10px; color: var(--accent-col); display: flex; align-items: center; gap: 6px;
-  cursor: pointer; background: var(--btn-bg); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-col);
+  font-size: 10px; color: var(--accent-col); display: flex; align-items: center; gap: 5px;
+  cursor: pointer; background: var(--btn-bg); padding: 3px 6px; border-radius: 5px; border: 1px solid var(--border-col);
 }
 .profile-box:active { background: var(--btn-hover); }
-.user-avatar { width: 22px; height: 22px; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-size: 13px; border: 1px solid var(--accent-col); }
+.user-avatar { width: 20px; height: 20px; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-size: 12px; border: 1px solid var(--accent-col); }
 
-.cabinet-btns { display: flex; gap: 6px; }
+.cabinet-btns { display: flex; gap: 4px; }
 .cab-btn {
   background: var(--btn-bg); border: 1px solid var(--border-col); color: var(--title-col);
-  padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;
+  padding: 3px 8px; border-radius: 5px; font-size: 11px; cursor: pointer;
 }
 
-/* ЭМУЛЯЦИЯ ЭКРАНА АВТОМАТА (CRT МОНИТОР) */
+/* ЭКРАН ЭЛТ (CRT МОНИТОР) */
 .arcade-screen {
   flex-grow: 1; background: var(--screen-bg);
-  border: 4px inset var(--cabinet-border);
-  border-radius: 12px;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.9), 0 0 10px var(--neon-glow);
-  display: flex; flex-direction: column; padding: 8px; gap: 6px;
-  overflow-y: auto; position: relative;
+  border: 3px inset var(--cabinet-border);
+  border-radius: 10px;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.9), 0 0 8px var(--neon-glow);
+  display: flex; flex-direction: column; padding: 6px; gap: 4px;
+  overflow: hidden; position: relative;
 }
-/* Сканлинии ЭЛТ экрана */
+/* Сканлинии */
 .arcade-screen::after {
   content: " "; display: block; position: absolute; inset: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-  background-size: 100% 3px; z-index: 50; pointer-events: none; opacity: 0.6;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+  background-size: 100% 3px; z-index: 50; pointer-events: none; opacity: 0.5;
 }
 
-/* СПЕЦ-КНОПКИ НА ЭКРАНЕ */
+/* КНОПКИ ДЕЙСТВИЙ */
 .actions-row { display: flex; gap: 6px; justify-content: center; flex-shrink: 0; z-index: 55; }
 .action-btn {
-  background: var(--btn-bg); border: 2px solid var(--border-col); color: var(--title-col);
-  padding: 6px 12px; border-radius: 6px; font: bold 9px monospace; cursor: pointer;
-  box-shadow: 0 0 8px var(--neon-glow); transition: .15s;
+  background: var(--btn-bg); border: 1px solid var(--border-col); color: var(--title-col);
+  padding: 5px 10px; border-radius: 5px; font: bold 9px monospace; cursor: pointer;
+  box-shadow: 0 0 6px var(--neon-glow); transition: .15s;
 }
 .action-btn:active { background: var(--btn-hover); transform: scale(0.95); }
 
-/* СЕТКА ИКОНОК 3x4 НА ЭКРАНЕ */
-.grid-menu { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr); gap: 8px; flex-grow: 1; z-index: 55; }
+/* СЕТКА ИКОНОК 3x4 (СТРОГО ОГРАНИЧЕНА) */
+.grid-menu { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  grid-template-rows: repeat(4, 1fr); 
+  gap: 6px; 
+  flex-grow: 1; 
+  z-index: 55; 
+  overflow-y: auto;
+  padding: 2px;
+}
 .icon-btn {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  aspect-ratio: 1/1; border: 2px solid var(--accent-col); border-radius: 10px;
+  border: 2px solid var(--accent-col); border-radius: 8px;
   background: var(--btn-bg); color: #fff; text-decoration: none; cursor: pointer;
-  box-shadow: 0 0 8px var(--neon-glow); transition: .15s; padding: 4px; gap: 2px;
+  box-shadow: 0 0 6px var(--neon-glow); transition: .15s; padding: 4px; gap: 2px;
 }
-.icon-btn:active { transform: scale(.92); background: var(--btn-hover); border-color: var(--title-col); }
-.icon-emoji { font-size: 26px; filter: drop-shadow(0 0 4px var(--accent-col)); }
-.icon-title { font-size: 8px; font-weight: bold; color: var(--title-col); text-align: center; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.icon-btn:active { transform: scale(0.93); background: var(--btn-hover); border-color: var(--title-col); }
+.icon-emoji { font-size: 22px; filter: drop-shadow(0 0 3px var(--accent-col)); }
+.icon-title { font-size: 8px; font-weight: bold; color: var(--title-col); text-align: center; line-height: 1; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
-/* ПАНЕЛЬ УПРАВЛЕНИЯ ВНИЗУ АВТОМАТА (КОНСОЛЬ) */
+/* ПАНЕЛЬ УПРАВЛЕНИЯ ВНИЗУ (КОНСОЛЬ) */
 .arcade-deck {
   background: linear-gradient(to bottom, #111526, #070912);
   border: 2px solid var(--cabinet-border);
-  border-radius: 10px;
-  padding: 8px;
+  border-radius: 8px;
+  padding: 6px;
   display: flex; justify-content: space-around; align-items: center;
-  flex-shrink: 0; box-shadow: inset 0 2px 5px rgba(255,255,255,0.05);
+  flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(255,255,255,0.05);
 }
 .joystick-mock {
-  width: 36px; height: 36px; background: radial-gradient(circle at 35% 35%, #ff3366, #880022);
-  border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.8), inset 0 2px 4px rgba(255,255,255,0.4);
-  position: relative;
+  width: 28px; height: 28px; background: radial-gradient(circle at 35% 35%, #ff3366, #880022);
+  border-radius: 50%; box-shadow: 0 3px 6px rgba(0,0,0,0.8); cursor: pointer;
 }
-.arcade-buttons-mock { display: flex; gap: 8px; align-items: center; }
+.arcade-buttons-mock { display: flex; gap: 6px; align-items: center; }
 .arcade-btn-red {
-  width: 28px; height: 28px; background: radial-gradient(circle at 35% 35%, #ff4444, #990000);
-  border-radius: 50%; box-shadow: 0 3px 6px rgba(0,0,0,0.8), inset 0 2px 3px rgba(255,255,255,0.4);
-  cursor: pointer;
+  width: 22px; height: 22px; background: radial-gradient(circle at 35% 35%, #ff4444, #990000);
+  border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.8); cursor: pointer;
 }
-.arcade-btn-red:active { transform: scale(0.9); }
 .arcade-btn-yellow {
-  width: 28px; height: 28px; background: radial-gradient(circle at 35% 35%, #ffdd00, #997700);
-  border-radius: 50%; box-shadow: 0 3px 6px rgba(0,0,0,0.8), inset 0 2px 3px rgba(255,255,255,0.4);
-  cursor: pointer;
+  width: 22px; height: 22px; background: radial-gradient(circle at 35% 35%, #ffdd00, #997700);
+  border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.8); cursor: pointer;
 }
-.arcade-btn-yellow:active { transform: scale(0.9); }
 
 /* МОДАЛЬНОЕ ОКНО АВАТАРОВ */
 .modal-overlay { position: absolute; inset: 0; background: rgba(2,3,11,0.9); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 15px; }
-.modal-card { background: var(--cabinet-body); border: 2px solid var(--border-col); border-radius: 12px; width: 100%; max-width: 320px; padding: 14px; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.9); display: flex; flex-direction: column; gap: 8px; z-index: 101; }
-.avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-height: 180px; overflow-y: auto; padding: 2px; }
-.avatar-item { aspect-ratio: 1/1; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; }
-.avatar-item.active { border-color: var(--title-col); box-shadow: 0 0 8px var(--title-col); }
+.modal-card { background: var(--cabinet-body); border: 2px solid var(--border-col); border-radius: 10px; width: 100%; max-width: 300px; padding: 12px; text-align: center; box-shadow: 0 0 25px rgba(0,0,0,0.9); display: flex; flex-direction: column; gap: 6px; z-index: 101; }
+.avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; max-height: 160px; overflow-y: auto; padding: 2px; }
+.avatar-item { aspect-ratio: 1/1; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 5px; display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; }
+.avatar-item.active { border-color: var(--title-col); box-shadow: 0 0 6px var(--title-col); }
 
-.footer-info { color: #83a4c9; font-size: 8px; letter-spacing: 1px; text-align: center; flex-shrink: 0; }
+.footer-info { color: #83a4c9; font-size: 7px; letter-spacing: 1px; text-align: center; flex-shrink: 0; }
 </style>
 </head>
 <body id="bodyRoot">
@@ -190,7 +194,7 @@ body{
     <div class="marquee-sub">ARCADE CABINET 🕹️ v2.0</div>
   </div>
 
-  <!-- ШАПКА КАБИНЕТА (ПРОФИЛЬ И ТЕМЫ) -->
+  <!-- ШАПКА КАБИНЕТА -->
   <div class="cabinet-top-panel">
     <div class="profile-box" onclick="openAvatarModal()">
       <div class="user-avatar" id="currentAvatarEmoji">👾</div>
@@ -209,7 +213,7 @@ body{
       <button class="action-btn" onclick="sharePortal()">📤 ДРУЗЬЯМ</button>
     </div>
 
-    <!-- Сетка иконок 3x4 -->
+    <!-- Сетка иконок 3x4 (Строго выровнена) -->
     <div class="grid-menu">
       <a href="snake.html" class="icon-btn"><div class="icon-emoji">🐍</div><div class="icon-title">SNAKE</div></a>
       <a href="tetris.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">TETRIS</div></a>
@@ -221,12 +225,12 @@ body{
       <a href="invaders.html" class="icon-btn"><div class="icon-emoji">👾</div><div class="icon-title">INVADERS</div></a>
       <a href="doodle.html" class="icon-btn"><div class="icon-emoji">🦘</div><div class="icon-title">JUMPER</div></a>
       <a href="minesweeper.html" class="icon-btn"><div class="icon-emoji">💣</div><div class="icon-title">MINESWEEPER</div></a>
-      <div class="icon-btn" style="opacity:0.5; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
-      <div class="icon-btn" style="opacity:0.5; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
+      <div class="icon-btn" style="opacity:0.4; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
+      <div class="icon-btn" style="opacity:0.4; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
     </div>
   </div>
 
-  <!-- ПАНЕЛЬ УПРАВЛЕНИЯ (КНОПКИ И ДЖОЙСТИК ВНИЗУ АВТОМАТА) -->
+  <!-- ПАНЕЛЬ УПРАВЛЕНИЯ ВНИЗУ АВТОМАТА -->
   <div class="arcade-deck">
     <div class="joystick-mock" onclick="playRandomGame()" title="Джойстик"></div>
     <div class="footer-info">COIN INSERTED • PRESS GAME</div>
@@ -240,10 +244,10 @@ body{
 <!-- МОДАЛЬНОЕ ОКНО КОЛЛЕКЦИИ АВАТАРОВ -->
 <div class="modal-overlay hidden" id="avatarModal">
   <div class="modal-card">
-    <h3 style="color:var(--title-col); margin:0; font-size:13px;">КОЛЛЕКЦИЯ АВАТАРОВ</h3>
-    <p style="font-size:9px; color:#83a4c9; margin:0;">Выбирай аватарку или заходи ежедневно за новой!</p>
+    <h3 style="color:var(--title-col); margin:0; font-size:12px;">КОЛЛЕКЦИЯ АВАТАРОВ</h3>
+    <p style="font-size:8px; color:#83a4c9; margin:0;">Выбирай аватарку или заходи ежедневно за новой!</p>
     <div class="avatar-grid" id="avatarGrid"></div>
-    <button class="action-btn" style="width:100%; justify-content:center; padding:8px;" onclick="closeAvatarModal()">ЗАКРЫТЬ</button>
+    <button class="action-btn" style="width:100%; justify-content:center; padding:6px;" onclick="closeAvatarModal()">ЗАКРЫТЬ</button>
   </div>
 </div>
 
