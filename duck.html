@@ -14,8 +14,6 @@
   --title-col: #ffd52c;
   --btn-bg: rgba(16, 26, 60, 0.95);
   --btn-hover: #213c8f;
-  --glass-bg: rgba(32, 232, 255, 0.08);
-  --neon-glow: rgba(32, 232, 255, 0.35);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
@@ -24,24 +22,21 @@ body{
   background: var(--bg-grad); position: fixed; inset: 0;
 }
 .portal{
-  width: 100%; height: 100%; max-width: 420px; max-height: 100vh;
+  width: 100%; height: 100%; max-width: 480px; max-height: 100vh;
   text-align: center; display: flex; flex-direction: column; gap: 6px;
   overflow-y: auto; padding: 8px; z-index: 10;
   background: var(--portal-bg); border: 2px solid var(--border-col);
   border-radius: 12px; box-shadow: 0 0 25px rgba(0,0,0,0.8);
   position: relative;
 }
-.game-ui-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; width: 100%; flex-shrink: 0; font-size: 11px; }
+.game-ui-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; width: 100%; flex-shrink: 0; }
 
-#gameContainer { flex-grow: 1; width: 100%; position: relative; background: #050b1a; border: 2px solid var(--accent-col); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; cursor: crosshair; }
-canvas { width: 100%; height: 100%; object-fit: contain; background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d); }
-
-.game-info-footer { display: flex; justify-content: space-around; padding: 6px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; font-size: 10px; flex-shrink: 0; }
+#gameContainer { flex-grow: 1; width: 100%; position: relative; background: #010206; border: 2px solid var(--accent-col); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; cursor: crosshair; }
+canvas { width: 100%; height: 100%; object-fit: contain; background: #010206; }
 </style>
 </head>
 <body>
 
-<!-- УНИВЕРСАЛЬНАЯ ПЛАВАЮЩАЯ КНОПКА ВОЗВРАТА В МЕНЮ -->
 <div style="position: fixed; top: 10px; left: 10px; z-index: 99999;">
   <a href="index.html" style="display: flex; align-items: center; gap: 4px; background: rgba(140, 5, 5, 0.95); border: 2px solid #ff6b55; color: #fff; padding: 8px 14px; border-radius: 8px; text-decoration: none; font-family: monospace; font-size: 11px; font-weight: bold; box-shadow: 0 0 15px rgba(255,0,0,0.7); -webkit-tap-highlight-color: transparent;">
     ⬅ МЕНЮ
@@ -50,16 +45,13 @@ canvas { width: 100%; height: 100%; object-fit: contain; background: linear-grad
 
 <div class="portal">
   <div class="game-ui-header">
-    <div id="scoreTxt" style="color:var(--title-col);">СЧЕТ: 0</div>
-    <div id="speedTxt" style="color:var(--accent-col);">СКОРОСТЬ: 1/10</div>
+    <div style="width: 50px;"></div>
+    <div style="color:var(--title-col); font-size:12px; font-weight:bold;" id="scoreTxt">СЧЕТ: 0</div>
+    <div id="speedTxt" style="color:var(--accent-col); font-size:10px;">СКОРОСТЬ: 1/10</div>
   </div>
 
   <div id="gameContainer">
-    <canvas id="dCanvas" width="360" height="420"></canvas>
-  </div>
-
-  <div class="game-info-footer">
-    <span style="color:var(--title-col);">ЦЕЛИЙСЯ И СТРЕЙЛЯЙ ПО УТКАМ! 🎯</span>
+    <canvas id="duckCanvas" width="360" height="480"></canvas>
   </div>
 </div>
 
@@ -78,7 +70,6 @@ function getAudioContext() {
   return audioCtx;
 }
 
-// Звук выстрела бластера
 function playShootSound() {
   if (!soundEnabled) return;
   try {
@@ -86,10 +77,10 @@ function playShootSound() {
     let osc = ctx.createOscillator();
     let gain = ctx.createGain();
     osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(180, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.15);
+    osc.frequency.setValueAtTime(150, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(20, ctx.currentTime + 0.15);
 
-    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
 
     osc.connect(gain);
@@ -99,7 +90,6 @@ function playShootSound() {
   } catch(e) {}
 }
 
-// Звук кряканья утки
 function playQuackSound() {
   if (!soundEnabled) return;
   try {
@@ -107,11 +97,11 @@ function playQuackSound() {
     let osc = ctx.createOscillator();
     let gain = ctx.createGain();
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(320, ctx.currentTime);
-    osc.frequency.linearRampToValueAtTime(190, ctx.currentTime + 0.1);
-    osc.frequency.linearRampToValueAtTime(270, ctx.currentTime + 0.2);
+    osc.frequency.setValueAtTime(300, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(180, ctx.currentTime + 0.1);
+    osc.frequency.linearRampToValueAtTime(250, ctx.currentTime + 0.2);
 
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
 
     osc.connect(gain);
@@ -127,55 +117,50 @@ function haptic() {
   }
 }
 
-const canvas = document.getElementById('dCanvas');
+const canvas = document.getElementById('duckCanvas');
 const ctx = canvas.getContext('2d');
 
 let score = 0;
 let ducks = [];
-let crosshair = { x: 180, y: 210 };
 
 class Duck {
   constructor() {
     this.reset();
   }
   reset() {
-    this.w = 36;
-    this.h = 28;
-    this.x = Math.random() < 0.5 ? -40 : canvas.width + 40;
-    this.y = Math.random() * (canvas.height - 180) + 30;
+    this.x = Math.random() < 0.5 ? -30 : canvas.width + 30;
+    this.y = Math.random() * 250 + 40;
     
-    // Плавная скорость, увеличивающаяся на 1 пункт каждые 10 000 очков (всего 10 скоростей)
     let speedLevel = Math.min(10, Math.floor(score / 10000) + 1);
-    let baseSpeed = 1.0 + (speedLevel * 0.35);
+    let baseSpeed = 0.8 + (speedLevel * 0.3);
     
     this.vx = (this.x < 0) ? baseSpeed : -baseSpeed;
-    this.vy = (Math.random() - 0.5) * 0.8;
-    this.isDead = false;
-    this.fallAnim = 0;
+    this.vy = (Math.random() - 0.5) * 0.6;
+    this.hit = false;
+    this.fallTimer = 0;
   }
   update() {
-    if (!this.isDead) {
+    if (!this.hit) {
       this.x += this.vx;
       this.y += this.vy;
-      if (this.y < 20 || this.y > canvas.height - 100) this.vy *= -1;
+      if (this.y < 30 || this.y > 320) this.vy *= -1;
 
-      if ((this.vx > 0 && this.x > canvas.width + 40) || (this.vx < 0 && this.x < -40)) {
+      if ((this.vx > 0 && this.x > canvas.width + 30) || (this.vx < 0 && this.x < -30)) {
         this.reset();
       }
     } else {
-      this.fallAnim += 4;
-      this.y += this.fallAnim;
+      this.fallTimer += 3;
+      this.y += this.fallTimer;
       if (this.y > canvas.height + 40) {
         this.reset();
       }
     }
   }
   draw() {
-    ctx.font = '28px monospace';
+    ctx.font = '24px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    let emoji = this.isDead ? '💥' : (this.vx > 0 ? '🦆' : '🐥');
-    ctx.fillText(emoji, this.x, this.y);
+    ctx.fillText(this.hit ? '🎯' : '🦆', this.x, this.y);
   }
 }
 
@@ -183,29 +168,19 @@ for (let i = 0; i < 3; i++) {
   ducks.push(new Duck());
 }
 
-// Управление прицелом и стрельба
-canvas.addEventListener('pointermove', (e) => {
-  let rect = canvas.getBoundingClientRect();
-  crosshair.x = (e.clientX - rect.left) * (canvas.width / rect.width);
-  crosshair.y = (e.clientY - rect.top) * (canvas.height / rect.height);
-});
-
 canvas.addEventListener('pointerdown', (e) => {
   let rect = canvas.getBoundingClientRect();
   let clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
   let clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
 
-  crosshair.x = clickX;
-  crosshair.y = clickY;
-
   playShootSound();
   haptic();
 
-  ducks.forEach(duck => {
-    if (!duck.isDead && Math.abs(clickX - duck.x) < 26 && Math.abs(clickY - duck.y) < 26) {
-      duck.isDead = true;
-      duck.vx = 0;
-      duck.vy = 0;
+  ducks.forEach(d => {
+    if (!d.hit && Math.abs(clickX - d.x) < 22 && Math.abs(clickY - d.y) < 22) {
+      d.hit = true;
+      d.vx = 0;
+      d.vy = 0;
       score += 1000;
       playQuackSound();
     }
@@ -217,31 +192,13 @@ canvas.addEventListener('pointerdown', (e) => {
 });
 
 function gameLoop() {
-  ctx.fillStyle = '#050b1a';
+  ctx.fillStyle = '#010206';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Пейзаж (холмы внизу)
-  ctx.fillStyle = '#112244';
-  ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
-  ctx.fillStyle = '#1e7b34';
-  ctx.beginPath();
-  ctx.arc(90, canvas.height - 40, 80, Math.PI, 0, false);
-  ctx.arc(270, canvas.height - 30, 100, Math.PI, 0, false);
-  ctx.fill();
-
-  ducks.forEach(duck => {
-    duck.update();
-    duck.draw();
+  ducks.forEach(d => {
+    d.update();
+    d.draw();
   });
-
-  // Отрисовка прицела бластера
-  ctx.strokeStyle = '#ff3366';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(crosshair.x, crosshair.y, 12, 0, Math.PI * 2);
-  ctx.moveTo(crosshair.x - 16, crosshair.y); ctx.lineTo(crosshair.x + 16, crosshair.y);
-  ctx.moveTo(crosshair.x, crosshair.y - 16); ctx.lineTo(crosshair.x, crosshair.y + 16);
-  ctx.stroke();
 
   requestAnimationFrame(gameLoop);
 }
