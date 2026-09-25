@@ -1,293 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Snake — FREEzzzGames</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root {
+  --bg-grad: radial-gradient(circle at 50% 20%, rgba(41, 16, 95, 0.9) 0%, rgba(7, 9, 34, 0.95) 50%, rgba(1, 2, 8, 1) 100%);
+  --portal-bg: rgba(4, 7, 20, 0.92);
+  --border-col: rgba(32, 232, 255, 0.4);
+  --accent-col: #20e8ff;
+  --title-col: #ffd52c;
+  --btn-bg: rgba(16, 26, 60, 0.95);
+  --btn-hover: #213c8f;
+  --glass-bg: rgba(32, 232, 255, 0.08);
+  --neon-glow: rgba(32, 232, 255, 0.35);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
+body{
+  padding:4px;display:flex;justify-content:center;align-items:center;
+  background: var(--bg-grad); position: fixed; inset: 0;
+}
+.portal{
+  width: 100%; height: 100%; max-width: 420px; max-height: 100vh;
+  text-align: center; display: flex; flex-direction: column; gap: 6px;
+  overflow-y: auto; padding: 8px; z-index: 10;
+  background: var(--portal-bg); border: 2px solid var(--border-col);
+  border-radius: 12px; box-shadow: 0 0 25px rgba(0,0,0,0.8);
+  position: relative;
+}
+.game-ui-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--btn-bg); border: 1px solid var(--border-col); border-radius: 8px; width: 100%; flex-shrink: 0; }
+
+#gameContainer { flex-grow: 1; width: 100%; position: relative; background: #010206; border: 2px solid var(--accent-col); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; }
+canvas { width: 100%; height: 100%; object-fit: contain; background: #010206; }
+
+/* УВЕЛИЧЕННЫЕ И МЯГКИЕ КНОПКИ УПРАВЛЕНИЯ */
+.game-controls { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; padding: 4px; flex-shrink: 0; }
+.dpad-row { display: flex; gap: 8px; justify-content: center; }
+.ctrl-pad-btn { 
+  background: var(--glass-bg); backdrop-filter: blur(4px);
+  border: 2px solid var(--accent-col); color: var(--title-col); 
+  font-size: 24px; width: 75px; height: 60px; border-radius: 10px; 
+  display: flex; justify-content: center; align-items: center; 
+  cursor: pointer; user-select: none; box-shadow: 0 0 10px var(--neon-glow); 
+  transition: transform 0.1s;
+}
+.ctrl-pad-btn:active { background: var(--btn-hover); transform: scale(0.92); border-color: var(--title-col); }
+</style>
+</head>
+<body>
+
 <!-- УНИВЕРСАЛЬНАЯ ПЛАВАЮЩАЯ КНОПКА ВОЗВРАТА В МЕНЮ -->
 <div style="position: fixed; top: 10px; left: 10px; z-index: 99999;">
   <a href="index.html" style="display: flex; align-items: center; gap: 4px; background: rgba(140, 5, 5, 0.95); border: 2px solid #ff6b55; color: #fff; padding: 8px 14px; border-radius: 8px; text-decoration: none; font-family: monospace; font-size: 11px; font-weight: bold; box-shadow: 0 0 15px rgba(255,0,0,0.7); -webkit-tap-highlight-color: transparent;">
     ⬅ МЕНЮ
   </a>
 </div>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>CLASSIC SNAKE — TG MINI APP</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;width:100%;height:100%;background:#02030b;color:#fff;font-family:monospace;overflow:hidden;}
-body{padding:6px;display:flex;justify-content:center;align-items:center;background:radial-gradient(circle at 50% 0,#29105f 0%,#070922 35%,#010208 85%);}
 
-.arcade{width:min(450px,100%);height:100%;max-height:800px;overflow:hidden;border:3px solid #151a32;border-radius:16px;background:#070a15;box-shadow:0 0 0 2px #292e4c,0 0 40px #153cff55;display:flex;flex-direction:column;}
-
-/* ТАБЛО И МЕНЮ ВВЕРХУ */
-.header-panel{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:radial-gradient(circle at 20% 50%,#692cff55,transparent 20%),#070925;border-bottom:3px solid #121936;}
-.marquee h1{margin:0;font-size:clamp(16px,3vw,20px);color:#ffd52c;text-shadow:2px 2px #e52225;}
-.stats{display:flex;gap:12px;font-size:11px;color:#20eaff;}
-.stats b{color:#fff;}
-
-/* ИГРОВОЕ ПОЛЕ */
-.screen-wrapper{flex-grow:1;position:relative;background:#05070e;overflow:hidden;display:flex;justify-content:center;align-items:center;padding:6px;}
-canvas{background:#03050c;border:2px solid #20e8ff;border-radius:6px;box-shadow:0 0 15px #00d9ff22;width:100%;height:100%;object-fit:contain;}
-
-/* КНОПКИ УПРАВЛЕНИЯ ПОСЕРЕДИНЕ ВНИЗУ */
-.controls{position:relative;z-index:20;display:flex;flex-direction:column;align-items:center;padding:10px;background:#070a18;border-top:3px solid #141c38;gap:6px;}
-.dpad{display:grid;grid-template-columns:repeat(3, 55px);grid-template-rows:repeat(2, 50px);gap:6px;}
-.ctrl-btn{border:2px solid rgba(255,255,255,.3);border-radius:10px;background:rgba(255,255,255,.08);color:#fff;font-size:22px;display:flex;justify-content:center;align-items:center;user-select:none;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.4);}
-.ctrl-btn:active{background:rgba(32,232,255,.35);border-color:#20e8ff;transform:scale(0.95);}
-.ctrl-btn.up{grid-column: 2;}
-.ctrl-btn.left{grid-column: 1; grid-row: 2;}
-.ctrl-btn.down{grid-column: 2; grid-row: 2;}
-.ctrl-btn.right{grid-column: 3; grid-row: 2;}
-
-.menu-row{display:flex;gap:10px;width:100%;max-width:250px;}
-.menu-btn{flex-grow:1;height:36px;border:2px solid #20e8ff;border-radius:6px;background:#0f2766;color:#fff;font:bold 11px monospace;cursor:pointer;box-shadow:0 0 10px #00d9ff33;}
-.menu-btn:active{background:#183b8c;}
-
-/* OVERLAY */
-.overlay{position:absolute;z-index:30;inset:0;display:flex;align-items:center;justify-content:center;background:#02030be8;}
-.overlay.hidden{display:none;}
-.card{width:min(320px,90%);padding:18px;border:3px solid #20e8ff;border-radius:12px;background:#060a1bef;text-align:center;box-shadow:0 0 30px #00d9ff55;}
-.card h2{margin:0 0 8px;color:#ffd42a;font-size:22px;text-shadow:2px 2px #f22;}
-.card p{color:#b8eaff;font-size:12px;line-height:1.4;}
-.start-btn{margin-top:12px;width:100%;height:42px;border:2px solid #20e8ff;border-radius:6px;background:#0f2766;color:#fff;font:bold 14px monospace;cursor:pointer;}
-
-.bottom{padding:4px;text-align:center;border-top:2px solid #111a3b;color:#ffd42a;font-size:11px;background:#050716;}
-</style>
-</head>
-<body>
-<div class="arcade">
-  <!-- ТАБЛО И МЕНЮ ВВЕРХУ -->
-  <div class="header-panel">
-    <div class="marquee">
-      <h1>SNAKE ARCADE</h1>
-    </div>
-    <div class="stats">
-      <div>LVL: <b id="level">1</b></div>
-      <div>SCORE: <b id="score">0</b></div>
-    </div>
+<div class="portal">
+  <div class="game-ui-header">
+    <div style="width: 50px;"></div>
+    <div style="color:var(--title-col); font-size:13px; font-weight:bold;" id="scoreTxt">СЧЕТ: 0</div>
+    <div style="width: 50px;"></div>
   </div>
 
-  <div class="screen-wrapper">
-    <canvas id="snakeCanvas" width="400" height="400"></canvas>
+  <div id="gameContainer">
+    <canvas id="gCanvas" width="400" height="400"></canvas>
   </div>
 
-  <!-- КНОПКИ УПРАВЛЕНИЯ ПОСЕРЕДИНЕ ВНИЗУ -->
-  <div class="controls">
-    <div class="dpad">
-      <div class="ctrl-btn up" id="btnUp">▲</div>
-      <div class="ctrl-btn left" id="btnLeft">◄</div>
-      <div class="ctrl-btn down" id="btnDown">▼</div>
-      <div class="ctrl-btn right" id="btnRight">►</div>
-    </div>
-    <div class="menu-row">
-      <button class="menu-btn" id="startBtn">СТАРТ</button>
-      <button class="menu-btn" id="pauseBtn">ПАУЗА</button>
+  <!-- КРУПНЫЙ И УДОБНЫЙ ДУХОВЫЙ ДПАД -->
+  <div class="game-controls">
+    <button class="ctrl-pad-btn" id="sUp">▲</button>
+    <div class="dpad-row">
+      <button class="ctrl-pad-btn" id="sLeft">◀</button>
+      <button class="ctrl-pad-btn" id="sDown">▼</button>
+      <button class="ctrl-pad-btn" id="sRight">▶</button>
     </div>
   </div>
-
-  <div class="overlay" id="overlay">
-    <div class="card">
-      <h2 id="title">SNAKE CLASSIC</h2>
-      <p id="message">Проходи сквозь стены насквозь!<br><br>Единственная опасность — врезаться в собственный хвост.</p>
-      <button class="start-btn" id="overlayStart">НАЧАТЬ ИГРУ</button>
-    </div>
-  </div>
-
-  <footer class="bottom">
-    🏆 HIGH SCORE: <span id="highScore">0</span>
-  </footer>
 </div>
 
 <script>
-"use strict";
-const tg = window.Telegram.WebApp;
-tg.ready(); tg.expand();
-
-const canvas = document.getElementById('snakeCanvas');
-const ctx = canvas.getContext('2d');
-
-const gridSize = 20; // 20x20 сетка
-const tileCount = canvas.width / gridSize;
-
-let snake = [];
-let food = {x: 0, y: 0};
-let dx = 0;
-let dy = 0;
-let score = 0;
-let level = 1;
-let gameSpeed = 140; // Стартовая комфортная скорость
-let running = false;
-let paused = false;
-let timer = null;
-
-let highScore = Number(localStorage.getItem("snakeHighScore") || 0);
-document.getElementById('highScore').textContent = highScore;
-
-function initGame() {
-  snake = [
-    {x: 10, y: 10},
-    {x: 9, y: 10},
-    {x: 8, y: 10}
-  ];
-  dx = 1;
-  dy = 0;
-  score = 0;
-  level = 1;
-  gameSpeed = 140;
-  updateStats();
-  spawnFood();
-}
-
-function spawnFood() {
-  let valid = false;
-  while (!valid) {
-    food.x = Math.floor(Math.random() * tileCount);
-    food.y = Math.floor(Math.random() * tileCount);
-    valid = true;
-    for (let part of snake) {
-      if (part.x === food.x && part.y === food.y) {
-        valid = false;
-        break;
-      }
-    }
+const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
+let soundEnabled = localStorage.getItem("freezzzSound") !== "false";
+function haptic() {
+  if (soundEnabled && tg && tg.HapticFeedback) {
+    try { tg.HapticFeedback.impactOccurred('light'); } catch(e){}
   }
 }
 
-function updateStats() {
-  document.getElementById('score').textContent = score;
-  document.getElementById('level').textContent = level;
+const canvas = document.getElementById('gCanvas');
+const ctx = canvas.getContext('2d');
+const gs = 20, tc = 20;
+
+let snake = [{x:10, y:10}, {x:9, y:10}];
+let food = {x:5, y:5};
+let dx = 1, dy = 0;
+let nextDx = 1, nextDy = 0; // Буфер направления для плавного поворота без багов
+let score = 0;
+
+function spawnFood() {
+  food.x = Math.floor(Math.random() * tc);
+  food.y = Math.floor(Math.random() * tc);
 }
+spawnFood();
 
 function gameLoop() {
-  if (!running || paused) return;
+  // Применяем направление из буфера (гарантирует плавность и отсутствие быстрых разворотов в себя)
+  dx = nextDx;
+  dy = nextDy;
 
-  // Вычисляем новую голову с проходом сквозь стены (зеркальный выход)
   let head = {x: snake[0].x + dx, y: snake[0].y + dy};
-  
-  if (head.x < 0) head.x = tileCount - 1;
-  else if (head.x >= tileCount) head.x = 0;
-  
-  if (head.y < 0) head.y = tileCount - 1;
-  else if (head.y >= tileCount) head.y = 0;
 
-  // Проверка столкновения с самим собой (хвостом)
-  for (let part of snake) {
-    if (head.x === part.x && head.y === part.y) {
-      gameOver("Укусил сам себя!");
+  // Проход сквозь стены
+  if (head.x < 0) head.x = tc - 1;
+  else if (head.x >= tc) head.x = 0;
+  if (head.y < 0) head.y = tc - 1;
+  else if (head.y >= tc) head.y = 0;
+
+  // Столкновение с собой
+  for (let p of snake) {
+    if (head.x === p.x && head.y === p.y) {
+      let best = Number(localStorage.getItem("snakeHighScore") || 0);
+      if (score > best) localStorage.setItem("snakeHighScore", score);
+      alert("Игра окончена! Счёт: " + score);
+      score = 0;
+      snake = [{x:10, y:10}, {x:9, y:10}];
+      dx = 1; dy = 0; nextDx = 1; nextDy = 0;
+      spawnFood();
+      document.getElementById('scoreTxt').textContent = "СЧЕТ: " + score;
       return;
     }
   }
 
   snake.unshift(head);
 
-  // Проверка поедания еды
   if (head.x === food.x && head.y === food.y) {
     score += 10;
-    
-    // Плавный и медленный рост уровня и скорости (увеличиваем интервал каждые 60 очков, уменьшаем скорость совсем по чуть-чуть)
-    level = Math.floor(score / 60) + 1;
-    gameSpeed = Math.max(70, 140 - (score * 1.5));
-    
-    updateStats();
+    document.getElementById('scoreTxt').textContent = "СЧЕТ: " + score;
     spawnFood();
-    restartTimer();
+    haptic();
   } else {
     snake.pop();
   }
 
-  draw();
-}
-
-function draw() {
-  // Фон
-  ctx.fillStyle = '#03050c';
+  // Отрисовка
+  ctx.fillStyle = '#010206';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Сетка поля
-  ctx.strokeStyle = '#0a1024';
-  ctx.lineWidth = 0.5;
-  for (let i = 0; i < tileCount; i++) {
-    ctx.beginPath(); ctx.moveTo(i * gridSize, 0); ctx.lineTo(i * gridSize, canvas.height); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, i * gridSize); ctx.lineTo(canvas.width, i * gridSize); ctx.stroke();
-  }
-
-  // Еда (Неоновое яблоко)
+  // Еда (неоновое яблоко)
   ctx.fillStyle = '#ff3366';
-  ctx.shadowBlur = 12; ctx.shadowColor = '#ff3366';
-  ctx.fillRect(food.x * gridSize + 2, food.y * gridSize + 2, gridSize - 4, gridSize - 4);
-  ctx.shadowBlur = 0;
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = '#ff3366';
+  ctx.fillRect(food.x * gs + 1, food.y * gs + 1, gs - 2, gs - 2);
 
-  // Змейка (В стиле неоновых аркад)
-  snake.forEach((part, index) => {
-    ctx.fillStyle = index === 0 ? '#20e8ff' : '#00bfff';
-    ctx.fillRect(part.x * gridSize + 1, part.y * gridSize + 1, gridSize - 2, gridSize - 2);
+  // Змейка
+  snake.forEach((p, i) => {
+    ctx.fillStyle = i === 0 ? '#20e8ff' : '#00bfff';
+    ctx.shadowBlur = i === 0 ? 10 : 4;
+    ctx.shadowColor = i === 0 ? '#20e8ff' : '#00bfff';
+    ctx.fillRect(p.x * gs + 1, p.y * gs + 1, gs - 2, gs - 2);
   });
+  ctx.shadowBlur = 0;
 }
 
-function restartTimer() {
-  clearInterval(timer);
-  timer = setInterval(gameLoop, gameSpeed);
-}
+setInterval(gameLoop, 120); // Плавная и комфортная скорость
 
-function startGame() {
-  initGame();
-  running = true;
-  paused = false;
-  document.getElementById('overlay').classList.add('hidden');
-  restartTimer();
-}
-
-function gameOver(reason) {
-  running = false;
-  clearInterval(timer);
-  if (score > highScore) {
-    highScore = score;
-    localStorage.setItem("snakeHighScore", highScore);
-    document.getElementById('highScore').textContent = highScore;
-  }
-  document.getElementById('overlay').classList.remove('hidden');
-  document.getElementById('title').textContent = "ИГРА ОКОНЧЕНА";
-  document.getElementById('message').innerHTML = `${reason}<br>Счет: <b>${score}</b> | Уровень: ${level}`;
-  document.getElementById('overlayStart').textContent = "ИГРАТЬ СНОВА";
-}
-
-function togglePause() {
-  if (!running) return;
-  paused = !paused;
-  const overlay = document.getElementById('overlay');
-  overlay.classList.toggle('hidden', !paused);
-  if (paused) {
-    document.getElementById('title').textContent = "ПАУЗА";
-    document.getElementById('message').innerHTML = "Игра приостановлена.";
-    document.getElementById('overlayStart').textContent = "ПРОДОЛЖИТЬ";
-  }
-}
-
-// Управление направлениями
-const setDir = (newDx, newDy) => {
-  if (!running || paused) return;
-  if (newDx !== -dx && newDy !== -dy) {
-    dx = newDx;
-    dy = newDy;
-  }
-};
-
-document.getElementById('btnUp').addEventListener('pointerdown', e => { e.preventDefault(); setDir(0, -1); });
-document.getElementById('btnDown').addEventListener('pointerdown', e => { e.preventDefault(); setDir(0, 1); });
-document.getElementById('btnLeft').addEventListener('pointerdown', e => { e.preventDefault(); setDir(-1, 0); });
-document.getElementById('btnRight').addEventListener('pointerdown', e => { e.preventDefault(); setDir(1, 0); });
-
-document.getElementById('startBtn').addEventListener('click', startGame);
-document.getElementById('pauseBtn').addEventListener('click', togglePause);
-document.getElementById('overlayStart').addEventListener('click', () => {
-  if (paused) {
-    paused = false;
-    document.getElementById('overlay').classList.add('hidden');
-  } else {
-    startGame();
-  }
+// Плавное управление с защитой от разворота на 180 градусов на месте
+document.getElementById('sUp').addEventListener('pointerdown', () => {
+  haptic();
+  if (dy === 0) { nextDx = 0; nextDy = -1; }
 });
-
-draw();
+document.getElementById('sDown').addEventListener('pointerdown', () => {
+  haptic();
+  if (dy === 0) { nextDx = 0; nextDy = 1; }
+});
+document.getElementById('sLeft').addEventListener('pointerdown', () => {
+  haptic();
+  if (dx === 0) { nextDx = -1; nextDy = 0; }
+});
+document.getElementById('sRight').addEventListener('pointerdown', () => {
+  haptic();
+  if (dx === 0) { nextDx = 1; nextDy = 0; }
+});
 </script>
 </body>
 </html>
