@@ -174,7 +174,7 @@ body { background: var(--bg-grad); color: #fff; font-family: monospace; padding:
 </div>
 
 <div class="games-viewport">
-  <!-- СЕТКА ИГР -->
+  <!-- СЕТКА ИГР И КЛИКЕРА -->
   <div class="grid-menu" id="gamesGrid">
     <a href="snake.html" class="icon-btn"><div class="icon-emoji">🐍</div><div class="icon-title">SNAKE</div></a>
     <a href="tetris.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">TETRIS</div></a>
@@ -183,11 +183,11 @@ body { background: var(--bg-grad); color: #fff; font-family: monospace; padding:
     <a href="mario.html" class="icon-btn"><div class="icon-emoji">🍄</div><div class="icon-title">PLATFORMER</div></a>
     <a href="arkanoid.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">ARKANOID</div></a>
     <a href="duck.html" class="icon-btn"><div class="icon-emoji">🦆</div><div class="icon-title">DUCK MUDACK</div></a>
+    <a href="clicker.html" class="icon-btn" style="border-color: #ffd52c;"><div class="icon-emoji">⚡</div><div class="icon-title" style="color:#ffd52c;">ZEITARBEIT</div></a>
     <a href="invaders.html" class="icon-btn"><div class="icon-emoji">👾</div><div class="icon-title">INVADERS</div></a>
     <a href="doodle.html" class="icon-btn"><div class="icon-emoji">🦘</div><div class="icon-title">JUMPER</div></a>
     <a href="minesweeper.html" class="icon-btn"><div class="icon-emoji">💣</div><div class="icon-title">MINESWEEPER</div></a>
-    <div class="icon-btn" onclick="switchView('games')" style="opacity:0.3; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
-    <div class="icon-btn" onclick="switchView('games')" style="opacity:0.3; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
+    <div class="icon-btn" style="opacity:0.3; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
   </div>
 
   <!-- ТАБЛИЦА ТОПА -->
@@ -404,7 +404,7 @@ if (currentTrackIdx !== 4) {
 
 function sharePortal() {
   const botUrl = "https://t.me/" + (tg.initDataUnsafe && tg.initDataUnsafe.bot ? tg.initDataUnsafe.bot.username : "your_bot_username");
-  const shareText = "🕹️ Крутой аркадный кабинет FREEzzzGames! 10 ретро-игр:";
+  const shareText = "🕹️ Крутой аркадный кабинет FREEzzzGames! 10 ретро-игр и Zeitarbeit Tycoon:";
   if (tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(shareText)}`);
   else window.open(`https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(shareText)}`);
 }
