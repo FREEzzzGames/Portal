@@ -1,488 +1,440 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>APTB // ELEKTRO UNTERNEHMEN</title>
-    <style>
-        :root {
-            --bg-main: #0F1115;
-            --bg-panel: #1A1D24;
-            --border-color: #2C323D;
-            --accent-cyan: #00FFCC;
-            --accent-gold: #FFD700;
-            --accent-red: #FF3366;
-            --text-main: #FFFFFF;
-            --text-secondary: #8B949E;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Elektro Unternehmen — FREEzzzGames</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root {
+  --bg-grad: linear-gradient(135deg, #09192b 0%, #112d4e 50%, #06111c 100%);
+  --portal-bg: rgba(13, 35, 58, 0.96);
+  --border-col: rgba(74, 144, 226, 0.5);
+  --accent-col: #4a90e2;
+  --title-col: #ffd52c;
+  --btn-bg: rgba(18, 48, 80, 0.95);
+  --btn-hover: rgba(74, 144, 226, 0.3);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;width:100%;height:100%;background:#06111c;color:#fff;font-family:monospace;overflow:hidden;}
+body{
+  padding:6px;display:flex;justify-content:center;align-items:center;
+  background: var(--bg-grad); position: fixed; inset: 0;
+}
+.portal{
+  width: 100%; height: 100%; max-width: 420px; max-height: 100vh;
+  text-align: center; display: flex; flex-direction: column; gap: 6px;
+  overflow-y: auto; padding: 10px; z-index: 10;
+  background: var(--portal-bg); border: 2.5px solid var(--border-col);
+  border-radius: 14px; box-shadow: 0 0 30px rgba(13, 35, 58, 0.9);
+  position: relative;
+}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
-        }
+/* ШАПКА */
+.game-ui-header { 
+  display: flex; justify-content: space-between; align-items: center; 
+  padding: 8px 10px; background: var(--btn-bg); border: 1.5px solid var(--border-col); 
+  border-radius: 10px; width: 100%; flex-shrink: 0; font-size: 11px; 
+  z-index: 50; gap: 6px;
+}
+.header-left { display: flex; gap: 4px; align-items: center; }
+.back-btn {
+  background: rgba(180, 40, 40, 0.95); border: 1.5px solid #ff6b55; color: #fff;
+  padding: 5px 8px; border-radius: 8px; text-decoration: none; font-weight: bold;
+  cursor: pointer; font-size: 10px;
+}
+.lang-btn {
+  background: rgba(74, 144, 226, 0.3); border: 1.5px solid var(--accent-col); color: #fff;
+  padding: 5px 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 10px;
+}
+.lang-btn:active { background: rgba(74, 144, 226, 0.6); }
 
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+/* КОНТЕЙНЕР */
+.clicker-body {
+  flex-grow: 1; background: rgba(8, 22, 38, 0.85); border: 2px solid var(--accent-col);
+  border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  padding: 8px; overflow-y: auto; gap: 6px; position: relative;
+}
 
-        /* Верхняя панель статуса */
-        .status-bar {
-            background-color: var(--bg-panel);
-            border-bottom: 2px solid var(--border-color);
-            padding: 12px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+/* УВЕЛИЧЕННЫЕ БЛОКИ РЕСУРСОВ */
+.resources-container { display: flex; gap: 8px; width: 100%; }
+.res-box {
+  flex: 1; background: var(--glass-bg); border: 1.5px solid var(--border-col); border-radius: 10px;
+  padding: 6px; text-align: center;
+}
+.res-title { font-size: 8px; color: #a1c4fd; text-transform: uppercase; font-weight: bold; }
+.res-val { font-size: 18px; font-weight: bold; color: var(--title-col); text-shadow: 0 0 10px rgba(255,213,44,0.6); margin-top: 2px; }
+.res-sub { font-size: 8.5px; color: var(--accent-col); margin-top: 2px; }
 
-        .status-top-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+/* ЭФФЕКТ МОЛНИЙ ДЛЯ ЭНЕРГИИ */
+@keyframes electricSpark {
+  0% { text-shadow: 0 0 4px #20e8ff, 0 0 10px #20e8ff; color: #6bc5ff; }
+  50% { text-shadow: 0 0 12px #ffffff, 0 0 20px #20e8ff, 0 0 30px #ffd52c; color: #ffffff; }
+  100% { text-shadow: 0 0 4px #20e8ff, 0 0 10px #20e8ff; color: #6bc5ff; }
+}
+.energy-lightning {
+  animation: electricSpark 1.2s infinite ease-in-out;
+}
 
-        .logo {
-            font-weight: 800;
-            font-size: 14px;
-            letter-spacing: 1px;
-            color: var(--accent-cyan);
-        }
+/* ПРОЗРАЧНАЯ ТРУБА С ПОТОКОМ ДЕНЕГ */
+.money-pipe {
+  width: 100%; height: 12px; background: rgba(0, 0, 0, 0.4); border: 1.5px solid rgba(74, 144, 226, 0.4);
+  border-radius: 6px; position: relative; overflow: hidden; margin: 2px 0;
+}
+.money-flow {
+  position: absolute; top: 0; left: -100%; width: 200%; height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 10px,
+    #ffd52c 10px,
+    #ffd52c 16px,
+    #ffffff 16px,
+    #ffffff 20px
+  );
+  opacity: 0.8;
+  animation: flowMoney 1.5s linear infinite;
+}
+@keyframes flowMoney {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(50%); }
+}
 
-        .resources {
-            display: flex;
-            gap: 16px;
-            font-size: 13px;
-            font-weight: 700;
-        }
+/* КНОПКА ПРОДАЖИ ЭНЕРГИИ */
+.sell-energy-btn {
+  width: 100%; background: linear-gradient(135deg, rgba(255,213,44,0.22), rgba(74,144,226,0.22));
+  border: 1.5px solid var(--title-col); border-radius: 8px; padding: 7px; color: var(--title-col);
+  font-family: monospace; font-size: 10px; font-weight: bold; cursor: pointer; text-align: center;
+  transition: transform 0.1s; box-shadow: 0 0 10px rgba(255,213,44,0.2);
+}
+.sell-energy-btn:active { transform: scale(0.97); background: rgba(255,213,44,0.35); }
 
-        .resource-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+/* ПРОГРЕСС-БАР */
+.progress-bar-container {
+  width: 100%; height: 5px; background: rgba(255,255,255,0.12); border-radius: 3px; overflow: hidden; border: 1px solid rgba(74,144,226,0.4);
+}
+.progress-bar-fill {
+  height: 100%; background: linear-gradient(90deg, #4a90e2, #ffd52c); width: 0%; transition: width 0.2s ease;
+}
 
-        .resource-item.energy { color: var(--accent-cyan); }
-        .resource-item.money { color: var(--accent-gold); }
+/* ЦЕНТРАЛЬНАЯ КНОПКА */
+.click-target-container { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.click-target {
+  width: 85px; height: 85px; background: radial-gradient(circle at 35% 35%, #ffd52c, #d39e00);
+  border: 4px solid #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+  font-size: 40px; cursor: pointer; box-shadow: 0 0 25px rgba(255,213,44,0.6); transition: transform 0.08s ease;
+  user-select: none; z-index: 40;
+}
+.click-target:active { transform: scale(0.86); background: radial-gradient(circle at 35% 35%, #e0b800, #997500); box-shadow: 0 0 12px #ffd52c; }
 
-        /* Индикатор нагрузки сети */
-        .load-container {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
+/* СПИСОК КАРТОЧЕК */
+.upgrades-list { width: 100%; display: flex; flex-direction: column; gap: 5px; max-height: 155px; overflow-y: auto; padding-right: 2px; }
+.upgrade-card {
+  display: flex; justify-content: space-between; align-items: center; background: rgba(18, 48, 80, 0.9);
+  border: 1.5px solid var(--border-col); border-radius: 8px; padding: 7px 10px; font-size: 10.5px; text-align: left; cursor: pointer;
+  transition: all 0.15s ease; position: relative; overflow: hidden; z-index: 40;
+}
+.upgrade-card:active { transform: scale(0.98); background: var(--btn-hover); }
+.upgrade-info { display: flex; flex-direction: column; gap: 2px; z-index: 2; }
+.upgrade-name { color: var(--title-col); font-weight: bold; font-size: 10.5px; display: flex; align-items: center; gap: 5px; }
+.upgrade-desc { font-size: 8px; color: #a1c4fd; }
+.upgrade-cost { color: #6bc5ff; font-weight: bold; font-size: 9.5px; }
+.upgrade-count { font-size: 12px; font-weight: bold; color: #fff; background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 6px; border: 1.5px solid var(--border-col); z-index: 2; }
 
-        .load-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .load-bar-bg {
-            background-color: var(--bg-main);
-            height: 6px;
-            border-radius: 3px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        .load-bar-fill {
-            background-color: var(--accent-cyan);
-            height: 100%;
-            width: 85%;
-            transition: width 0.3s ease;
-        }
-
-        /* Основной контент (экраны) */
-        .main-content {
-            flex: 1;
-            position: relative;
-            overflow-y: auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .screen {
-            display: none;
-            width: 100%;
-            height: 100%;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .screen.active {
-            display: flex;
-        }
-
-        /* Главный экран кликера */
-        .clicker-container {
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .turbine-core {
-            width: 220px;
-            height: 220px;
-            background: radial-gradient(circle, #252B37 0%, var(--bg-panel) 70%);
-            border: 3px solid var(--border-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            cursor: pointer;
-            box-shadow: 0 0 30px rgba(0, 255, 204, 0.1);
-            transition: transform 0.05s ease, box-shadow 0.2s ease;
-        }
-
-        .turbine-core:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
-        }
-
-        .turbine-inner {
-            width: 160px;
-            height: 160px;
-            border: 2px dashed var(--accent-cyan);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: rotateCore 15s linear infinite;
-        }
-
-        @keyframes rotateCore {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .turbine-icon {
-            font-size: 48px;
-            animation: pulseIcon 2s ease-in-out infinite;
-        }
-
-        @keyframes pulseIcon {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--accent-cyan)); }
-            50% { transform: scale(1.1); filter: drop-shadow(0 0 15px var(--accent-cyan)); }
-        }
-
-        .tap-hint {
-            margin-top: 20px;
-            font-size: 12px;
-            color: var(--text-secondary);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        /* Карточки станций и контрактов */
-        .card-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .industrial-card {
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-info h4 {
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .card-info p {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        .btn-action {
-            background-color: var(--accent-cyan);
-            color: #000;
-            border: none;
-            padding: 8px 14px;
-            font-weight: 700;
-            font-size: 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-action:hover {
-            background-color: #00cca3;
-        }
-
-        .btn-action.gold {
-            background-color: var(--accent-gold);
-        }
-
-        /* Нижняя навигация */
-        .nav-bar {
-            background-color: var(--bg-panel);
-            border-top: 2px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-        }
-
-        .nav-item {
-            background: none;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            flex: 1;
-            transition: color 0.2s;
-        }
-
-        .nav-item span.icon {
-            font-size: 18px;
-        }
-
-        .nav-item.active {
-            color: var(--accent-cyan);
-        }
-
-        /* Всплывающие цифры при клике */
-        .floating-number {
-            position: absolute;
-            color: var(--accent-cyan);
-            font-weight: 800;
-            font-size: 16px;
-            pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
-        }
-
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
-        }
-    </style>
+/* АНИМАЦИИ */
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-40px) scale(1.3); opacity: 0; }
+}
+.floating-text {
+  position: fixed; color: #ffd52c; font-size: 15px; font-weight: bold; pointer-events: none; z-index: 99999;
+  animation: floatUp 0.45s ease-out forwards; text-shadow: 0 0 6px rgba(0,0,0,0.9);
+}
+</style>
 </head>
 <body>
 
-    <!-- Верхняя статусная панель -->
-    <header class="status-bar">
-        <div class="status-top-row">
-            <div class="logo">APTB // ELEKTRO</div>
-            <div class="resources">
-                <div class="resource-item energy">
-                    ⚡ <span id="energy-counter">4,521,078</span>
-                </div>
-                <div class="resource-item money">
-                    💶 <span id="money-counter">1,789,500</span>
-                </div>
-            </div>
+<div class="portal">
+  <div class="game-ui-header">
+    <div class="header-left">
+      <a href="index.html" class="back-btn" id="menuBtnTxt">⬅ МЕНЮ</a>
+      <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">🇩🇪 DE</button>
+    </div>
+    <div id="licenseTxt" style="color:var(--title-col); font-weight:bold; font-size: 10px;">⚡ Электро Компания</div>
+  </div>
+
+  <div class="clicker-body">
+    <!-- УВЕЛИЧЕННЫЕ ШКАЛЫ РЕСУРСОВ -->
+    <div class="resources-container">
+      <div class="res-box">
+        <div class="res-title" id="resBudgetTitle">Бюджет (€)</div>
+        <div class="res-val" id="moneyTxt">0.00 €</div>
+        <div class="res-sub" id="cpsTxt">+0.0 €/сек</div>
+      </div>
+      <div class="res-box">
+        <div class="res-title" id="resEnergyTitle">Энергия (МВт·ч)</div>
+        <div class="res-val energy-lightning" id="energyTxt">0.0 МВт</div>
+        <div class="res-sub" id="epsTxt">+0.0 МВт/с</div>
+      </div>
+    </div>
+
+    <!-- ПРОЗРАЧНАЯ ТРУБА С ПОТОКОМ ЕВРО -->
+    <div class="money-pipe">
+      <div class="money-flow" id="moneyFlow"></div>
+    </div>
+
+    <!-- КНОПКА ПРОДАЖИ ЭНЕРГИИ -->
+    <button class="sell-energy-btn" id="sellBtnTxt" onclick="sellEnergy()">⚡ ПРОДАТЬ ЭНЕРГИЮ (1 МВт = 2.50 €)</button>
+
+    <!-- ПРОГРЕСС-БАР -->
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+
+    <!-- ЦЕНТРАЛЬНАЯ КНОПКА -->
+    <div class="click-target-container">
+      <div class="click-target" onclick="clickEnergy(event)">⚡</div>
+      <div style="font-size: 8px; color: #a1c4fd;" id="tapHintTxt">Тапай для подачи напряжения!</div>
+    </div>
+
+    <!-- СПИСОК ПОСТРОЕК И РАБОЧИХ -->
+    <div class="upgrades-list" id="upgradesList"></div>
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
+let soundEnabled = localStorage.getItem("freezzzSound") !== "false";
+let currentLang = localStorage.getItem("freezzzLang") || "ru";
+
+const langData = {
+  ru: {
+    menu: "⬅ МЕНЮ",
+    license: "⚡ Электро Компания",
+    budget: "Бюджет (€)",
+    energy: "Энергия (МВт·ч)",
+    sellBtn: "⚡ ПРОДАТЬ ЭНЕРГИЮ (1 МВт = 2.50 €)",
+    tapHint: "Тапай для подачи напряжения!",
+    price: "Цена",
+    reqWorkers: "Требует раб.",
+    items: [
+      { name: "🧑‍🎓 Стажер-практикант (Azubi)", desc: "Авто-кликер (нажимает за вас)" },
+      { name: "👨‍🔧 Электрик (Специалист)", desc: "Базовый мастер для выездов" },
+      { name: "👷‍♂️ Бригада электриков", desc: "Команда монтажников сетей" },
+      { name: "💨 Ветряная установка", desc: "Генератор зеленой энергии" },
+      { name: "☀️ Солнечная ферма", desc: "Панели (+ выработка МВт)" },
+      { name: "⚡ АЭС (Атомная станция)", desc: "Максимальная энергия и доход" }
+    ]
+  },
+  de: {
+    menu: "⬅ MENÜ",
+    license: "⚡ Elektro Unternehmen",
+    budget: "Budget (€)",
+    energy: "Energie (MWh)",
+    sellBtn: "⚡ ENERGIE VERKAUFEN (1 MWh = 2.50 €)",
+    tapHint: "Tippen für Stromversorgung!",
+    price: "Preis",
+    reqWorkers: "Benötigt Arb.",
+    items: [
+      { name: "🧑‍🎓 Azubi (Praktikant)", desc: "Auto-Klicker (klickt für dich)" },
+      { name: "👨‍🔧 Elektriker (Spezialist)", desc: "Grundmonteur für Einsätze" },
+      { name: "👷‍♂️ Elektriker-Team", desc: "Trupp für Netzmontage" },
+      { name: "💨 Windkraftanlage", desc: "Grüne Windenergie" },
+      { name: "☀️ Solarpark", desc: "Solarpanels (+ MWh)" },
+      { name: "⚡ Atomkraftwerk (AKW)", desc: "Maximale Energie & Ertrag" }
+    ]
+  }
+};
+
+function toggleLanguage() {
+  currentLang = currentLang === "ru" ? "de" : "ru";
+  localStorage.setItem("freezzzLang", currentLang);
+  updateLanguageUI();
+  updateUI();
+}
+
+function updateLanguageUI() {
+  let t = langData[currentLang];
+  document.getElementById('menuBtnTxt').textContent = t.menu;
+  document.getElementById('licenseTxt').textContent = t.license;
+  document.getElementById('resBudgetTitle').textContent = t.budget;
+  document.getElementById('resEnergyTitle').textContent = t.energy;
+  document.getElementById('sellBtnTxt').textContent = t.sellBtn;
+  document.getElementById('tapHintTxt').textContent = t.tapHint;
+  document.getElementById('langBtn').textContent = currentLang === "ru" ? "🇩🇪 DE" : "🇷🇺 RU";
+}
+
+let money = Number(localStorage.getItem("zeitarbeitMoney") || 0);
+let totalEnergyMWh = Number(localStorage.getItem("zeitarbeitEnergy") || 0);
+
+let upgrades = [
+  { id: 'azubi', cost: 25, incomeEur: 0.1, energyMWh: 0.05, autoClickPower: 1, count: Number(localStorage.getItem("up_azubi") || 0), mult: 1.12, type: 'autoclicker' },
+  { id: 'elektrik', cost: 150, incomeEur: 0.4, energyMWh: 0.1, count: Number(localStorage.getItem("up_elektrik") || 0), mult: 1.15, type: 'worker' },
+  { id: 'brigade', cost: 1200, incomeEur: 2, energyMWh: 0.8, count: Number(localStorage.getItem("up_brigade") || 0), mult: 1.18, type: 'worker' },
+  { id: 'wind', cost: 9500, incomeEur: 14, energyMWh: 8.5, workersNeeded: 2, count: Number(localStorage.getItem("up_wind") || 0), mult: 1.20, type: 'station' },
+  { id: 'solar', cost: 120000, incomeEur: 110, energyMWh: 65, workersNeeded: 8, count: Number(localStorage.getItem("up_solar") || 0), mult: 1.22, type: 'station' },
+  { id: 'aes', cost: 1500000, incomeEur: 850, energyMWh: 450, workersNeeded: 30, count: Number(localStorage.getItem("up_aes") || 0), mult: 1.25, type: 'station' }
+];
+
+let audioCtx = null;
+function playSound(freq, type='square', duration=0.1) {
+  if (!soundEnabled) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch(e) {}
+}
+
+function haptic(style='light') {
+  if (soundEnabled && tg && tg.HapticFeedback) {
+    try { tg.HapticFeedback.impactOccurred(style); } catch(e){}
+  }
+}
+
+function clickEnergy(e) {
+  money += 1;
+  totalEnergyMWh += 0.2;
+  playSound(520, 'triangle', 0.08);
+  haptic('light');
+  updateUI();
+
+  let pop = document.createElement('div');
+  pop.textContent = "+1 € / ⚡";
+  pop.className = "floating-text";
+  pop.style.left = (e.clientX - 15) + "px";
+  pop.style.top = (e.clientY - 25) + "px";
+  document.body.appendChild(pop);
+  setTimeout(() => pop.remove(), 450);
+}
+
+function sellEnergy() {
+  if (totalEnergyMWh < 1) {
+    playSound(150, 'sawtooth', 0.15);
+    return;
+  }
+  let earned = totalEnergyMWh * 2.50;
+  money += earned;
+  totalEnergyMWh = 0;
+  playSound(880, 'square', 0.2);
+  haptic('heavy');
+  updateUI();
+}
+
+function buyUpgrade(index) {
+  let up = upgrades[index];
+  if (money >= up.cost) {
+    money -= up.cost;
+    up.count++;
+    up.cost = Math.floor(up.cost * up.mult);
+    localStorage.setItem("up_" + up.id, up.count);
+    playSound(720, 'square', 0.15);
+    haptic('medium');
+    updateUI();
+  } else {
+    playSound(140, 'sawtooth', 0.2);
+  }
+}
+
+function calculateStats() {
+  let totalEurSec = 0;
+  let totalEnergySec = 0;
+  let totalWorkers = 0;
+  
+  upgrades.forEach(up => {
+    if (up.type === 'worker' || up.type === 'autoclicker') totalWorkers += up.count;
+  });
+
+  upgrades.forEach(up => {
+    if (up.type === 'worker' || up.type === 'autoclicker') {
+      totalEurSec += up.incomeEur * up.count;
+      totalEnergySec += up.energyMWh * up.count;
+    } else if (up.type === 'station') {
+      let requiredWorkersTotal = up.workersNeeded * up.count;
+      let efficiency = requiredWorkersTotal > 0 ? Math.min(1.0, totalWorkers / requiredWorkersTotal) : 1.0;
+      if (totalWorkers === 0 && up.workersNeeded > 0) efficiency = 0.1;
+
+      totalEurSec += (up.incomeEur * up.count) * efficiency;
+      totalEnergySec += (up.energyMWh * up.count) * efficiency;
+    }
+  });
+
+  return { totalEurSec, totalEnergySec, totalWorkers };
+}
+
+function updateUI() {
+  let stats = calculateStats();
+  let t = langData[currentLang];
+  
+  document.getElementById('moneyTxt').textContent = money.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
+  document.getElementById('cpsTxt').textContent = `+${stats.totalEurSec.toFixed(1)} €/s`;
+  
+  document.getElementById('energyTxt').textContent = totalEnergyMWh.toFixed(1) + (currentLang === 'ru' ? " МВт" : " MWh");
+  document.getElementById('epsTxt').textContent = `+${stats.totalEnergySec.toFixed(1)} ${currentLang === 'ru' ? 'МВт/с' : 'MWh/s'}`;
+
+  let flowSpeed = Math.max(0.3, 2.0 - (stats.totalEurSec / 20));
+  document.getElementById('moneyFlow').style.animationDuration = flowSpeed + 's';
+
+  let cheapestCost = Math.min(...upgrades.map(u => u.cost));
+  let progressPercent = Math.min(100, (money / cheapestCost) * 100);
+  document.getElementById('progressFill').style.width = progressPercent + "%";
+
+  let listHtml = "";
+  upgrades.forEach((up, idx) => {
+    let currentCost = Math.floor(up.cost);
+    let canBuy = money >= currentCost;
+    let localizedItem = t.items[idx];
+    
+    let subInfo = `${currentLang === 'ru' ? 'Доход' : 'Eink.'}: +${up.incomeEur}€/s, +${up.energyMWh}MWh/s`;
+    if (up.type === 'station') {
+      subInfo = `${t.reqWorkers}: ${up.workersNeeded} | +${up.energyMWh}MWh`;
+    }
+
+    listHtml += `
+      <div class="upgrade-card" style="opacity: ${canBuy ? 1 : 0.65}; border-color: ${canBuy ? 'var(--title-col)' : 'var(--border-col)'};" onclick="buyUpgrade(${idx})">
+        <div class="upgrade-info">
+          <div class="upgrade-name">${localizedItem.name}</div>
+          <div class="upgrade-desc">${subInfo}</div>
+          <div class="upgrade-cost">${t.price}: ${currentCost.toLocaleString()} €</div>
         </div>
-        <div class="load-container">
-            <div class="load-info">
-                <span>Сетевая нагрузка</span>
-                <span id="load-text">85% (+142.5 €/сек)</span>
-            </div>
-            <div class="load-bar-bg">
-                <div class="load-bar-fill" id="load-bar"></div>
-            </div>
-        </div>
-    </header>
+        <div class="upgrade-count">${up.count}</div>
+      </div>
+    `;
+  });
+  
+  document.getElementById('upgradesList').innerHTML = listHtml;
+  localStorage.setItem("zeitarbeitMoney", money);
+  localStorage.setItem("zeitarbeitEnergy", totalEnergyMWh);
+}
 
-    <!-- Основные экраны (Вкладки) -->
-    <main class="main-content">
-        
-        <!-- 1. Главный экран (Кликер) -->
-        <div class="screen active clicker-container" id="screen-clicker">
-            <div class="turbine-core" id="turbine-btn">
-                <div class="turbine-inner">
-                    <div class="turbine-icon">⚡</div>
-                </div>
-            </div>
-            <div class="tap-hint">Кликайте для генерации энергии</div>
-        </div>
+// Фоновый расчет пассивного дохода и авто-кликов
+setInterval(() => {
+  let stats = calculateStats();
+  if (stats.totalEurSec > 0 || stats.totalEnergySec > 0) {
+    money += stats.totalEurSec / 10;
+    totalEnergyMWh += stats.totalEnergySec / 10;
+    updateUI();
+  }
+}, 100);
 
-        <!-- 2. Станции (Производство) -->
-        <div class="screen" id="screen-stations">
-            <div class="card-list">
-                <div class="industrial-card">
-                    <div class="card-info">
-                        <h4>☀️ Солнечная ферма (Lvl 12)</h4>
-                        <p>+250 ⚡/сек • Обслуживание</p>
-                    </div>
-                    <button class="btn-action" onclick="buyItem(45000)">45,000 €</button>
-                </div>
-                <div class="industrial-card">
-                    <div class="card-info">
-                        <h4>💨 Ветряная электростанция (Lvl 8)</h4>
-                        <p>+980 ⚡/сек • Экологично</p>
-                    </div>
-                    <button class="btn-action" onclick="buyItem(150000)">150,000 €</button>
-                </div>
-                <div class="industrial-card">
-                    <div class="card-info">
-                        <h4>⚙️ Дизель-генератор (Lvl 5)</h4>
-                        <p>+3,100 ⚡/сек • Высокий выхлоп</p>
-                    </div>
-                    <button class="btn-action" onclick="buyItem(490000)">490,000 €</button>
-                </div>
-            </div>
-        </div>
+// Автосохранение
+setInterval(() => {
+  localStorage.setItem("zeitarbeitMoney", money);
+  localStorage.setItem("zeitarbeitEnergy", totalEnergyMWh);
+}, 5000);
 
-        <!-- 3. Бригада (Персонал) -->
-        <div class="screen" id="screen-brigade">
-            <div class="card-list">
-                <div class="industrial-card">
-                    <div class="card-info">
-                        <h4>👷 Главный Инженер (Lvl 4)</h4>
-                        <p>Снижает риск аварий на 16%</p>
-                    </div>
-                    <button class="btn-action gold" onclick="buyItem(210000)">210,000 €</button>
-                </div>
-                <div class="industrial-card">
-                    <div class="card-info">
-                        <h4>⚡ Электрик 3-го разряда (Lvl 12)</h4>
-                        <p>+12% к общей энергии сетей</p>
-                    </div>
-                    <button class="btn-action gold" onclick="buyItem(85000)">85,000 €</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. Контракты -->
-        <div class="screen" id="screen-contracts">
-            <div class="card-list">
-                <div class="industrial-card" style="border-left: 4px solid var(--accent-cyan);">
-                    <div class="card-info">
-                        <h4>🇩🇪 Завод металлоконструкций</h4>
-                        <p>Требуется: 5,000 ⚡/ч • Награда: 12,000 €</p>
-                    </div>
-                    <span style="font-size: 11px; color: var(--accent-cyan); font-weight: 700;">АКТИВЕН</span>
-                </div>
-                <div class="industrial-card" style="border-left: 4px solid var(--accent-red);">
-                    <div class="card-info">
-                        <h4>🇩🇪 Зарядная станция E-Auto</h4>
-                        <p>Требуется: 1,200 ⚡/ч • Риск штрафа!</p>
-                    </div>
-                    <button class="btn-action">ВЗЯТЬ</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. Меню (Настройки) -->
-        <div class="screen" id="screen-menu">
-            <div class="card-list">
-                <div class="industrial-card">
-                    <div class="card-info">
-                        <h4>🌍 Язык / Sprache</h4>
-                        <p>Русский / Deutsch</p>
-                    </div>
-                    <button class="btn-action">DE / RU</button>
-                </div>
-                <div class="industrial-card">
-                    <div class="card-info">
-                        <h4>🔊 Звуковые эффекты</h4>
-                        <p>Включены (Индустриальные щелчки)</p>
-                    </div>
-                    <button class="btn-action">ВКЛ</button>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Нижняя панель навигации -->
-    <nav class="nav-bar">
-        <button class="nav-item active" onclick="switchTab('clicker', this)">
-            <span class="icon">🏭</span>
-            <span>Станции</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('brigade', this)">
-            <span class="icon">👷</span>
-            <span>Бригада</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('contracts', this)">
-            <span class="icon">📜</span>
-            <span>Контракты</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('menu', this)">
-            <span class="icon">⚙️</span>
-            <span>Меню</span>
-        </button>
-    </nav>
-
-    <script>
-        // Переключение вкладок
-        function switchTab(screenName, element) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            
-            if(screenName === 'clicker') {
-                document.getElementById('screen-clicker').classList.add('active');
-            } else {
-                document.getElementById('screen-' + screenName).classList.add('active');
-            }
-            element.classList.add('active');
-        }
-
-        // Логика кликера и анимаций тапа
-        let energy = 4521078;
-        let money = 1789500;
-        const energyCounter = document.getElementById('energy-counter');
-        const turbineBtn = document.getElementById('turbine-btn');
-
-        turbineBtn.addEventListener('click', (e) => {
-            energy += 1;
-            energyCounter.innerText = energy.toLocaleString();
-
-            // Создание летящей цифры
-            const rect = turbineBtn.getBoundingClientRect();
-            const x = e.clientX - rect.left - 20;
-            const y = e.clientY - rect.top - 20;
-
-            const floatNum = document.createElement('div');
-            floatNum.className = 'floating-number';
-            floatNum.innerText = '+1 ⚡';
-            floatNum.style.left = `${x}px`;
-            floatNum.style.top = `${y}px`;
-            
-            turbineBtn.appendChild(floatNum);
-            setTimeout(() => floatNum.remove(), 800);
-        });
-
-        // Заглушка для покупки
-        function buyItem(cost) {
-            if(money >= cost) {
-                money -= cost;
-                document.getElementById('money-counter').innerText = money.toLocaleString();
-                alert('Успешно приобретено!');
-            } else {
-                alert('Недостаточно средств (Евро)!');
-            }
-        }
-    </script>
+updateLanguageUI();
+updateUI();
+</script>
 </body>
 </html>
