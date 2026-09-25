@@ -90,17 +90,16 @@ body{
 .cabinet-top-panel {
   display: flex; justify-content: space-between; align-items: center;
   background: rgba(0,0,0,0.4); border: 1px solid var(--border-col);
-  border-radius: 6px; padding: 3px 6px; flex-shrink: 0;
+  border-radius: 6px; padding: 3px 6px; flex-shrink: 0; position: relative; z-index: 200;
 }
 .profile-box {
   font-size: 10px; color: var(--accent-col); display: flex; align-items: center; gap: 5px;
   cursor: pointer; background: rgba(16, 26, 60, 0.8); padding: 3px 6px; border-radius: 5px; border: 1px solid var(--border-col);
-  z-index: 120;
 }
 .profile-box:active { background: var(--glass-hover); }
 .user-avatar { width: 18px; height: 18px; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-size: 11px; border: 1px solid var(--accent-col); }
 
-.cabinet-btns { display: flex; gap: 4px; z-index: 120; }
+.cabinet-btns { display: flex; gap: 4px; }
 .cab-btn {
   background: rgba(16, 26, 60, 0.8); border: 1px solid var(--border-col); color: var(--title-col);
   padding: 3px 8px; border-radius: 5px; font-size: 11px; cursor: pointer;
@@ -113,26 +112,31 @@ body{
   border-radius: 8px;
   box-shadow: inset 0 0 12px rgba(0,0,0,0.9), 0 0 6px var(--neon-glow);
   display: flex; flex-direction: column; padding: 6px; gap: 5px;
-  position: relative; overflow: hidden;
+  position: relative; overflow: hidden; z-index: 100;
 }
 .arcade-screen::after {
   content: " "; display: block; position: absolute; inset: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
-  background-size: 100% 3px; z-index: 1; pointer-events: none; opacity: 0.4;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+  background-size: 100% 3px; z-index: 1; pointer-events: none; opacity: 0.3;
 }
 
-/* ВКЛАДКИ И КНОПКИ ДЕЙСТВИЙ (ПОВЫШЕННЫЙ Z-INDEX ДЛЯ КЛИКОВ) */
-.actions-row { display: flex; gap: 4px; justify-content: center; flex-shrink: 0; z-index: 100; flex-wrap: wrap; }
+/* КНОПКИ ДЕЙСТВИЙ И ВКЛАДКИ */
+.actions-row { display: flex; gap: 4px; justify-content: center; flex-shrink: 0; z-index: 150; flex-wrap: wrap; }
 .action-btn {
   background: var(--glass-bg); border: 1px solid var(--border-col); color: #83a4c9;
   padding: 5px 8px; border-radius: 5px; font: bold 8px monospace; cursor: pointer;
   box-shadow: 0 0 4px var(--neon-glow); transition: .15s; backdrop-filter: blur(2px);
-  position: relative; z-index: 101;
+  position: relative; z-index: 151; pointer-events: auto;
 }
 .action-btn.active { background: var(--btn-hover); border-color: var(--accent-col); color: var(--title-col); }
 .action-btn.special { border-color: #ffd42aaa; color: #ffd42a; }
 
 .hidden { display: none !important; }
+
+/* КОНТЕЙНЕР КОНТЕНТА ВНУТРИ ЭКРАНА */
+.screen-content {
+  flex-grow: 1; position: relative; z-index: 150; display: flex; flex-direction: column; overflow: hidden;
+}
 
 /* СЕТКА ИКОНОК 3x4 */
 .grid-menu { 
@@ -140,8 +144,6 @@ body{
   grid-template-columns: repeat(3, 1fr); 
   grid-template-rows: repeat(4, 1fr); 
   gap: 5px; 
-  flex-grow: 1; 
-  z-index: 100; 
   width: 100%;
   height: 100%;
   overflow-y: auto;
@@ -153,7 +155,7 @@ body{
   color: #fff; text-decoration: none; cursor: pointer;
   box-shadow: inset 0 0 10px rgba(255,255,255,0.05), 0 0 6px var(--neon-glow);
   transition: all 0.15s ease; width: 100%; height: 100%; padding: 2px; gap: 2px;
-  position: relative; z-index: 101;
+  pointer-events: auto;
 }
 .icon-btn:active { 
   transform: scale(0.94); 
@@ -164,8 +166,8 @@ body{
 .icon-title { font-size: 7.5px; font-weight: bold; color: var(--title-col); text-align: center; line-height: 1; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-shadow: 0 1px 2px rgba(0,0,0,0.9); }
 
 /* ПАНЕЛИ ТОПА И АЧИВОК */
-.panel-view { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; overflow-y: auto; z-index: 100; padding: 2px; }
-.row-card { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); border: 1px solid var(--border-col); border-radius: 6px; padding: 6px 10px; font-size: 10px; text-align: left; backdrop-filter: blur(4px); }
+.panel-view { display: flex; flex-direction: column; gap: 5px; width: 100%; height: 100%; overflow-y: auto; padding: 2px; }
+.row-card { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); border: 1px solid var(--border-col); border-radius: 6px; padding: 6px 10px; font-size: 10px; text-align: left; backdrop-filter: blur(4px); flex-shrink: 0; }
 .row-name { color: var(--accent-col); font-weight: bold; }
 .row-val { color: var(--title-col); font-weight: bold; }
 .achievement { opacity: 0.4; border-color: #444; }
@@ -180,6 +182,7 @@ body{
   padding: 5px;
   display: flex; justify-content: space-around; align-items: center;
   flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(255,255,255,0.05);
+  position: relative; z-index: 200;
 }
 .joystick-mock {
   width: 24px; height: 24px; background: radial-gradient(circle at 35% 35%, #ff3366, #880022);
@@ -252,34 +255,37 @@ body{
       <button class="action-btn" onclick="sharePortal()">📤 ДРУЗЬЯМ</button>
     </div>
 
-    <!-- Сетка иконок 3x4 (Вкладка Игры) -->
-    <div class="grid-menu" id="gamesGrid">
-      <a href="snake.html" class="icon-btn"><div class="icon-emoji">🐍</div><div class="icon-title">SNAKE</div></a>
-      <a href="tetris.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">TETRIS</div></a>
-      <a href="pong.html" class="icon-btn"><div class="icon-emoji">🏓</div><div class="icon-title">PONG</div></a>
-      <a href="race.html" class="icon-btn"><div class="icon-emoji">🏎️</div><div class="icon-title">RACER</div></a>
-      <a href="mario.html" class="icon-btn"><div class="icon-emoji">🍄</div><div class="icon-title">PLATFORMER</div></a>
-      <a href="arkanoid.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">ARKANOID</div></a>
-      <a href="duck.html" class="icon-btn"><div class="icon-emoji">🦆</div><div class="icon-title">DUCK MUDACK</div></a>
-      <a href="invaders.html" class="icon-btn"><div class="icon-emoji">👾</div><div class="icon-title">INVADERS</div></a>
-      <a href="doodle.html" class="icon-btn"><div class="icon-emoji">🦘</div><div class="icon-title">JUMPER</div></a>
-      <a href="minesweeper.html" class="icon-btn"><div class="icon-emoji">💣</div><div class="icon-title">MINESWEEPER</div></a>
-      <div class="icon-btn" style="opacity:0.4; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
-      <div class="icon-btn" style="opacity:0.4; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
-    </div>
+    <!-- КОНТЕЙНЕР ВКЛАДОК -->
+    <div class="screen-content">
+      <!-- Сетка иконок 3x4 (Вкладка Игры) -->
+      <div class="grid-menu" id="gamesGrid">
+        <a href="snake.html" class="icon-btn"><div class="icon-emoji">🐍</div><div class="icon-title">SNAKE</div></a>
+        <a href="tetris.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">TETRIS</div></a>
+        <a href="pong.html" class="icon-btn"><div class="icon-emoji">🏓</div><div class="icon-title">PONG</div></a>
+        <a href="race.html" class="icon-btn"><div class="icon-emoji">🏎️</div><div class="icon-title">RACER</div></a>
+        <a href="mario.html" class="icon-btn"><div class="icon-emoji">🍄</div><div class="icon-title">PLATFORMER</div></a>
+        <a href="arkanoid.html" class="icon-btn"><div class="icon-emoji">🧱</div><div class="icon-title">ARKANOID</div></a>
+        <a href="duck.html" class="icon-btn"><div class="icon-emoji">🦆</div><div class="icon-title">DUCK MUDACK</div></a>
+        <a href="invaders.html" class="icon-btn"><div class="icon-emoji">👾</div><div class="icon-title">INVADERS</div></a>
+        <a href="doodle.html" class="icon-btn"><div class="icon-emoji">🦘</div><div class="icon-title">JUMPER</div></a>
+        <a href="minesweeper.html" class="icon-btn"><div class="icon-emoji">💣</div><div class="icon-title">MINESWEEPER</div></a>
+        <div class="icon-btn" style="opacity:0.4; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
+        <div class="icon-btn" style="opacity:0.4; cursor:default;"><div class="icon-emoji">⏳</div><div class="icon-title">SOON...</div></div>
+      </div>
 
-    <!-- Таблица рекордов (Вкладка ТОП) -->
-    <div class="panel-view hidden" id="leaderboardView">
-      <div class="row-card"><span class="row-name">🐍 Classic Snake</span><span class="row-val" id="scoreSnake">0</span></div>
-      <div class="row-card"><span class="row-name">🧱 Tetris Classic</span><span class="row-val" id="scoreTetris">0</span></div>
-      <div class="row-card"><span class="row-name">🦘 Retro Jumper</span><span class="row-val" id="scoreJumper">0</span></div>
-    </div>
+      <!-- Таблица рекордов (Вкладка ТОП) -->
+      <div class="panel-view hidden" id="leaderboardView">
+        <div class="row-card"><span class="row-name">🐍 Classic Snake</span><span class="row-val" id="scoreSnake">0</span></div>
+        <div class="row-card"><span class="row-name">🧱 Tetris Classic</span><span class="row-val" id="scoreTetris">0</span></div>
+        <div class="row-card"><span class="row-name">🦘 Retro Jumper</span><span class="row-val" id="scoreJumper">0</span></div>
+      </div>
 
-    <!-- Система достижений (Вкладка АЧИВКИ) -->
-    <div class="panel-view hidden" id="achievementsView">
-      <div class="row-card achievement" id="achSnake"><div><span class="row-name">🐍 Мастер Змейки</span><div class="ach-desc">Счет от 100 в Snake</div></div><span class="row-val" id="statSnake">🔒</span></div>
-      <div class="row-card achievement" id="achTetris"><div><span class="row-name">🧱 Архитектор Тетриса</span><div class="ach-desc">Счет от 500 в Tetris</div></div><span class="row-val" id="statTetris">🔒</span></div>
-      <div class="row-card achievement" id="achJumper"><div><span class="row-name">🦘 Прыгун</span><div class="ach-desc">Сыграй в Retro Jumper</div></div><span class="row-val" id="statJumper">🔒</span></div>
+      <!-- Система достижений (Вкладка АЧИВКИ) -->
+      <div class="panel-view hidden" id="achievementsView">
+        <div class="row-card achievement" id="achSnake"><div><span class="row-name">🐍 Мастер Змейки</span><div class="ach-desc">Счет от 100 в Snake</div></div><span class="row-val" id="statSnake">🔒</span></div>
+        <div class="row-card achievement" id="achTetris"><div><span class="row-name">🧱 Архитектор Тетриса</span><div class="ach-desc">Счет от 500 в Tetris</div></div><span class="row-val" id="statTetris">🔒</span></div>
+        <div class="row-card achievement" id="achJumper"><div><span class="row-name">🦘 Прыгун</span><div class="ach-desc">Сыграй в Retro Jumper</div></div><span class="row-val" id="statJumper">🔒</span></div>
+      </div>
     </div>
   </div>
 
@@ -471,16 +477,4 @@ function playNote(freq) {
 
 function startBGM() {
   if (musicInterval) clearInterval(musicInterval);
-  musicInterval = setInterval(() => {
-    if (!soundEnabled) return;
-    playNote(melodyNotes[noteIndex]);
-    noteIndex = (noteIndex + 1) % melodyNotes.length;
-  }, 200);
-}
-
-function stopBGM() {
-  if (musicInterval) clearInterval(musicInterval);
-  musicInterval = null;
-}
-
-window.addEventListener('pointerdown', () => {
+  musicInt
