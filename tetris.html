@@ -76,7 +76,7 @@ canvas { width: 100%; height: 100%; object-fit: contain; background: #010206; }
       <button class="ctrl-pad-btn" id="btnRight">ВПРАВО ▶</button>
     </div>
     <div class="ctrl-row">
-      <button class="ctrl-pad-btn" id="btnDown" style="width: 288px;">▼ УСКОРИТЬ ВНИЗ</button>
+      <button class="ctrl-pad-btn" id="btnDrop" style="width: 288px; background: rgba(32, 232, 255, 0.15);">⚡ БЫСТРЫЙ СБРОС ▼</button>
     </div>
   </div>
 </div>
@@ -120,7 +120,7 @@ let currentPiece = {
 let score = 0;
 let lines = 0;
 let dropCounter = 0;
-let dropInterval = 500; // Плавная скорость падения
+let dropInterval = 600; 
 let lastTime = 0;
 
 function spawnPiece() {
@@ -177,7 +177,7 @@ function clearLines() {
     board.splice(r, 1);
     board.unshift(Array(COLS).fill(0));
     cleared++;
-    r++; // проверка этой же строки снова
+    r++;
   }
   if (cleared > 0) {
     lines += cleared;
@@ -198,7 +198,7 @@ function rotatePiece() {
     shift = -(shift + (shift > 0 ? 1 : -1));
     if (shift > rotated[0].length) {
       currentPiece.x = originalX;
-      return; // поворот невозможен
+      return;
     }
   }
   currentPiece.shape = rotated;
@@ -219,7 +219,21 @@ function moveRight() {
   }
 }
 
-function moveDown() {
+// Моментальный сброс фигурки вниз до упора (Hard Drop)
+function hardDrop() {
+  let dropDistance = 0;
+  while (!checkCollision(0, dropDistance + 1, currentPiece.shape)) {
+    dropDistance++;
+  }
+  currentPiece.y += dropDistance;
+  mergePiece();
+  clearLines();
+  spawnPiece();
+  dropCounter = 0;
+  haptic();
+}
+
+function moveDownStep() {
   if (!checkCollision(0, 1, currentPiece.shape)) {
     currentPiece.y++;
   } else {
@@ -235,11 +249,11 @@ function updateUI() {
   document.getElementById('linesTxt').textContent = "ЛИНИИ: " + lines;
 }
 
-// Привязка кнопок управления
+// Управление кнопками
 document.getElementById('btnLeft').addEventListener('pointerdown', moveLeft);
 document.getElementById('btnRight').addEventListener('pointerdown', moveRight);
 document.getElementById('btnRot').addEventListener('pointerdown', rotatePiece);
-document.getElementById('btnDown').addEventListener('pointerdown', moveDown);
+document.getElementById('btnDrop').addEventListener('pointerdown', hardDrop);
 
 spawnPiece();
 
@@ -278,7 +292,7 @@ function update(time = 0) {
   lastTime = time;
   dropCounter += deltaTime;
   if (dropCounter > dropInterval) {
-    moveDown();
+    moveDownStep();
   }
   draw();
   requestAnimationFrame(update);
