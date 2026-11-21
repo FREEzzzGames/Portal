@@ -1,0 +1,39 @@
+name: FREEzzz HUB checks
+
+on:
+  push:
+    branches: [hub-control-center]
+    paths:
+      - "hub-control-center/**"
+      - ".github/workflows/hub-control-center.yml"
+  pull_request:
+    paths:
+      - "hub-control-center/**"
+      - ".github/workflows/hub-control-center.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hub-control-center/app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: hub-control-center/app/requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install httpx
+      - name: Compile Python
+        run: python -m compileall -q hub
+      - name: Run API tests
+        run: PYTHONPATH=. python -m unittest discover -s tests -v
