@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0c10">
+<meta name="description" content="FREEzzz HUB — локальная панель управления сервером">
+<title>FREEzzz HUB · Control Center</title>
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+<a class="brand" href="#"><span class="brand-mark">F<span>•</span></span><span><b>FREEzzz</b><small>HUB CONTROL</small></span></a>
+<div class="side-caption">CONTROL PLANE</div>
+<nav id="side-nav">
+<button class="nav-item active" data-page="home"><span>⌂</span> Обзор</button>
+<button class="nav-item" data-page="services"><span>▦</span> Сервисы</button>
+<button class="nav-item" data-page="system"><span>⌁</span> Система</button>
+<button class="nav-item" data-page="development"><span>⌘</span> Разработка</button>
+<button class="nav-item" data-page="smart"><span>⌗</span> Умный дом</button>
+<button class="nav-item" data-page="ai"><span>✳</span> AI Center</button>
+</nav>
+<div class="sidebar-bottom"><div class="mini-label">HOST</div><div id="side-host">Определение…</div><div class="side-version">CONTROL CENTER · 0.1.0</div></div>
+</aside>
+<main class="main">
+<header class="topbar"><div><div class="eyebrow">PRIVATE SERVER / LOCAL FIRST</div><h1 id="page-title">Обзор системы</h1></div><div class="top-status"><i id="api-dot" class="dot"></i><span id="api-state">Подключение</span><span class="top-divider"></span><span id="clock">--:--:--</span></div></header>
+<section class="page active" id="page-home">
+<div class="welcome-row"><div><div class="eyebrow">FREEzzz HUB · HOME</div><h2>Состояние инфраструктуры</h2><p>Локальная панель управления. Данные поступают непосредственно с сервера.</p></div><button class="refresh-btn" id="refresh">↻ <span>Обновить</span></button></div>
+<div class="hero-card"><div class="hero-orbit"></div><div class="hero-copy"><div class="status-line"><span class="pulse"></span> HOST ONLINE</div><h2 id="hero-host">Ожидание данных сервера</h2><p id="hero-platform">Подключаемся к локальному backend…</p></div><div class="hero-meta"><span>UPTIME</span><b id="uptime">—</b><span>LAST UPDATE</span><b id="updated">—</b></div></div>
+<div class="section-heading"><div><span class="eyebrow">LIVE TELEMETRY</span><h3>Ресурсы системы</h3></div><span class="live-tag"><i></i> LIVE</span></div>
+<div class="metrics-grid">
+<article class="metric-card"><div class="metric-top"><span>CPU LOAD</span><span class="metric-icon">◉</span></div><div class="metric-value" id="cpu-value">—<small>%</small></div><div class="meter"><i id="cpu-bar"></i></div><div class="metric-foot" id="cpu-foot">Процессор</div></article>
+<article class="metric-card"><div class="metric-top"><span>MEMORY</span><span class="metric-icon">▤</span></div><div class="metric-value" id="ram-value">—<small>%</small></div><div class="meter"><i id="ram-bar"></i></div><div class="metric-foot" id="ram-foot">Оперативная память</div></article>
+<article class="metric-card"><div class="metric-top"><span>STORAGE /</span><span class="metric-icon">▱</span></div><div class="metric-value" id="disk-value">—<small>%</small></div><div class="meter"><i id="disk-bar"></i></div><div class="metric-foot" id="disk-foot">Корневая файловая система</div></article>
+<article class="metric-card"><div class="metric-top"><span>SWAP</span><span class="metric-icon">⇅</span></div><div class="metric-value" id="swap-value">—<small>%</small></div><div class="meter"><i id="swap-bar"></i></div><div class="metric-foot" id="swap-foot">Виртуальная память</div></article>
+</div>
+<div class="lower-grid">
+<section class="panel"><div class="panel-head"><div><span class="eyebrow">INFRASTRUCTURE</span><h3>Docker</h3></div><span class="panel-count" id="container-count">—</span></div><div class="docker-summary"><div class="docker-symbol">▣</div><div><b id="docker-state">Проверка Docker</b><small id="docker-detail">Получение списка контейнеров</small></div></div><div id="container-preview" class="container-preview"><div class="empty-state">Загрузка контейнеров…</div></div><button class="text-action" data-open="services">Все контейнеры <span>→</span></button></section>
+<section class="panel"><div class="panel-head"><div><span class="eyebrow">HOST DETAILS</span><h3>Сервер</h3></div><span class="panel-icon">⌁</span></div><div class="detail-list"><div><span>Имя узла</span><b id="detail-host">—</b></div><div><span>Платформа</span><b id="detail-arch">—</b></div><div><span>Ядро Linux</span><b id="detail-kernel">—</b></div><div><span>CPU cores</span><b id="detail-cores">—</b></div><div><span>Load average</span><b id="detail-load">—</b></div></div></section>
+</div><div class="footer-note"><span>●</span> Все показатели получены локально. Внешние API не используются.</div>
+</section>
+<section class="page" id="page-services"><div class="page-intro"><span class="eyebrow">INFRASTRUCTURE</span><h2>Сервисы и контейнеры</h2><p>Инвентаризация Docker в режиме чтения. Управляющие действия будут добавляться после отдельной проверки прав.</p></div><div class="panel"><div class="panel-head"><h3>Docker containers</h3><span class="panel-count" id="services-count">—</span></div><div id="containers-full" class="container-list"><div class="empty-state">Загрузка…</div></div></div></section>
+<section class="page" id="page-system"><div class="page-intro"><span class="eyebrow">HOST TELEMETRY</span><h2>Система</h2><p>Текущие показатели оборудования и операционной системы.</p></div><div class="metrics-grid compact"><article class="metric-card"><div class="metric-top"><span>CPU</span></div><div class="metric-value" id="sys-cpu">—</div><div class="metric-foot">Текущая загрузка</div></article><article class="metric-card"><div class="metric-top"><span>RAM</span></div><div class="metric-value" id="sys-ram">—</div><div class="metric-foot" id="sys-ram-detail">—</div></article><article class="metric-card"><div class="metric-top"><span>SWAP</span></div><div class="metric-value" id="sys-swap">—</div><div class="metric-foot" id="sys-swap-detail">—</div></article><article class="metric-card"><div class="metric-top"><span>ROOT DISK</span></div><div class="metric-value" id="sys-disk">—</div><div class="metric-foot" id="sys-disk-detail">—</div></article></div><div class="panel system-panel"><div class="panel-head"><h3>Информация об узле</h3></div><div class="detail-list" id="system-details"></div></div></section>
+<section class="page" id="page-development"><div class="page-intro"><span class="eyebrow">WORKSPACE</span><h2>Разработка</h2><p>Следующий модуль: обнаружение Git-репозиториев, компиляторов и SDK, профили сборки.</p></div><div class="placeholder-panel"><div class="placeholder-icon">⌘</div><h3>Модуль разработки</h3><p>Будет подключён после безопасного сканирования установленных инструментов и каталогов проектов.</p><span class="module-state">PLANNED · M5</span></div></section>
+<section class="page" id="page-smart"><div class="page-intro"><span class="eyebrow">CONNECTED DEVICES</span><h2>Умный дом</h2><p>Интеграции Home Assistant, MQTT и ESPHome. Отсутствующее оборудование не влияет на работу панели.</p></div><div class="placeholder-panel"><div class="placeholder-icon">⌗</div><h3>Модуль умного дома</h3><p>Подключение существующих локальных служб будет выполнено после инвентаризации. Управление устройствами пока отключено.</p><span class="module-state">PLANNED · M6</span></div></section>
+<section class="page" id="page-ai"><div class="page-intro"><span class="eyebrow">LOCAL INTELLIGENCE</span><h2>AI Center</h2><p>Локальные модели — основной автономный режим. Онлайн-провайдеры будут дополнительными.</p></div><div class="placeholder-panel"><div class="placeholder-icon">✳</div><h3>AI Center</h3><p>Будет обнаруживать локальный inference runtime и модели, не раскрывая API-ключи интерфейсу.</p><span class="module-state">PLANNED · M6</span></div></section>
+</main></div>
+<nav class="mobile-nav" id="mobile-nav"><button class="active" data-page="home"><span>⌂</span>Главная</button><button data-page="services"><span>▦</span>Сервисы</button><button data-page="system"><span>⌁</span>Система</button><button data-page="more"><span>•••</span>Ещё</button></nav>
+<div class="toast" id="toast" role="status"></div>
+<script src="/assets/app.js" defer></script>
+</body></html>
