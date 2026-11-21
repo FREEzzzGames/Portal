@@ -24,7 +24,8 @@ FREEzzz HUB Control Center is a separate, self-hosted, offline-first administrat
 4. [Security and operations](docs/04-SECURITY-OPERATIONS.md)
 5. [Implementation plan and acceptance tests](docs/05-IMPLEMENTATION-PLAN.md)
 6. [Known server baseline](docs/06-CURRENT-BASELINE.md)
-7. [Implementation status and run instructions](IMPLEMENTATION-STATUS.md)
+7. [Cardputer voice-control architecture](docs/07-CARDPUTER-VOICE.md)
+8. [Implementation status and run instructions](IMPLEMENTATION-STATUS.md)
 
 ## Run locally
 
