@@ -1,74 +1,62 @@
 # FREEzzz HUB Control Center
 
-Standalone, local-first control panel for the FREEzzz home server.
+**Project:** local control plane for the FREEzzz home server  
+**Status:** specification baseline; implementation not yet started  
+**Working branch:** `hub-control-center`
 
-## Project status
+FREEzzz HUB Control Center is a self-hosted, offline-first administration interface for the Ubuntu host and its local infrastructure. It is a separate application from the existing FREEzzz Portal.
 
-Initial workspace. The existing production portal and its containers are not modified by this project.
+## Documentation
 
-## Design constraints
+1. [Product and system architecture](docs/01-PRODUCT-ARCHITECTURE.md)
+2. [Interface and UX specification](docs/02-INTERFACE-UX.md)
+3. [Backend API contract](docs/03-API-CONTRACT.md)
+4. [Security and operations](docs/04-SECURITY-OPERATIONS.md)
+5. [Implementation plan and acceptance tests](docs/05-IMPLEMENTATION-PLAN.md)
+6. [Known server baseline](docs/06-CURRENT-BASELINE.md)
 
-- Offline-first: the UI and backend must work without public internet access.
-- Local deployment on Ubuntu; browser access from localhost, LAN and Tailscale.
-- Mobile-first responsive interface, including portrait phone layouts.
-- No CDN, remote fonts, cloud authentication or required hosted APIs.
-- The control panel must start independently of Docker so it remains available when Docker is unavailable.
-- Read-only discovery by default. Any system-changing action must be explicit, validated, allow-listed and logged.
-- Never expose the Docker socket directly to the browser.
-- Do not require adding the Linux user `monk` to the `docker` group.
-- Secrets and runtime data must stay outside source control.
+## Non-negotiable requirements
 
-## Planned architecture
+- Local-first and offline-first. No required external APIs, CDNs, remote fonts or cloud authentication.
+- Runs on Ubuntu and remains available if Docker is stopped.
+- Browser access through localhost, LAN and Tailscale, subject to network availability.
+- Responsive desktop and mobile layouts; phone portrait mode is a first-class target.
+- Read-only discovery by default. Mutating actions are explicit, allow-listed and audited.
+- The browser never receives direct access to the Docker socket.
+- Do not add Linux user `monk` to the `docker` group without explicit authorization.
+- No arbitrary shell endpoint, arbitrary file path endpoint or unrestricted command execution.
+- Backups and secrets are never committed to Git.
+- Existing production portal and services must not be changed by development or installation scripts.
 
-```text
-Browser (local static UI)
-        |
-     HTTP / WS
-        |
-Python API service
-        |
-  adapters / allow-listed actions
-        |
-Ubuntu / Docker / network / local services
-```
+## Technology direction
 
-## Planned stack
-
-- Frontend: HTML, CSS, TypeScript, Vite.
-- Backend: Python, FastAPI, Uvicorn.
-- Host metrics: psutil and read-only Linux interfaces.
-- Container integration: Docker API through a restricted backend adapter.
-- Local state: SQLite.
+- Frontend: TypeScript, Vite, semantic HTML and CSS.
+- Backend: Python, FastAPI and Uvicorn.
+- Host telemetry: psutil plus read-only Linux interfaces.
+- Docker integration: restricted backend adapter.
+- Persistent application state: SQLite.
 - Runtime: systemd service, independent of Docker.
+- Tests: backend tests, frontend typecheck/build, API integration tests and deployment smoke tests.
 
-Exact versions and installed dependencies will be selected after inspecting the server inventory and the supplied source archive.
-
-## Planned modules
-
-1. HOME — host health, CPU, memory, swap, disk, uptime and service overview.
-2. SERVICES — Docker containers, systemd services, health checks and logs.
-3. SYSTEM — host, network, storage, security and backup information.
-4. DEVELOPMENT — detected repositories, toolchains and controlled build jobs.
-5. SMART HOME — Home Assistant, MQTT and device integrations when available.
-6. AI CENTER — local model runtimes and optional remote providers.
+Exact dependency versions and deployment permissions must be selected after the current host and source code have been inspected.
 
 ## Repository layout
 
 ```text
 hub-control-center/
-  frontend/
-  backend/
-  config/
-  docs/
-  scripts/
-  tests/
-  README.md
+├── README.md
+├── docs/
+├── frontend/
+├── backend/
+├── config/
+├── scripts/
+└── tests/
 ```
 
-## Development workflow
+## Change and release policy
 
-Changes are developed on the `hub-control-center` branch. The running server is not changed until a release is reviewed, backed up, deployed and verified.
+All work is committed to `hub-control-center`. The production system is not updated directly from an unreviewed working tree. A release requires a backup, a reviewed change set, successful tests, controlled deployment and post-deployment verification.
 
-## Next step
+## Current state
 
-Inspect the current server archive and map the existing services and deployment constraints before implementing adapters or deployment scripts.
+The repository contains the project documentation baseline. The documents define the target system; they do not claim that the new application has been implemented. The known state of the existing server is recorded separately in [06-CURRENT-BASELINE.md].
