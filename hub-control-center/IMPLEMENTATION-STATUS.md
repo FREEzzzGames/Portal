@@ -41,3 +41,11 @@ The backend binds to loopback by default. Docker inventory requires the backend 
 ## Verification status
 
 Source files are committed to branch `hub-control-center`. Runtime tests, dependency installation and deployment have not yet been run on the user's Ubuntu host. This is an implementation preview, not a production deployment.
+
+
+## Additional engineering work
+
+- Added automated backend API smoke tests under `app/tests/`.
+- Added GitHub Actions workflow for Python compilation and API tests on branch updates.
+- Added the Cardputer ADV push-to-talk voice-control architecture, including offline-first speech recognition, device pairing, allowlisted intents and confirmation requirements.
+- Voice control is specified but not implemented; Cardputer hardware/firmware transport must be verified before coding the device integration.
